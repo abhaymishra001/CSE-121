@@ -1,0 +1,1925 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CSE121 – Unit I: Data Science & Big Data</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Caveat:wght@400;500;600;700&family=Kalam:wght@300;400;700&family=Patrick+Hand&family=Nunito:ital,wght@0,300;0,400;0,600;0,700;1,400&display=swap');
+
+  :root {
+    --paper: #fdfcf7;
+    --paper2: #f9f8f0;
+    --lines: #c8dff5;
+    --ink: #1a1a2e;
+    --ink-light: #3a3a5c;
+    --blue: #2563eb;
+    --blue-light: #dbeafe;
+    --blue-mid: #93c5fd;
+    --teal: #0d9488;
+    --teal-light: #ccfbf1;
+    --amber: #d97706;
+    --amber-light: #fef3c7;
+    --rose: #e11d48;
+    --rose-light: #ffe4e6;
+    --green: #16a34a;
+    --green-light: #dcfce7;
+    --purple: #7c3aed;
+    --purple-light: #ede9fe;
+    --shadow: rgba(37,99,235,0.10);
+    --hole-shadow: rgba(0,0,0,0.12);
+    --spiral: #9ca3af;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'Nunito', sans-serif;
+    background: #e8edf5;
+    background-image: radial-gradient(#c3d1e8 1px, transparent 1px);
+    background-size: 24px 24px;
+    color: var(--ink);
+    min-height: 100vh;
+  }
+
+  /* ─── PROGRESS BAR ─── */
+  #progress-bar {
+    position: fixed; top: 0; left: 0; height: 3px;
+    background: linear-gradient(90deg, var(--blue), var(--teal), var(--purple));
+    width: 0%; z-index: 9999;
+    transition: width 0.2s ease;
+    box-shadow: 0 0 6px rgba(37,99,235,.4);
+  }
+
+  /* ─── TOP NAV ─── */
+  #top-nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 1000;
+    background: rgba(253,252,247,.96);
+    backdrop-filter: blur(8px);
+    border-bottom: 2px solid var(--lines);
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 20px; height: 54px;
+    box-shadow: 0 2px 12px var(--shadow);
+  }
+  #top-nav .brand {
+    font-family: 'Caveat', cursive; font-size: 1.4rem;
+    font-weight: 700; color: var(--blue);
+    letter-spacing: 0.5px;
+  }
+  #top-nav .brand span { color: var(--teal); }
+  #menu-toggle {
+    display: none; flex-direction: column; gap: 5px;
+    background: none; border: none; cursor: pointer; padding: 4px;
+  }
+  #menu-toggle span {
+    display: block; width: 22px; height: 2px;
+    background: var(--ink); border-radius: 2px;
+    transition: all .3s;
+  }
+  .nav-links { display: flex; gap: 14px; }
+  .nav-links a {
+    font-family: 'Kalam', cursive; font-size: .85rem; font-weight: 700;
+    color: var(--ink-light); text-decoration: none;
+    padding: 4px 10px; border-radius: 20px;
+    transition: all .2s;
+  }
+  .nav-links a:hover, .nav-links a.active {
+    background: var(--blue-light); color: var(--blue);
+  }
+
+  /* ─── LAYOUT ─── */
+  .layout {
+    display: flex;
+    padding-top: 54px;
+    min-height: 100vh;
+  }
+
+  /* ─── SIDEBAR ─── */
+  #sidebar {
+    position: fixed; top: 54px; left: 0; bottom: 0;
+    width: 260px; overflow-y: auto;
+    background: var(--paper);
+    border-right: 2px solid var(--lines);
+    padding: 16px 0 40px;
+    z-index: 800;
+    transition: transform .3s ease;
+    box-shadow: 2px 0 16px var(--shadow);
+  }
+  #sidebar::-webkit-scrollbar { width: 4px; }
+  #sidebar::-webkit-scrollbar-thumb { background: var(--lines); border-radius: 4px; }
+
+  .sidebar-title {
+    font-family: 'Caveat', cursive; font-size: 1rem; font-weight: 700;
+    color: var(--blue); padding: 0 16px 10px;
+    border-bottom: 1.5px dashed var(--lines);
+    margin-bottom: 8px; letter-spacing: 0.5px;
+  }
+  .toc-item {
+    display: block; padding: 6px 16px 6px 20px;
+    font-family: 'Patrick Hand', cursive; font-size: .82rem;
+    color: var(--ink-light); text-decoration: none;
+    border-left: 3px solid transparent;
+    transition: all .2s;
+    line-height: 1.4;
+  }
+  .toc-item:hover, .toc-item.active {
+    background: var(--blue-light);
+    border-left-color: var(--blue);
+    color: var(--blue);
+  }
+  .toc-item.sub { padding-left: 30px; font-size: .77rem; opacity: .85; }
+  .toc-item.mcq-link { color: var(--purple); font-weight: bold; margin-top: 8px; }
+  .toc-item.mcq-link:hover { background: var(--purple-light); border-left-color: var(--purple); }
+
+  /* ─── MAIN CONTENT ─── */
+  #main {
+    margin-left: 260px;
+    flex: 1;
+    padding: 30px 24px 60px;
+    max-width: 900px;
+  }
+
+  /* ─── NOTEBOOK PAGE ─── */
+  .notebook-page {
+    background: var(--paper);
+    border-radius: 4px 12px 12px 4px;
+    margin-bottom: 28px;
+    box-shadow: 4px 4px 20px var(--shadow), 1px 1px 0 rgba(0,0,0,.04);
+    position: relative;
+    overflow: hidden;
+  }
+
+  /* Spiral holes */
+  .notebook-page::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 44px;
+    background: var(--paper2);
+    border-right: 2px solid var(--lines);
+  }
+
+  .spiral-holes {
+    position: absolute; left: 0; top: 0; bottom: 0;
+    width: 44px;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: space-evenly;
+    gap: 0; z-index: 2; pointer-events: none;
+  }
+  .spiral-hole {
+    width: 14px; height: 14px; border-radius: 50%;
+    background: #e8edf5;
+    border: 2px solid var(--spiral);
+    box-shadow: inset 0 1px 3px var(--hole-shadow);
+    flex-shrink: 0;
+  }
+
+  .page-content {
+    padding: 24px 28px 28px 58px;
+    background-image: repeating-linear-gradient(
+      transparent, transparent 27px, var(--lines) 28px
+    );
+    min-height: 200px;
+  }
+
+  /* ─── COVER PAGE ─── */
+  .cover-page {
+    text-align: center;
+    padding: 48px 58px 40px 58px;
+    background: var(--paper);
+    background-image: none;
+  }
+  .cover-subject {
+    font-family: 'Kalam', cursive; font-size: .9rem; font-weight: 400;
+    color: var(--teal); letter-spacing: 2px; text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+  .cover-title {
+    font-family: 'Caveat', cursive; font-size: 2.8rem; font-weight: 700;
+    color: var(--ink); line-height: 1.2; margin-bottom: 6px;
+  }
+  .cover-subtitle {
+    font-family: 'Patrick Hand', cursive; font-size: 1.1rem;
+    color: var(--blue); margin-bottom: 24px;
+  }
+  .cover-divider {
+    width: 100px; height: 3px;
+    background: linear-gradient(90deg, var(--blue), var(--teal));
+    border-radius: 2px; margin: 0 auto 24px;
+  }
+  .cover-meta {
+    display: flex; justify-content: center; gap: 20px; flex-wrap: wrap;
+  }
+  .cover-tag {
+    background: var(--blue-light); color: var(--blue);
+    border-radius: 20px; padding: 5px 14px;
+    font-family: 'Patrick Hand', cursive; font-size: .82rem;
+    border: 1.5px solid var(--blue-mid);
+  }
+
+  /* ─── SECTION HEADINGS ─── */
+  .section-heading {
+    font-family: 'Caveat', cursive; font-size: 1.85rem; font-weight: 700;
+    color: var(--ink); margin-bottom: 8px;
+    display: flex; align-items: center; gap: 10px;
+    padding-bottom: 6px;
+    border-bottom: 2px solid var(--lines);
+  }
+  .section-heading .icon {
+    font-size: 1.4rem; flex-shrink: 0;
+  }
+  .section-heading .badge {
+    font-family: 'Patrick Hand', cursive; font-size: .75rem;
+    background: var(--blue); color: #fff;
+    border-radius: 20px; padding: 2px 10px;
+    margin-left: auto; letter-spacing: .5px;
+  }
+
+  .sub-heading {
+    font-family: 'Caveat', cursive; font-size: 1.35rem; font-weight: 600;
+    color: var(--blue); margin: 18px 0 6px;
+    padding-left: 10px;
+    border-left: 3px solid var(--blue);
+  }
+  .sub-heading2 {
+    font-family: 'Kalam', cursive; font-size: 1.05rem; font-weight: 700;
+    color: var(--teal); margin: 14px 0 5px;
+  }
+
+  /* ─── BODY TEXT ─── */
+  p {
+    font-size: .93rem; line-height: 1.9; color: var(--ink-light);
+    margin-bottom: 10px; font-family: 'Patrick Hand', cursive;
+    font-size: .96rem;
+  }
+  strong { color: var(--ink); font-weight: 700; }
+
+  /* ─── LISTS ─── */
+  ul.notes-list, ol.notes-list {
+    padding-left: 22px; margin: 8px 0 10px;
+  }
+  ul.notes-list li, ol.notes-list li {
+    font-family: 'Patrick Hand', cursive; font-size: .95rem;
+    line-height: 1.8; color: var(--ink-light);
+    margin-bottom: 4px;
+    padding-left: 4px;
+  }
+  ul.notes-list li::marker { color: var(--blue); }
+  ol.notes-list li::marker { color: var(--blue); font-weight: 700; }
+
+  /* ─── CALLOUT BOXES ─── */
+  .box {
+    border-radius: 10px; padding: 14px 18px;
+    margin: 14px 0;
+    border-left: 4px solid;
+    font-family: 'Patrick Hand', cursive; font-size: .93rem;
+    line-height: 1.8;
+  }
+  .box-title {
+    font-family: 'Kalam', cursive; font-weight: 700; font-size: 1rem;
+    margin-bottom: 5px; display: flex; align-items: center; gap: 6px;
+  }
+  .box.def { background: var(--blue-light); border-color: var(--blue); color: var(--ink); }
+  .box.tip { background: var(--amber-light); border-color: var(--amber); color: var(--ink); }
+  .box.imp { background: var(--rose-light); border-color: var(--rose); color: var(--ink); }
+  .box.sum { background: var(--green-light); border-color: var(--green); color: var(--ink); }
+  .box.note { background: var(--purple-light); border-color: var(--purple); color: var(--ink); }
+  .box.teal { background: var(--teal-light); border-color: var(--teal); color: var(--ink); }
+
+  /* ─── CARDS GRID ─── */
+  .cards {
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 14px; margin: 14px 0;
+  }
+  .card {
+    background: var(--paper2);
+    border: 1.5px solid var(--lines);
+    border-radius: 10px; padding: 14px;
+    transition: transform .2s, box-shadow .2s;
+    cursor: default;
+  }
+  .card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 20px var(--shadow);
+  }
+  .card .card-icon { font-size: 1.6rem; margin-bottom: 6px; }
+  .card .card-title {
+    font-family: 'Kalam', cursive; font-size: .95rem; font-weight: 700;
+    color: var(--ink); margin-bottom: 4px;
+  }
+  .card .card-body {
+    font-family: 'Patrick Hand', cursive; font-size: .83rem;
+    color: var(--ink-light); line-height: 1.6;
+  }
+
+  /* ─── TABLE ─── */
+  .notes-table {
+    width: 100%; border-collapse: collapse;
+    margin: 14px 0; font-family: 'Patrick Hand', cursive;
+    font-size: .88rem;
+  }
+  .notes-table th {
+    background: var(--blue); color: #fff;
+    padding: 8px 12px; text-align: left;
+    font-family: 'Kalam', cursive; font-weight: 700;
+  }
+  .notes-table td {
+    padding: 8px 12px; border-bottom: 1px solid var(--lines);
+    color: var(--ink-light); vertical-align: top;
+  }
+  .notes-table tr:nth-child(even) td { background: var(--blue-light); }
+  .notes-table tr:hover td { background: var(--teal-light); }
+
+  /* ─── 3V DIAGRAM ─── */
+  .three-vs {
+    display: grid; grid-template-columns: repeat(3, 1fr);
+    gap: 14px; margin: 14px 0;
+  }
+  .v-card {
+    border-radius: 10px; padding: 16px;
+    text-align: center;
+    border: 1.5px solid;
+  }
+  .v-card .v-letter {
+    font-family: 'Caveat', cursive; font-size: 2.4rem; font-weight: 700;
+    line-height: 1;
+  }
+  .v-card .v-name {
+    font-family: 'Kalam', cursive; font-size: 1rem; font-weight: 700;
+    margin: 4px 0;
+  }
+  .v-card .v-desc {
+    font-family: 'Patrick Hand', cursive; font-size: .82rem;
+    line-height: 1.6; color: var(--ink-light);
+  }
+  .v-card.vol { background: #dbeafe; border-color: var(--blue); }
+  .v-card.vol .v-letter { color: var(--blue); }
+  .v-card.vel { background: var(--rose-light); border-color: var(--rose); }
+  .v-card.vel .v-letter { color: var(--rose); }
+  .v-card.var { background: var(--amber-light); border-color: var(--amber); }
+  .v-card.var .v-letter { color: var(--amber); }
+
+  /* ─── LIFECYCLE STEPS ─── */
+  .lifecycle {
+    display: flex; flex-wrap: wrap; gap: 0;
+    margin: 14px 0; align-items: center;
+  }
+  .lc-step {
+    background: var(--blue); color: #fff;
+    padding: 10px 16px; font-family: 'Kalam', cursive;
+    font-weight: 700; font-size: .83rem;
+    clip-path: polygon(0 0,calc(100% - 12px) 0,100% 50%,calc(100% - 12px) 100%,0 100%,12px 50%);
+    margin-right: -8px;
+    min-width: 110px; text-align: center;
+    line-height: 1.3;
+    transition: transform .2s;
+  }
+  .lc-step:first-child { clip-path: polygon(0 0,calc(100% - 12px) 0,100% 50%,calc(100% - 12px) 100%,0 100%); margin-left: 0; }
+  .lc-step:hover { transform: scale(1.05); z-index: 2; }
+  .lc-step:nth-child(2) { background: #1d4ed8; }
+  .lc-step:nth-child(3) { background: var(--teal); }
+  .lc-step:nth-child(4) { background: #0f766e; }
+  .lc-step:nth-child(5) { background: var(--amber); }
+  .lc-step:nth-child(6) { background: var(--rose); }
+
+  /* ─── COLLAPSIBLE ─── */
+  .collapsible-btn {
+    width: 100%; background: var(--paper2);
+    border: 1.5px solid var(--lines); border-radius: 8px;
+    padding: 10px 14px; text-align: left;
+    font-family: 'Kalam', cursive; font-size: 1rem; font-weight: 700;
+    color: var(--ink); cursor: pointer;
+    display: flex; justify-content: space-between; align-items: center;
+    transition: all .2s; margin: 8px 0;
+  }
+  .collapsible-btn:hover { background: var(--blue-light); color: var(--blue); }
+  .collapsible-btn .arrow { transition: transform .3s; font-size: .9rem; }
+  .collapsible-btn.open .arrow { transform: rotate(90deg); }
+  .collapsible-body {
+    display: none; padding: 12px 16px;
+    background: var(--paper2);
+    border: 1.5px solid var(--lines); border-top: none;
+    border-radius: 0 0 8px 8px;
+    font-family: 'Patrick Hand', cursive; font-size: .93rem;
+    color: var(--ink-light); line-height: 1.8;
+    animation: slideDown .3s ease;
+  }
+  .collapsible-body.open { display: block; }
+  @keyframes slideDown {
+    from { opacity: 0; transform: translateY(-8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ─── TOOL CARDS ─── */
+  .tool-grid {
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 14px; margin: 14px 0;
+  }
+  .tool-card {
+    border-radius: 12px; padding: 18px;
+    border: 2px solid var(--lines);
+    background: var(--paper);
+    transition: transform .2s, box-shadow .2s;
+  }
+  .tool-card:hover { transform: translateY(-4px); box-shadow: 0 8px 24px var(--shadow); }
+  .tool-card .tool-name {
+    font-family: 'Caveat', cursive; font-size: 1.4rem; font-weight: 700;
+    margin-bottom: 8px;
+  }
+  .tool-card .tool-desc {
+    font-family: 'Patrick Hand', cursive; font-size: .88rem;
+    color: var(--ink-light); line-height: 1.7;
+  }
+  .tool-card.hadoop { border-color: #fbbf24; }
+  .tool-card.hadoop .tool-name { color: #b45309; }
+  .tool-card.tableau { border-color: #60a5fa; }
+  .tool-card.tableau .tool-name { color: var(--blue); }
+  .tool-card.r-lang { border-color: #a78bfa; }
+  .tool-card.r-lang .tool-name { color: var(--purple); }
+  .tool-card.excel { border-color: #34d399; }
+  .tool-card.excel .tool-name { color: var(--green); }
+
+  /* ─── REVISION SECTION ─── */
+  .revision-grid {
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 12px; margin: 14px 0;
+  }
+  .rev-card {
+    border-radius: 10px; padding: 14px;
+    border: 1.5px dashed var(--blue-mid);
+    background: var(--blue-light);
+  }
+  .rev-card .rev-q {
+    font-family: 'Kalam', cursive; font-size: .88rem; font-weight: 700;
+    color: var(--blue); margin-bottom: 5px;
+  }
+  .rev-card .rev-a {
+    font-family: 'Patrick Hand', cursive; font-size: .85rem;
+    color: var(--ink-light); line-height: 1.6;
+  }
+
+  /* ─── MCQ SECTION ─── */
+  #mcq-section {
+    background: var(--paper);
+    border-radius: 4px 12px 12px 4px;
+    box-shadow: 4px 4px 20px var(--shadow);
+    overflow: hidden;
+    margin-bottom: 28px;
+  }
+  .mcq-header {
+    background: linear-gradient(135deg, var(--blue) 0%, var(--purple) 100%);
+    color: #fff; padding: 28px 32px;
+    position: relative; overflow: hidden;
+  }
+  .mcq-header::after {
+    content: '📝';
+    position: absolute; right: 28px; bottom: 8px;
+    font-size: 4rem; opacity: .15;
+  }
+  .mcq-header h2 {
+    font-family: 'Caveat', cursive; font-size: 2rem; font-weight: 700;
+    margin-bottom: 4px;
+  }
+  .mcq-header p {
+    font-family: 'Patrick Hand', cursive; font-size: .9rem;
+    color: rgba(255,255,255,.85); margin: 0;
+  }
+
+  .mcq-progress-bar-wrap {
+    background: rgba(255,255,255,.2); border-radius: 20px;
+    height: 8px; margin-top: 14px; overflow: hidden;
+  }
+  .mcq-progress-fill {
+    height: 100%; border-radius: 20px;
+    background: rgba(255,255,255,.7);
+    transition: width .4s ease;
+    width: 0%;
+  }
+  .mcq-progress-text {
+    font-family: 'Patrick Hand', cursive; font-size: .82rem;
+    color: rgba(255,255,255,.85); margin-top: 4px;
+  }
+
+  .mcq-body { padding: 28px 32px; }
+
+  .mcq-question-block { display: none; animation: fadeIn .4s ease; }
+  .mcq-question-block.active { display: block; }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateX(20px); }
+    to { opacity: 1; transform: translateX(0); }
+  }
+
+  .q-number {
+    font-family: 'Kalam', cursive; font-size: .82rem; font-weight: 700;
+    color: var(--blue); letter-spacing: 1px; text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+  .q-text {
+    font-family: 'Kalam', cursive; font-size: 1.1rem; font-weight: 700;
+    color: var(--ink); line-height: 1.6; margin-bottom: 18px;
+  }
+  .q-options { display: flex; flex-direction: column; gap: 10px; margin-bottom: 18px; }
+
+  .q-option {
+    display: flex; align-items: flex-start; gap: 12px;
+    padding: 12px 16px; border-radius: 10px;
+    border: 2px solid var(--lines);
+    cursor: pointer; transition: all .2s;
+    font-family: 'Patrick Hand', cursive; font-size: .95rem;
+    color: var(--ink-light); background: var(--paper2);
+    user-select: none;
+  }
+  .q-option:hover:not(.answered) {
+    border-color: var(--blue-mid); background: var(--blue-light);
+    color: var(--blue); transform: translateX(4px);
+  }
+  .q-option .opt-label {
+    font-family: 'Kalam', cursive; font-weight: 700; font-size: 1rem;
+    color: var(--blue); min-width: 22px; flex-shrink: 0;
+  }
+  .q-option.correct {
+    background: var(--green-light); border-color: var(--green);
+    color: var(--green);
+  }
+  .q-option.correct .opt-label { color: var(--green); }
+  .q-option.wrong {
+    background: var(--rose-light); border-color: var(--rose);
+    color: var(--rose);
+  }
+  .q-option.wrong .opt-label { color: var(--rose); }
+  .q-option.reveal-correct {
+    background: var(--green-light); border-color: var(--green); color: var(--green);
+  }
+
+  .q-explanation {
+    display: none; padding: 14px 16px;
+    background: var(--amber-light); border-left: 4px solid var(--amber);
+    border-radius: 8px; margin-bottom: 18px;
+    font-family: 'Patrick Hand', cursive; font-size: .9rem;
+    color: var(--ink); line-height: 1.7;
+    animation: slideDown .3s ease;
+  }
+  .q-explanation.show { display: block; }
+  .q-explanation .exp-title {
+    font-family: 'Kalam', cursive; font-weight: 700; font-size: .9rem;
+    color: var(--amber); margin-bottom: 4px;
+    display: flex; align-items: center; gap: 5px;
+  }
+
+  .mcq-nav {
+    display: flex; justify-content: space-between; align-items: center;
+    padding-top: 14px; border-top: 1.5px dashed var(--lines);
+  }
+  .mcq-btn {
+    padding: 10px 22px; border: none; border-radius: 8px;
+    font-family: 'Kalam', cursive; font-size: .95rem; font-weight: 700;
+    cursor: pointer; transition: all .2s;
+  }
+  .mcq-btn.prev {
+    background: var(--paper2); color: var(--ink-light);
+    border: 2px solid var(--lines);
+  }
+  .mcq-btn.prev:hover { background: var(--blue-light); color: var(--blue); }
+  .mcq-btn.next {
+    background: var(--blue); color: #fff;
+  }
+  .mcq-btn.next:hover { background: #1d4ed8; }
+  .mcq-btn:disabled { opacity: .4; cursor: not-allowed; }
+
+  .q-counter {
+    font-family: 'Kalam', cursive; font-size: .9rem;
+    color: var(--ink-light);
+  }
+  .q-counter strong { color: var(--blue); }
+
+  /* ─── SCORE PANEL ─── */
+  .score-panel {
+    display: none; text-align: center;
+    padding: 40px 20px;
+    animation: fadeIn .5s ease;
+  }
+  .score-panel.show { display: block; }
+  .score-emoji { font-size: 4rem; margin-bottom: 14px; }
+  .score-title {
+    font-family: 'Caveat', cursive; font-size: 2rem; font-weight: 700;
+    color: var(--ink); margin-bottom: 8px;
+  }
+  .score-value {
+    font-family: 'Kalam', cursive; font-size: 1.4rem;
+    color: var(--blue); margin-bottom: 16px;
+  }
+  .score-restart {
+    padding: 12px 28px; background: var(--blue); color: #fff;
+    border: none; border-radius: 10px;
+    font-family: 'Kalam', cursive; font-size: 1rem; font-weight: 700;
+    cursor: pointer; transition: all .2s;
+  }
+  .score-restart:hover { background: #1d4ed8; transform: scale(1.03); }
+
+  /* ─── SCROLL REVEAL ─── */
+  .reveal {
+    opacity: 0; transform: translateY(28px);
+    transition: opacity .6s ease, transform .6s ease;
+  }
+  .reveal.visible { opacity: 1; transform: translateY(0); }
+
+  /* ─── HIGHLIGHT ─── */
+  .hl { background: #fef08a; padding: 0 2px; border-radius: 3px; }
+  .hl-blue { background: var(--blue-light); padding: 0 2px; border-radius: 3px; color: var(--blue); font-weight: 700; }
+  .hl-green { background: var(--green-light); padding: 0 2px; border-radius: 3px; color: var(--green); font-weight: 700; }
+  .hl-rose { background: var(--rose-light); padding: 0 2px; border-radius: 3px; color: var(--rose); font-weight: 700; }
+
+  /* ─── FORMULA BOX ─── */
+  .formula {
+    background: #1e1b4b; color: #a5f3fc;
+    font-family: 'Kalam', cursive; font-size: 1rem;
+    border-radius: 8px; padding: 14px 18px;
+    margin: 12px 0; letter-spacing: .5px;
+    border-left: 4px solid #7c3aed;
+  }
+
+  /* ─── RESPONSIVE ─── */
+  @media (max-width: 768px) {
+    #sidebar { transform: translateX(-100%); }
+    #sidebar.open { transform: translateX(0); }
+    #main { margin-left: 0; padding: 20px 14px 50px; }
+    #menu-toggle { display: flex; }
+    .three-vs { grid-template-columns: 1fr; }
+    .lifecycle { flex-direction: column; }
+    .lc-step { clip-path: none; margin: 2px 0; border-radius: 6px; }
+    .mcq-body { padding: 20px 16px; }
+    .cover-title { font-size: 2rem; }
+  }
+  @media (max-width: 500px) {
+    .cards { grid-template-columns: 1fr; }
+    .tool-grid { grid-template-columns: 1fr; }
+    .revision-grid { grid-template-columns: 1fr; }
+    .nav-links { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Progress Bar -->
+<div id="progress-bar"></div>
+
+<!-- Top Nav -->
+<nav id="top-nav">
+  <div class="brand">CSE121 <span>Notes</span></div>
+  <button id="menu-toggle" aria-label="Menu"><span></span><span></span><span></span></button>
+  <div class="nav-links">
+    <a href="#cover">Home</a>
+    <a href="#sec-ds">Data Science</a>
+    <a href="#sec-bigdata">Big Data</a>
+    <a href="#sec-tools">Tools</a>
+    <a href="#sec-cloud">Cloud</a>
+    <a href="#sec-jobs">Careers</a>
+    <a href="#mcq-section">MCQs</a>
+  </div>
+</nav>
+
+<!-- Sidebar Overlay -->
+<div id="sidebar-overlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.3);z-index:799;"></div>
+
+<div class="layout">
+  <!-- Sidebar -->
+  <aside id="sidebar">
+    <div class="sidebar-title">📖 Unit I Contents</div>
+    <a class="toc-item" href="#cover">🏠 Cover</a>
+    <a class="toc-item" href="#sec-ds">📊 Data Science</a>
+    <a class="toc-item sub" href="#ds-intro">→ Definition & Need</a>
+    <a class="toc-item sub" href="#ds-lifecycle">→ Lifecycle</a>
+    <a class="toc-item sub" href="#ds-applications">→ Applications</a>
+    <a class="toc-item" href="#sec-bigdata">🌊 Big Data</a>
+    <a class="toc-item sub" href="#bd-def">→ Definition</a>
+    <a class="toc-item sub" href="#bd-3vs">→ The 3Vs</a>
+    <a class="toc-item sub" href="#bd-challenges">→ Challenges</a>
+    <a class="toc-item sub" href="#bd-usecases">→ Use Cases</a>
+    <a class="toc-item sub" href="#bd-skills">→ Skills Needed</a>
+    <a class="toc-item" href="#sec-tools">🔧 Tools</a>
+    <a class="toc-item sub" href="#tool-hadoop">→ Apache Hadoop</a>
+    <a class="toc-item sub" href="#tool-tableau">→ Tableau</a>
+    <a class="toc-item sub" href="#tool-r">→ R Language</a>
+    <a class="toc-item sub" href="#tool-excel">→ Excel</a>
+    <a class="toc-item sub" href="#tool-others">→ Other Tools</a>
+    <a class="toc-item" href="#sec-cloud">☁️ Big Data & Cloud</a>
+    <a class="toc-item" href="#sec-areas">🌍 Big Data Areas</a>
+    <a class="toc-item" href="#sec-jobs">💼 Job Roles & Skillset</a>
+    <a class="toc-item" href="#sec-revision">✏️ Quick Revision</a>
+    <a class="toc-item mcq-link" href="#mcq-section">🧠 MCQ Practice (50 Qs)</a>
+  </aside>
+
+  <main id="main">
+
+    <!-- COVER -->
+    <div id="cover" class="notebook-page reveal">
+      <div class="spiral-holes" id="holes-cover"></div>
+      <div class="page-content cover-page">
+        <div class="cover-subject">Orientation to Computing – II &nbsp;|&nbsp; CSE121</div>
+        <div class="cover-title">Unit I: Data Science &amp; Big Data</div>
+        <div class="cover-subtitle">LPU School of Computer Science &amp; Engineering</div>
+        <div class="cover-divider"></div>
+        <div class="cover-meta">
+          <span class="cover-tag">📊 Data Science</span>
+          <span class="cover-tag">🌊 Big Data &amp; 3Vs</span>
+          <span class="cover-tag">🔧 Hadoop · Tableau · R</span>
+          <span class="cover-tag">☁️ Cloud Integration</span>
+          <span class="cover-tag">💼 Job Roles</span>
+          <span class="cover-tag">🧠 50 MCQs Included</span>
+        </div>
+        <div style="margin-top:24px;">
+          <div class="box def" style="text-align:left;max-width:500px;margin:0 auto;">
+            <div class="box-title">🎯 Course Outcome (CO1)</div>
+            Understand the need for data science and big data along with its tools, job roles, and skill set.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════
+         SECTION 1: DATA SCIENCE
+    ════════════════════════════════════════ -->
+    <div id="sec-ds" class="notebook-page reveal">
+      <div class="spiral-holes" id="holes-ds"></div>
+      <div class="page-content">
+        <div class="section-heading">
+          <span class="icon">📊</span> Data Science
+          <span class="badge">Section 1</span>
+        </div>
+
+        <!-- Definition -->
+        <div id="ds-intro">
+          <div class="sub-heading">What is Data Science?</div>
+          <div class="box def">
+            <div class="box-title">📌 Definition</div>
+            <strong>Data Science</strong> is an interdisciplinary field that uses scientific methods, processes, algorithms, and systems to <span class="hl">extract knowledge and insights</span> from structured and unstructured data. It combines statistics, programming, and domain expertise to solve real-world problems.
+          </div>
+          <p>In simple terms, Data Science is about turning <strong>raw data into meaningful information</strong> that helps businesses and organizations make better decisions. It involves collecting data, cleaning it, analyzing it, and then visualizing the results in a way that non-technical people can also understand.</p>
+
+          <div class="sub-heading2">Key Components of Data Science</div>
+          <div class="cards">
+            <div class="card">
+              <div class="card-icon">📐</div>
+              <div class="card-title">Statistics & Math</div>
+              <div class="card-body">Foundation of all data analysis — probability, regression, distributions, hypothesis testing.</div>
+            </div>
+            <div class="card">
+              <div class="card-icon">💻</div>
+              <div class="card-title">Programming</div>
+              <div class="card-body">Python, R, Java — used for data manipulation, automation, and building ML models.</div>
+            </div>
+            <div class="card">
+              <div class="card-icon">🏢</div>
+              <div class="card-title">Domain Expertise</div>
+              <div class="card-body">Industry knowledge to ask the right questions (e.g., medical, financial, agricultural context).</div>
+            </div>
+            <div class="card">
+              <div class="card-icon">📈</div>
+              <div class="card-title">Data Visualization</div>
+              <div class="card-body">Converting complex results into charts, graphs, and dashboards for easy interpretation.</div>
+            </div>
+          </div>
+
+          <div class="sub-heading">Need / Importance of Data Science</div>
+          <p>We live in a data-driven world. Every second, enormous amounts of data are generated through social media posts, online transactions, IoT sensors, medical records, etc. Without Data Science, this data would be useless. Here is why Data Science is critically needed:</p>
+          <ul class="notes-list">
+            <li><strong>Data Explosion:</strong> Approximately 2.5 quintillion bytes of data are generated every day. Traditional tools cannot process this volume.</li>
+            <li><strong>Better Decision Making:</strong> Companies like Amazon use data science to predict what you want to buy before you even search for it.</li>
+            <li><strong>Personalization:</strong> Netflix uses data science to recommend movies. Spotify suggests songs. YouTube curates your feed.</li>
+            <li><strong>Cost Reduction:</strong> Predictive maintenance in manufacturing saves millions by fixing machines before they break.</li>
+            <li><strong>Healthcare Advances:</strong> Disease diagnosis, drug discovery, and patient monitoring are all improved by data science.</li>
+            <li><strong>Fraud Detection:</strong> Banks use real-time data science to block fraudulent transactions within milliseconds.</li>
+            <li><strong>Scientific Research:</strong> Climate models, genome sequencing, and space exploration all depend on large-scale data analysis.</li>
+          </ul>
+
+          <div class="box tip">
+            <div class="box-title">💡 Exam Tip</div>
+            Data Science = Statistics + Programming + Domain Knowledge. This triangle is a very popular exam question!
+          </div>
+        </div>
+
+        <!-- Lifecycle -->
+        <div id="ds-lifecycle">
+          <div class="sub-heading">Data Science Lifecycle</div>
+          <p>The Data Science Lifecycle (also called the Data Science Process) describes the step-by-step process followed when working on a data science project. It is <span class="hl-blue">cyclic</span> — meaning insights may lead you back to earlier steps.</p>
+
+          <div class="lifecycle">
+            <div class="lc-step">1. Business Understanding</div>
+            <div class="lc-step">2. Data Collection</div>
+            <div class="lc-step">3. Data Cleaning</div>
+            <div class="lc-step">4. Data Exploration</div>
+            <div class="lc-step">5. Modeling</div>
+            <div class="lc-step">6. Deployment</div>
+          </div>
+
+          <div style="margin-top:14px;">
+            <button class="collapsible-btn" onclick="toggleCollapse(this)">
+              📋 Step 1: Business Understanding <span class="arrow">▶</span>
+            </button>
+            <div class="collapsible-body">
+              The first step is to understand <strong>what problem we are trying to solve</strong>. This involves talking to stakeholders, defining objectives, and determining what success looks like. <br><br>
+              <strong>Use Case Example:</strong> A retail company wants to reduce customer churn. The business question is: "Which customers are likely to stop using our service in the next 30 days?"
+            </div>
+
+            <button class="collapsible-btn" onclick="toggleCollapse(this)">
+              📋 Step 2: Data Collection & Acquisition <span class="arrow">▶</span>
+            </button>
+            <div class="collapsible-body">
+              Data is gathered from various sources — databases, APIs, web scraping, surveys, IoT devices, social media, etc. Data can be:<br><br>
+              <strong>Structured:</strong> Organized in rows and columns (Excel, SQL databases)<br>
+              <strong>Unstructured:</strong> Raw text, images, videos, audio files<br>
+              <strong>Semi-structured:</strong> JSON, XML files
+            </div>
+
+            <button class="collapsible-btn" onclick="toggleCollapse(this)">
+              📋 Step 3: Data Cleaning / Preprocessing <span class="arrow">▶</span>
+            </button>
+            <div class="collapsible-body">
+              Real-world data is <strong>dirty</strong> — it contains missing values, duplicates, outliers, and inconsistencies. This step involves:<br><br>
+              • Handling missing values (fill/remove)<br>
+              • Removing duplicate records<br>
+              • Fixing data type errors<br>
+              • Normalizing/Standardizing values<br>
+              • Removing noise and outliers<br><br>
+              <span class="hl">Fun fact: Data scientists spend 60–80% of their time just cleaning data!</span>
+            </div>
+
+            <button class="collapsible-btn" onclick="toggleCollapse(this)">
+              📋 Step 4: Exploratory Data Analysis (EDA) <span class="arrow">▶</span>
+            </button>
+            <div class="collapsible-body">
+              EDA involves <strong>exploring the data visually and statistically</strong> to find patterns, relationships, and anomalies before building any model.<br><br>
+              Techniques include:<br>
+              • Histograms, box plots, scatter plots<br>
+              • Correlation matrices<br>
+              • Descriptive statistics (mean, median, std)<br>
+              • Feature engineering
+            </div>
+
+            <button class="collapsible-btn" onclick="toggleCollapse(this)">
+              📋 Step 5: Model Building & Evaluation <span class="arrow">▶</span>
+            </button>
+            <div class="collapsible-body">
+              This is where <strong>Machine Learning models</strong> are applied to the prepared data. Common algorithms include:<br><br>
+              • Linear/Logistic Regression<br>
+              • Decision Trees and Random Forests<br>
+              • Neural Networks / Deep Learning<br>
+              • Clustering (K-Means, DBSCAN)<br><br>
+              Models are evaluated using metrics like accuracy, precision, recall, F1-score, RMSE.
+            </div>
+
+            <button class="collapsible-btn" onclick="toggleCollapse(this)">
+              📋 Step 6: Deployment & Monitoring <span class="arrow">▶</span>
+            </button>
+            <div class="collapsible-body">
+              The trained model is <strong>deployed into production</strong> so real users can benefit from it. This includes creating APIs, dashboards, or integrating into existing systems.<br><br>
+              The model must also be <strong>monitored continuously</strong> because real-world data changes over time (data drift).
+            </div>
+          </div>
+
+          <div class="box sum">
+            <div class="box-title">✅ Quick Summary: Data Science Lifecycle</div>
+            Business Understanding → Data Collection → Data Cleaning → EDA → Modeling → Deployment → (Repeat/Monitor)
+          </div>
+        </div>
+
+        <!-- Applications -->
+        <div id="ds-applications">
+          <div class="sub-heading">Applications of Data Science</div>
+          <p>Data Science is used across almost every industry. Here are the key application areas:</p>
+
+          <table class="notes-table">
+            <thead><tr><th>Sector</th><th>Application</th></tr></thead>
+            <tbody>
+              <tr><td>🏥 Healthcare</td><td>Medical image analysis, drug discovery, disease prediction, virtual assistants</td></tr>
+              <tr><td>💰 Finance & Banking</td><td>Fraud detection, credit risk modeling, algorithmic trading, customer segmentation</td></tr>
+              <tr><td>🛒 E-commerce</td><td>Product recommendations, customer lifetime value, review analysis</td></tr>
+              <tr><td>🚗 Transport</td><td>Self-driving cars, route optimization, passenger safety systems</td></tr>
+              <tr><td>🏭 Manufacturing</td><td>Predictive maintenance, anomaly detection, quality control</td></tr>
+              <tr><td>🎬 Entertainment</td><td>Content recommendations (Netflix, Spotify, YouTube)</td></tr>
+              <tr><td>🌾 Agriculture</td><td>Crop disease detection, yield prediction, smart irrigation</td></tr>
+              <tr><td>🏛️ Government</td><td>Smart city planning, crime prediction, traffic management</td></tr>
+            </tbody>
+          </table>
+
+          <div class="box imp">
+            <div class="box-title">⚠️ Important for Exam</div>
+            Data Science lifecycle has 6–7 stages. The most commonly asked stage is Data Cleaning/Preprocessing, because it takes the most time and effort.
+          </div>
+        </div>
+      </div>
+    </div><!-- end sec-ds -->
+
+    <!-- ═══════════════════════════════════════
+         SECTION 2: BIG DATA
+    ════════════════════════════════════════ -->
+    <div id="sec-bigdata" class="notebook-page reveal">
+      <div class="spiral-holes" id="holes-bd"></div>
+      <div class="page-content">
+        <div class="section-heading">
+          <span class="icon">🌊</span> Big Data
+          <span class="badge">Section 2</span>
+        </div>
+
+        <div id="bd-def">
+          <div class="sub-heading">What is Big Data?</div>
+          <div class="box def">
+            <div class="box-title">📌 Definition</div>
+            <strong>Big Data</strong> refers to extremely large and complex datasets that cannot be processed, stored, or analyzed using traditional data management tools like Excel or standard RDBMS. It is characterized by massive <span class="hl">Volume</span>, high <span class="hl">Velocity</span>, and diverse <span class="hl">Variety</span> — collectively called the <strong>3Vs</strong>.
+          </div>
+          <p>Think about this: Every minute, over 500 hours of video are uploaded to YouTube, 695,000 Instagram stories are shared, 1 million logins happen on Facebook, and billions of sensors in factories and cities send data. This scale of data generation is what we call <strong>Big Data</strong>.</p>
+
+          <div class="sub-heading2">Brief History of Big Data</div>
+          <div class="cards">
+            <div class="card">
+              <div class="card-icon">🌱</div>
+              <div class="card-title">Genesis (1960s–80s)</div>
+              <div class="card-body">Early data centers. First relational databases. Small structured datasets.</div>
+            </div>
+            <div class="card">
+              <div class="card-icon">💾</div>
+              <div class="card-title">Data Storage (1980s–90s)</div>
+              <div class="card-body">Hard drives became affordable. Database technology advanced rapidly.</div>
+            </div>
+            <div class="card">
+              <div class="card-icon">🌐</div>
+              <div class="card-title">Internet Age (2000s)</div>
+              <div class="card-body">Web 2.0 explosion. Social media, e-commerce generated unprecedented data volumes.</div>
+            </div>
+            <div class="card">
+              <div class="card-icon">🚀</div>
+              <div class="card-title">21st Century</div>
+              <div class="card-body">IoT, smartphones, AI/ML, cloud storage made Big Data mainstream and essential.</div>
+            </div>
+          </div>
+        </div>
+
+        <div id="bd-3vs">
+          <div class="sub-heading">The 3Vs of Big Data</div>
+          <p>The concept of 3Vs was introduced by <strong>Doug Laney</strong> in 2001. It became the standard way to define Big Data.</p>
+
+          <div class="three-vs">
+            <div class="v-card vol">
+              <div class="v-letter">V<sub style="font-size:.5em">1</sub></div>
+              <div class="v-name">Volume</div>
+              <div class="v-desc">The <strong>amount</strong> of data generated. Ranges from terabytes to petabytes to zettabytes. Data is saved in records, tables, and files — both online and offline transactions included.</div>
+            </div>
+            <div class="v-card vel">
+              <div class="v-letter">V<sub style="font-size:.5em">2</sub></div>
+              <div class="v-name">Velocity</div>
+              <div class="v-desc">The <strong>speed</strong> at which data is generated and processed. Data flows in real-time streams (social media, sensors), batch processing, or in bits. Processing must keep pace with generation.</div>
+            </div>
+            <div class="v-card var">
+              <div class="v-letter">V<sub style="font-size:.5em">3</sub></div>
+              <div class="v-name">Variety</div>
+              <div class="v-desc">The <strong>different types</strong> of data — structured (databases), unstructured (text, images, videos), and semi-structured (JSON, XML). Both human-generated and machine-generated data.</div>
+            </div>
+          </div>
+
+          <div class="box note">
+            <div class="box-title">📝 Extended Vs (Advanced)</div>
+            Modern definitions also add: <strong>Veracity</strong> (data quality/accuracy), <strong>Value</strong> (business worth of data), and <strong>Variability</strong> (inconsistency in data flow). Exam may ask about 3V, 5V, or 7V.
+          </div>
+
+          <table class="notes-table" style="margin-top:14px;">
+            <thead><tr><th>V</th><th>Parameter</th><th>Example</th><th>Challenge</th></tr></thead>
+            <tbody>
+              <tr><td>Volume</td><td>Size of data</td><td>Facebook stores 300PB of user data</td><td>Storage cost, scalability</td></tr>
+              <tr><td>Velocity</td><td>Speed of data</td><td>NYSE processes 1M transactions/sec</td><td>Real-time processing</td></tr>
+              <tr><td>Variety</td><td>Types of data</td><td>Tweets, X-rays, sensor readings</td><td>Integration, schema design</td></tr>
+              <tr><td>Veracity</td><td>Data quality</td><td>Inconsistent survey answers</td><td>Data cleaning</td></tr>
+              <tr><td>Value</td><td>Usefulness</td><td>Customer behavior insights</td><td>Finding actionable insights</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div id="bd-challenges">
+          <div class="sub-heading">Challenges of Big Data</div>
+          <p>Dealing with Big Data is not easy. Organizations face several major challenges:</p>
+
+          <div class="cards">
+            <div class="card">
+              <div class="card-icon">💰</div>
+              <div class="card-title">Budget Requirements</div>
+              <div class="card-body">Building Big Data infrastructure requires heavy investment in hardware, software licenses, and cloud services.</div>
+            </div>
+            <div class="card">
+              <div class="card-icon">🏗️</div>
+              <div class="card-title">New Data Center Workloads</div>
+              <div class="card-body">Traditional data centers were not designed for Big Data. New distributed architectures are needed.</div>
+            </div>
+            <div class="card">
+              <div class="card-icon">✅</div>
+              <div class="card-title">Data Quality Assurance</div>
+              <div class="card-body">Ensuring accuracy, completeness, and consistency of huge data volumes is extremely difficult.</div>
+            </div>
+            <div class="card">
+              <div class="card-icon">⚡</div>
+              <div class="card-title">Performance of Data</div>
+              <div class="card-body">Query speed and processing performance degrade as data volume grows. Optimization is complex.</div>
+            </div>
+            <div class="card">
+              <div class="card-icon">📦</div>
+              <div class="card-title">The Storage Bulge</div>
+              <div class="card-body">Continuous data generation creates a storage crisis. Cost of storage per GB is decreasing, but total storage needed grows faster.</div>
+            </div>
+            <div class="card">
+              <div class="card-icon">🔍</div>
+              <div class="card-title">Mastery in Analytics</div>
+              <div class="card-body">Skilled Big Data professionals are scarce. Finding talent with expertise in Hadoop, Spark, ML is challenging.</div>
+            </div>
+          </div>
+
+          <div class="sub-heading2">Additional Challenges (Important!)</div>
+          <ul class="notes-list">
+            <li><strong>Data Security & Privacy:</strong> Large datasets are prime targets for hackers. GDPR compliance is mandatory in many countries.</li>
+            <li><strong>Data Integration:</strong> Merging data from multiple different sources (databases, APIs, IoT) is complex and error-prone.</li>
+            <li><strong>Talent Shortage:</strong> The demand for Big Data engineers and data scientists far outpaces supply.</li>
+            <li><strong>Real-time Processing:</strong> Analyzing streaming data with microsecond latency is technically very demanding.</li>
+            <li><strong>Ethical Concerns:</strong> Using customer data responsibly, avoiding bias in algorithms, and ensuring fair outcomes.</li>
+          </ul>
+        </div>
+
+        <div id="bd-usecases">
+          <div class="sub-heading">Use Cases of Big Data</div>
+
+          <div class="sub-heading2">Industry Use Cases</div>
+          <table class="notes-table">
+            <thead><tr><th>Industry</th><th>How Big Data is Used</th></tr></thead>
+            <tbody>
+              <tr><td>🏥 Healthcare</td><td>Electronic health records analysis, disease outbreak prediction, personalized medicine</td></tr>
+              <tr><td>🏦 Banking & Finance</td><td>Real-time fraud detection, risk analytics, algorithmic trading</td></tr>
+              <tr><td>🛍️ Retail</td><td>Dynamic pricing, inventory optimization, customer segmentation, loyalty programs</td></tr>
+              <tr><td>📡 Telecom</td><td>Network optimization, churn prediction, usage pattern analysis</td></tr>
+              <tr><td>🎬 Media & Entertainment</td><td>Content recommendation, audience analytics, targeted advertising</td></tr>
+              <tr><td>🏭 Supply Chain</td><td>Demand forecasting, logistics optimization, supplier risk assessment</td></tr>
+            </tbody>
+          </table>
+
+          <div class="sub-heading2">Specific Use Case Examples</div>
+          <div class="cards">
+            <div class="card">
+              <div class="card-icon">💳</div>
+              <div class="card-title">Fraud Detection</div>
+              <div class="card-body">Banks analyze millions of transactions per second to flag anomalous patterns and block fraud in real-time.</div>
+            </div>
+            <div class="card">
+              <div class="card-icon">🛒</div>
+              <div class="card-title">Customer Segmentation</div>
+              <div class="card-body">Grouping customers by behavior to send targeted promotions and improve conversion rates.</div>
+            </div>
+            <div class="card">
+              <div class="card-icon">📊</div>
+              <div class="card-title">Predictive Analytics</div>
+              <div class="card-body">Using historical data to predict future outcomes — stock prices, equipment failures, demand spikes.</div>
+            </div>
+            <div class="card">
+              <div class="card-icon">💬</div>
+              <div class="card-title">Sentiment Analysis</div>
+              <div class="card-body">Analyzing customer reviews and social media posts to gauge public opinion about a brand.</div>
+            </div>
+            <div class="card">
+              <div class="card-icon">🎯</div>
+              <div class="card-title">Behavioral Analytics</div>
+              <div class="card-body">Tracking how users interact with apps and websites to improve UX and increase sales.</div>
+            </div>
+          </div>
+
+          <div class="box sum">
+            <div class="box-title">✅ Big Data Benefits Summary</div>
+            Cost Reductions | Time Reductions | Smarter Business Decisions | New Products and Services (from slide: Big Data Analytics Benefits)
+          </div>
+        </div>
+
+        <div id="bd-skills">
+          <div class="sub-heading">Skills Needed for Big Data</div>
+          <ul class="notes-list">
+            <li><strong>Analytical Skills:</strong> Ability to analyze large datasets and extract meaningful patterns and trends.</li>
+            <li><strong>Programming Skills:</strong> Python, Java, Scala, R — used for processing, scripting, and building pipelines.</li>
+            <li><strong>SQL & NoSQL:</strong> Structured Query Language for relational databases; NoSQL for unstructured data (MongoDB, Cassandra).</li>
+            <li><strong>Big Data Tools:</strong> Hands-on experience with Hadoop, Spark, Kafka, Hive, HBase.</li>
+            <li><strong>Data Visualization:</strong> Tableau, Power BI, matplotlib — converting data into visual stories.</li>
+            <li><strong>Machine Learning Basics:</strong> Understanding of clustering, classification, and regression to apply ML on Big Data.</li>
+            <li><strong>Problem Solving:</strong> Ability to break complex business problems into data-driven questions.</li>
+            <li><strong>Cloud Platforms:</strong> AWS, Google Cloud, Azure — most Big Data pipelines run on cloud infrastructure.</li>
+          </ul>
+
+          <div class="box tip">
+            <div class="box-title">💡 Exam Tip</div>
+            The 5 skill set categories from the slides: (1) Analytical Skills, (2) Data Visualization Skills, (3) Problem Solving Skills, (4) SQL, (5) Programming (Python, Java, R).
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════
+         SECTION 3: TOOLS
+    ════════════════════════════════════════ -->
+    <div id="sec-tools" class="notebook-page reveal">
+      <div class="spiral-holes" id="holes-tools"></div>
+      <div class="page-content">
+        <div class="section-heading">
+          <span class="icon">🔧</span> Big Data Tools & Techniques
+          <span class="badge">Section 3</span>
+        </div>
+        <p>Several tools have been developed to handle Big Data challenges. The syllabus specifically mentions: <strong>Apache Hadoop, Tableau, R Language, and Excel</strong>. We will cover these in detail plus additional tools mentioned in lecture slides.</p>
+
+        <!-- HADOOP -->
+        <div id="tool-hadoop">
+          <div class="sub-heading">Apache Hadoop</div>
+          <div class="box def">
+            <div class="box-title">📌 Definition</div>
+            <strong>Apache Hadoop</strong> is an open-source, Java-based framework that enables distributed storage and processing of large datasets across clusters of commodity computers.
+          </div>
+
+          <div class="sub-heading2">Key Features of Hadoop</div>
+          <ul class="notes-list">
+            <li><strong>Open-source Java-based platform</strong> — free to use, actively maintained by Apache Software Foundation.</li>
+            <li><strong>Distributed Processing</strong> — distributes data and computation across hundreds or thousands of servers (nodes).</li>
+            <li><strong>Scalability</strong> — can scale from a single server to thousands of machines by simply adding nodes.</li>
+            <li><strong>Fault Tolerance / Resilience</strong> — if one node fails, data is automatically recovered from replicated copies.</li>
+            <li><strong>Flexibility</strong> — can store and process both structured and unstructured data.</li>
+            <li><strong>Parallel Workload Execution</strong> — multiple tasks run simultaneously across the cluster.</li>
+            <li><strong>Cost-effective</strong> — uses commodity (low-cost) hardware instead of expensive specialized machines.</li>
+          </ul>
+
+          <div class="sub-heading2">Hadoop Ecosystem Components</div>
+          <div class="tool-grid">
+            <div class="tool-card hadoop">
+              <div class="tool-name">🗂️ HDFS</div>
+              <div class="tool-desc"><strong>Hadoop Distributed File System</strong> — stores data across many machines with automatic replication (usually 3 copies).</div>
+            </div>
+            <div class="tool-card hadoop">
+              <div class="tool-name">🗺️ MapReduce</div>
+              <div class="tool-desc">Programming model for processing large data sets in parallel. Map phase divides task; Reduce phase aggregates results.</div>
+            </div>
+            <div class="tool-card hadoop">
+              <div class="tool-name">🐝 Apache Hive</div>
+              <div class="tool-desc">Data warehouse tool. Allows SQL-like queries (HiveQL) on data stored in HDFS. Used for data summarization and analysis.</div>
+            </div>
+            <div class="tool-card hadoop">
+              <div class="tool-name">🐷 Apache Pig</div>
+              <div class="tool-desc">Data Analysis Platform. High-level language (Pig Latin) for analyzing large datasets in parallel on Hadoop clusters.</div>
+            </div>
+            <div class="tool-card hadoop">
+              <div class="tool-name">🦈 HBase</div>
+              <div class="tool-desc">NoSQL Database built on top of HDFS. Used for real-time read/write access to large datasets.</div>
+            </div>
+            <div class="tool-card hadoop">
+              <div class="tool-name">⚡ Apache Spark</div>
+              <div class="tool-desc">Real-time Processing engine. 100x faster than MapReduce for in-memory computation. Used for streaming analytics and ML.</div>
+            </div>
+            <div class="tool-card hadoop">
+              <div class="tool-name">📨 Apache Kafka</div>
+              <div class="tool-desc">Messaging System. Used for building real-time data pipelines and streaming applications. High-throughput, low-latency.</div>
+            </div>
+            <div class="tool-card hadoop">
+              <div class="tool-name">🔗 Apache Cassandra</div>
+              <div class="tool-desc">No-Sequel Database for handling large amounts of data across many commodity servers. Highly available, no single point of failure.</div>
+            </div>
+          </div>
+
+          <div class="box note">
+            <div class="box-title">📝 How Hadoop Works — Simple Explanation</div>
+            Imagine you have 10,000 pages to read and summarize. Instead of reading them yourself, you give 100 pages each to 100 people (nodes). Each person summarizes their 100 pages (Map phase). Then all summaries are collected and combined into one final summary (Reduce phase). This is exactly how Hadoop's MapReduce works!
+          </div>
+        </div>
+
+        <!-- TABLEAU -->
+        <div id="tool-tableau">
+          <div class="sub-heading">Tableau</div>
+          <div class="box def">
+            <div class="box-title">📌 Definition</div>
+            <strong>Tableau</strong> is a powerful, interactive data visualization and business intelligence tool that allows users to create stunning visual analytics without writing any code.
+          </div>
+
+          <div class="sub-heading2">Key Features of Tableau</div>
+          <ul class="notes-list">
+            <li><strong>Powerful Data Analysis Tool</strong> — connects to hundreds of data sources (SQL, Excel, Google Sheets, cloud databases).</li>
+            <li><strong>No Coding Required</strong> — drag-and-drop interface makes it accessible to non-programmers.</li>
+            <li><strong>Interactive Visualizations</strong> — creates charts, dashboards, maps, and graphs that users can explore dynamically.</li>
+            <li><strong>Real-time Data</strong> — dashboards update automatically as data changes.</li>
+            <li><strong>Data Sources:</strong> Connects to Excel, SQL Server, Google Analytics, Salesforce, and many more.</li>
+            <li><strong>Data Security:</strong> Row-level security and enterprise-grade permissions management.</li>
+            <li><strong>Mobile Access:</strong> Responsive dashboards accessible on tablets and smartphones.</li>
+            <li><strong>Collaboration:</strong> Share dashboards with team members via Tableau Server or Tableau Online.</li>
+            <li><strong>Time Series Analysis:</strong> Track trends over time with built-in forecasting capabilities.</li>
+          </ul>
+
+          <div class="cards">
+            <div class="card">
+              <div class="card-icon">📊</div>
+              <div class="card-title">Data Visualization</div>
+              <div class="card-body">Bar charts, line graphs, heat maps, treemaps, scatter plots — all created with just drag and drop.</div>
+            </div>
+            <div class="card">
+              <div class="card-icon">🗺️</div>
+              <div class="card-title">Geographic Maps</div>
+              <div class="card-body">Automatically recognizes geographic data and renders it on interactive world/country maps.</div>
+            </div>
+            <div class="card">
+              <div class="card-icon">📱</div>
+              <div class="card-title">Mobile Dashboards</div>
+              <div class="card-body">Responsive design automatically adjusts to phone and tablet screen sizes.</div>
+            </div>
+            <div class="card">
+              <div class="card-icon">🔮</div>
+              <div class="card-title">Predictive Analytics</div>
+              <div class="card-body">Built-in trend lines and forecasting using statistical models to predict future values.</div>
+            </div>
+          </div>
+
+          <div class="box tip">
+            <div class="box-title">💡 Why Tableau is Important</div>
+            Tableau turns raw data into <strong>actionable insights</strong>. A business manager without any programming knowledge can use Tableau to understand sales trends, customer behavior, and operational performance through beautiful visual dashboards.
+          </div>
+        </div>
+
+        <!-- R LANGUAGE -->
+        <div id="tool-r">
+          <div class="sub-heading">R Language</div>
+          <div class="box def">
+            <div class="box-title">📌 Definition</div>
+            <strong>R</strong> is a free, open-source programming language and environment specifically designed for <strong>statistical computing and data visualization</strong>. It is one of the most popular languages among statisticians and data scientists.
+          </div>
+
+          <div class="sub-heading2">Key Characteristics of R</div>
+          <ul class="notes-list">
+            <li><strong>Statistical Computing:</strong> Built-in functions for descriptive statistics, hypothesis testing, regression, time series analysis.</li>
+            <li><strong>Graphics & Visualization:</strong> Produces high-quality, publication-ready charts (ggplot2, base R graphics).</li>
+            <li><strong>Based on S Language:</strong> R is similar to the S language developed by AT&T Bell Laboratories.</li>
+            <li><strong>Open-source:</strong> Free to use under the GNU General Public License (GPL).</li>
+            <li><strong>Cross-platform:</strong> Compatible with UNIX, Linux, Windows, and MacOS.</li>
+            <li><strong>Supports Advanced Methods:</strong> Linear and nonlinear modeling, clustering, classification, time-series forecasting.</li>
+            <li><strong>CRAN Repository:</strong> Over 18,000 packages available for downloading (Comprehensive R Archive Network).</li>
+            <li><strong>Widely Used in Research:</strong> Academia, pharmaceutical research, biostatistics, and finance rely heavily on R.</li>
+          </ul>
+
+          <div class="sub-heading2">Popular R Packages</div>
+          <table class="notes-table">
+            <thead><tr><th>Package</th><th>Purpose</th></tr></thead>
+            <tbody>
+              <tr><td>ggplot2</td><td>Advanced data visualization</td></tr>
+              <tr><td>dplyr</td><td>Data manipulation and transformation</td></tr>
+              <tr><td>tidyr</td><td>Tidying and reshaping data</td></tr>
+              <tr><td>caret</td><td>Machine learning model training</td></tr>
+              <tr><td>shiny</td><td>Building interactive web applications</td></tr>
+              <tr><td>forecast</td><td>Time series analysis and forecasting</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- EXCEL -->
+        <div id="tool-excel">
+          <div class="sub-heading">Microsoft Excel for Data Science</div>
+          <div class="box def">
+            <div class="box-title">📌 Definition</div>
+            <strong>Microsoft Excel</strong> is a spreadsheet application that, despite being a traditional tool, remains widely used for data analysis, especially for smaller datasets and business reporting.
+          </div>
+          <ul class="notes-list">
+            <li><strong>Data Organization:</strong> Tables, filters, sorting, and pivot tables for organizing structured data.</li>
+            <li><strong>Built-in Analytics:</strong> Statistical functions (AVERAGE, STDEV, CORREL), regression analysis, solver add-in.</li>
+            <li><strong>Charts & Graphs:</strong> Bar, line, pie, scatter, histogram, and many more chart types.</li>
+            <li><strong>Power Query:</strong> Import and transform data from multiple sources.</li>
+            <li><strong>Power BI Integration:</strong> Excel data can be directly pushed into Power BI for advanced visualization.</li>
+            <li><strong>Limitation:</strong> Excel struggles with datasets larger than ~1 million rows. Not suitable for true Big Data — but excellent for initial exploration and reporting.</li>
+          </ul>
+        </div>
+
+        <!-- OTHER TOOLS -->
+        <div id="tool-others">
+          <div class="sub-heading">Other Big Data Analytics Tools (from Slides)</div>
+          <div class="tool-grid">
+            <div class="tool-card">
+              <div class="tool-name" style="color:var(--rose);">🔗 Apache Talend</div>
+              <div class="tool-desc"><strong>Software Integration Platform.</strong> ETL (Extract, Transform, Load) tool for integrating data from multiple sources into a unified system.</div>
+            </div>
+            <div class="tool-card">
+              <div class="tool-name" style="color:var(--blue);">🔎 Splunk</div>
+              <div class="tool-desc"><strong>Log Analysis Platform.</strong> Collects, indexes, and analyzes machine-generated log data. Used for IT operations, security monitoring.</div>
+            </div>
+            <div class="tool-card">
+              <div class="tool-name" style="color:var(--green);">📦 Apache Hive</div>
+              <div class="tool-desc"><strong>Data Warehousing.</strong> SQL-like interface to query data stored in HDFS. Converts SQL queries into MapReduce jobs automatically.</div>
+            </div>
+            <div class="tool-card">
+              <div class="tool-name" style="color:var(--purple);">🛡️ Apache Cassandra</div>
+              <div class="tool-desc"><strong>NoSQL Database.</strong> Designed to handle large amounts of data across many servers with no single point of failure.</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="box sum">
+          <div class="box-title">✅ Tools Summary</div>
+          Hadoop (Storage+Processing) | Tableau (Visualization) | R (Statistics) | Excel (Spreadsheet Analysis) | Spark (Real-time) | Kafka (Messaging) | HBase (NoSQL) | Hive (Warehousing) | Cassandra (NoSQL) | Talend (Integration) | Splunk (Log Analysis)
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════
+         SECTION 4: BIG DATA ON THE CLOUD
+    ════════════════════════════════════════ -->
+    <div id="sec-cloud" class="notebook-page reveal">
+      <div class="spiral-holes" id="holes-cloud"></div>
+      <div class="page-content">
+        <div class="section-heading">
+          <span class="icon">☁️</span> Big Data on the Cloud
+          <span class="badge">Section 4</span>
+        </div>
+
+        <div class="box def">
+          <div class="box-title">📌 What is Big Data on the Cloud?</div>
+          Combining Big Data with <strong>Cloud Computing</strong> means using cloud platforms (like AWS, Google Cloud, Azure) to store, process, and analyze massive datasets without building your own physical infrastructure.
+        </div>
+
+        <p>Cloud computing provides Big Data processing through a <span class="hl-blue">Software as a Service (SaaS)</span> model — organizations pay only for what they use, avoiding massive upfront infrastructure investments.</p>
+
+        <div class="sub-heading">Key Advantages of Cloud for Big Data</div>
+        <ul class="notes-list">
+          <li><strong>Uses "Software as a Service" (SaaS) model:</strong> Pay-as-you-go pricing model. No need to buy expensive hardware.</li>
+          <li><strong>Offers tools for data processing easily:</strong> Cloud providers offer pre-built tools — Google BigQuery, AWS EMR (Elastic MapReduce), Azure HDInsight.</li>
+          <li><strong>Includes DBMS, VMs, ML capabilities:</strong> All database management, virtual machines, and machine learning services available on-demand.</li>
+          <li><strong>Standardizes data with AI/ML tools:</strong> Cloud platforms provide managed AI/ML services (Google AutoML, AWS SageMaker) that standardize data pipelines.</li>
+          <li><strong>Enables real-time Big Data processing:</strong> Streaming services like AWS Kinesis, Google Pub/Sub enable processing data within milliseconds of arrival.</li>
+          <li><strong>Speeds up Big Data analytics significantly:</strong> Elastic scaling — add thousands of processing nodes in minutes for peak demand, scale down when done.</li>
+        </ul>
+
+        <div class="sub-heading">Major Cloud Platforms for Big Data</div>
+        <div class="cards">
+          <div class="card">
+            <div class="card-icon">🟠</div>
+            <div class="card-title">Amazon Web Services (AWS)</div>
+            <div class="card-body">S3 (storage), EMR (Hadoop/Spark), Redshift (data warehouse), Kinesis (streaming), SageMaker (ML).</div>
+          </div>
+          <div class="card">
+            <div class="card-icon">🔵</div>
+            <div class="card-title">Google Cloud Platform</div>
+            <div class="card-body">BigQuery (analytics), Dataproc (Hadoop/Spark), Cloud Storage, Pub/Sub (streaming), Vertex AI (ML).</div>
+          </div>
+          <div class="card">
+            <div class="card-icon">🟦</div>
+            <div class="card-title">Microsoft Azure</div>
+            <div class="card-body">Azure Data Lake, HDInsight (Hadoop), Synapse Analytics, Event Hubs (streaming), Azure ML.</div>
+          </div>
+          <div class="card">
+            <div class="card-icon">🌐</div>
+            <div class="card-title">IBM Cloud</div>
+            <div class="card-body">IBM Watson (AI), Db2 on Cloud, IBM Analytics Engine, Cloudant (NoSQL).</div>
+          </div>
+        </div>
+
+        <div class="sub-heading">Cloud vs On-Premise Big Data</div>
+        <table class="notes-table">
+          <thead><tr><th>Feature</th><th>Cloud</th><th>On-Premise</th></tr></thead>
+          <tbody>
+            <tr><td>Cost Model</td><td>Pay per use (OPEX)</td><td>Large upfront investment (CAPEX)</td></tr>
+            <tr><td>Scalability</td><td>Instant, unlimited</td><td>Limited by hardware capacity</td></tr>
+            <tr><td>Maintenance</td><td>Managed by provider</td><td>In-house IT team required</td></tr>
+            <tr><td>Security Control</td><td>Shared responsibility</td><td>Full control</td></tr>
+            <tr><td>Setup Time</td><td>Minutes</td><td>Weeks to months</td></tr>
+          </tbody>
+        </table>
+
+        <div class="box imp">
+          <div class="box-title">⚠️ Key Point</div>
+          Cloud enables <strong>Elastic Scalability</strong> — you can process petabytes of data in hours by provisioning thousands of virtual servers, and then release them when done. This is impossible with traditional on-premise setups.
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════
+         SECTION 5: USE OF BIG DATA IN DIFFERENT AREAS
+    ════════════════════════════════════════ -->
+    <div id="sec-areas" class="notebook-page reveal">
+      <div class="spiral-holes" id="holes-areas"></div>
+      <div class="page-content">
+        <div class="section-heading">
+          <span class="icon">🌍</span> Use of Big Data in Different Areas
+          <span class="badge">Section 5</span>
+        </div>
+        <p>Big Data is transforming virtually every sector of society. The syllabus specifically lists these application areas:</p>
+
+        <div class="sub-heading">Detailed Application Areas</div>
+
+        <button class="collapsible-btn" onclick="toggleCollapse(this)">🏥 Healthcare <span class="arrow">▶</span></button>
+        <div class="collapsible-body">
+          <strong>Electronic Health Records (EHR):</strong> Digitized patient records across hospitals allow comprehensive analysis of disease patterns.<br><br>
+          <strong>Disease Prediction:</strong> ML models predict disease outbreaks (flu, COVID) by analyzing search trends, social media, and health records.<br><br>
+          <strong>Drug Discovery:</strong> Pharmaceutical companies analyze genomic data to identify drug candidates 10x faster than traditional lab methods.<br><br>
+          <strong>Medical Imaging:</strong> AI trained on millions of X-rays and MRI scans can detect tumors with accuracy equal to or better than radiologists.<br><br>
+          <strong>Personalized Medicine:</strong> Tailoring treatment based on a patient's genetic profile, lifestyle, and medical history.
+        </div>
+
+        <button class="collapsible-btn" onclick="toggleCollapse(this)">🌾 Agriculture <span class="arrow">▶</span></button>
+        <div class="collapsible-body">
+          <strong>Smart Irrigation:</strong> Soil moisture sensors + weather data + ML = automated irrigation systems that save 30–50% water.<br><br>
+          <strong>Crop Disease Detection:</strong> Image recognition AI analyzes photos of crops to detect diseases and recommend treatments.<br><br>
+          <strong>Yield Prediction:</strong> Satellite imagery + historical harvest data + climate models predict crop yields before harvest.<br><br>
+          <strong>Precision Farming:</strong> Variable-rate fertilizer/pesticide application using GPS-guided equipment reduces waste and increases yield.<br><br>
+          <strong>Market Price Prediction:</strong> Big Data helps farmers decide when and where to sell crops at optimal prices.
+        </div>
+
+        <button class="collapsible-btn" onclick="toggleCollapse(this)">🚗 Transportation & Smart Cities <span class="arrow">▶</span></button>
+        <div class="collapsible-body">
+          <strong>Traffic Management:</strong> Real-time traffic data from millions of GPS devices (Google Maps, Waze) is analyzed to optimize traffic signal timing.<br><br>
+          <strong>Public Transport Optimization:</strong> Analyzing ridership patterns to schedule buses/trains more efficiently.<br><br>
+          <strong>Self-Driving Cars:</strong> Tesla, Waymo collect petabytes of driving data to train autonomous vehicle AI.<br><br>
+          <strong>Smart City Infrastructure:</strong> Sensors in roads, buildings, and utilities collect data for energy optimization and infrastructure planning.
+        </div>
+
+        <button class="collapsible-btn" onclick="toggleCollapse(this)">🏦 Finance & Banking <span class="arrow">▶</span></button>
+        <div class="collapsible-body">
+          <strong>Real-time Fraud Detection:</strong> Analyzing transaction patterns to identify and block fraud within milliseconds.<br><br>
+          <strong>Credit Scoring:</strong> More accurate credit risk assessment using thousands of data points beyond just credit history.<br><br>
+          <strong>Algorithmic Trading:</strong> High-frequency trading algorithms analyze market data and execute thousands of trades per second.<br><br>
+          <strong>Customer Lifetime Value:</strong> Predicting the long-term value of customers to optimize retention strategies.
+        </div>
+
+        <button class="collapsible-btn" onclick="toggleCollapse(this)">📱 Social Media & E-commerce <span class="arrow">▶</span></button>
+        <div class="collapsible-body">
+          <strong>Social Media Monitoring:</strong> Companies track brand mentions, sentiment, and trends across Twitter, Instagram, Facebook in real-time.<br><br>
+          <strong>Product Recommendations:</strong> Amazon's recommendation engine generates 35% of its total revenue using collaborative filtering on purchase history.<br><br>
+          <strong>Targeted Advertising:</strong> Facebook and Google analyze user behavior to serve hyper-targeted ads with extreme precision.<br><br>
+          <strong>Influencer Analytics:</strong> Brands use Big Data to identify the most effective social media influencers for their target audience.
+        </div>
+
+        <button class="collapsible-btn" onclick="toggleCollapse(this)">⚡ Energy & Environment <span class="arrow">▶</span></button>
+        <div class="collapsible-body">
+          <strong>Smart Grids:</strong> Real-time monitoring of electricity consumption across millions of homes to balance supply and demand.<br><br>
+          <strong>Climate Modeling:</strong> Petabytes of atmospheric, oceanic, and satellite data power climate change prediction models.<br><br>
+          <strong>Oil & Gas Exploration:</strong> Seismic data analysis to identify drilling locations, reducing exploration costs.<br><br>
+          <strong>Renewable Energy Optimization:</strong> Wind and solar output prediction using weather data and ML to optimize grid dispatch.
+        </div>
+
+        <div class="box sum">
+          <div class="box-title">✅ Summary: Big Data Application Areas</div>
+          Healthcare | Finance | Retail/E-commerce | Transportation | Agriculture | Energy | Government | Media & Entertainment | Manufacturing | Telecom
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════
+         SECTION 6: JOB ROLES & SKILLSETS
+    ════════════════════════════════════════ -->
+    <div id="sec-jobs" class="notebook-page reveal">
+      <div class="spiral-holes" id="holes-jobs"></div>
+      <div class="page-content">
+        <div class="section-heading">
+          <span class="icon">💼</span> Job Roles & Skillsets
+          <span class="badge">Section 6</span>
+        </div>
+        <p>Data Science and Big Data have created a new category of high-paying tech careers. The slides specifically show 9 data science job roles. Let's explore each in detail.</p>
+
+        <div class="sub-heading">Data Science & Big Data Job Roles</div>
+
+        <div class="tool-grid">
+          <div class="tool-card tableau">
+            <div class="tool-name">📈 Data Scientist</div>
+            <div class="tool-desc">The most sought-after role. Builds ML models, performs statistical analysis, and derives insights. Requires: Python/R, ML, statistics, SQL, data visualization.</div>
+          </div>
+          <div class="tool-card tableau">
+            <div class="tool-name">📊 Business Analyst</div>
+            <div class="tool-desc">Bridges the gap between data and business decisions. Translates business requirements into data questions. Requires: SQL, Excel, Tableau, communication skills.</div>
+          </div>
+          <div class="tool-card tableau">
+            <div class="tool-name">🔍 Big Data Analyst</div>
+            <div class="tool-desc">Specializes in analyzing very large datasets using Big Data tools. Requires: Hadoop, Spark, SQL, Hive, statistical analysis.</div>
+          </div>
+          <div class="tool-card tableau">
+            <div class="tool-name">🧠 Decision Scientist</div>
+            <div class="tool-desc">Applies data-driven approaches to support strategic decision-making. Combines data science with business strategy.</div>
+          </div>
+          <div class="tool-card tableau">
+            <div class="tool-name">📰 Data Journalist</div>
+            <div class="tool-desc">Combines journalism with data analysis to tell data-driven stories. Creates infographics and data visualizations for media.</div>
+          </div>
+          <div class="tool-card tableau">
+            <div class="tool-name">🤖 ML Engineer</div>
+            <div class="tool-desc">Builds and deploys ML models at scale. Focuses on production systems. Requires: Python, TensorFlow/PyTorch, MLOps, cloud platforms.</div>
+          </div>
+          <div class="tool-card tableau">
+            <div class="tool-name">💰 Financial Analyst</div>
+            <div class="tool-desc">Uses data to analyze financial markets, company performance, and investment opportunities. Requires: Excel, SQL, financial modeling, statistics.</div>
+          </div>
+          <div class="tool-card tableau">
+            <div class="tool-name">🗄️ Database Admin</div>
+            <div class="tool-desc">Manages and maintains database systems, ensures performance, security, and availability. Requires: SQL, NoSQL, database tuning, backup/recovery.</div>
+          </div>
+          <div class="tool-card tableau">
+            <div class="tool-name">⚙️ Data Engineer</div>
+            <div class="tool-desc">Builds and maintains data pipelines, data lakes, and warehouses. The backbone of any data-driven organization. Requires: Python, Spark, Kafka, SQL, cloud platforms.</div>
+          </div>
+        </div>
+
+        <div class="sub-heading">Comprehensive Skillset for Data Science & Big Data</div>
+
+        <div class="sub-heading2">Technical Skills</div>
+        <table class="notes-table">
+          <thead><tr><th>Skill Category</th><th>Specific Technologies</th></tr></thead>
+          <tbody>
+            <tr><td>Programming Languages</td><td>Python, R, Java, Scala, SQL</td></tr>
+            <tr><td>Big Data Tools</td><td>Hadoop, Spark, Kafka, Hive, HBase</td></tr>
+            <tr><td>Databases</td><td>MySQL, PostgreSQL, MongoDB, Cassandra</td></tr>
+            <tr><td>Machine Learning</td><td>Scikit-learn, TensorFlow, PyTorch, Keras</td></tr>
+            <tr><td>Data Visualization</td><td>Tableau, Power BI, matplotlib, seaborn, ggplot2</td></tr>
+            <tr><td>Cloud Platforms</td><td>AWS, Google Cloud, Azure</td></tr>
+            <tr><td>Statistics</td><td>Hypothesis testing, regression, probability, distributions</td></tr>
+          </tbody>
+        </table>
+
+        <div class="sub-heading2">Soft Skills</div>
+        <ul class="notes-list">
+          <li><strong>Analytical Thinking:</strong> Breaking complex problems into smaller, solvable parts.</li>
+          <li><strong>Communication:</strong> Presenting findings to non-technical stakeholders clearly and convincingly.</li>
+          <li><strong>Curiosity:</strong> Asking the right questions about data, always looking for deeper patterns.</li>
+          <li><strong>Problem Solving:</strong> Identifying creative solutions when standard approaches don't work.</li>
+          <li><strong>Business Acumen:</strong> Understanding how data insights translate into business value.</li>
+          <li><strong>Storytelling:</strong> Making data tell a compelling narrative that drives action.</li>
+        </ul>
+
+        <div class="box tip">
+          <div class="box-title">💡 Career Path Tip</div>
+          The typical career progression: <strong>Data Analyst → Data Scientist → Senior Data Scientist → Lead/Principal Data Scientist → Chief Data Officer (CDO)</strong>. Starting with SQL + Python + one visualization tool is the best first step.
+        </div>
+
+        <div class="sub-heading">The Multifaceted Role of a Data Scientist</div>
+        <p>As shown in the course slides, a Data Scientist must have skills across multiple domains:</p>
+        <div class="cards">
+          <div class="card">
+            <div class="card-icon">🔬</div>
+            <div class="card-title">Analytics Domain</div>
+            <div class="card-body">Statistics, AI, Machine Learning, Predictive Modeling, Feature Engineering, NLP, Graph Analytics.</div>
+          </div>
+          <div class="card">
+            <div class="card-icon">💻</div>
+            <div class="card-title">Computer Science Domain</div>
+            <div class="card-body">Programming, Cloud Computing, Distributed Systems, Privacy & Security, Technology Infrastructure.</div>
+          </div>
+          <div class="card">
+            <div class="card-icon">🗄️</div>
+            <div class="card-title">Data Management</div>
+            <div class="card-body">Data Warehousing, Information Retrieval, Business Intelligence, Big Data, Databases.</div>
+          </div>
+          <div class="card">
+            <div class="card-icon">🎨</div>
+            <div class="card-title">Visualization & Design</div>
+            <div class="card-body">Data visualization, Art & Design principles, Communication skills for presenting insights.</div>
+          </div>
+          <div class="card">
+            <div class="card-icon">🚀</div>
+            <div class="card-title">Entrepreneurship</div>
+            <div class="card-body">Ethics, Domain Knowledge, Data Product Design, Business Thinking, Pragmatic approach.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════
+         SECTION 7: QUICK REVISION
+    ════════════════════════════════════════ -->
+    <div id="sec-revision" class="notebook-page reveal">
+      <div class="spiral-holes" id="holes-rev"></div>
+      <div class="page-content">
+        <div class="section-heading">
+          <span class="icon">✏️</span> Quick Revision — Unit I
+          <span class="badge">Revision</span>
+        </div>
+
+        <div class="sub-heading">Key Formulas & Definitions to Remember</div>
+        <div class="formula">Data Science = Statistics + Programming + Domain Expertise</div>
+        <div class="formula">Big Data = Volume + Velocity + Variety (3Vs — by Doug Laney, 2001)</div>
+        <div class="formula">Hadoop = HDFS + MapReduce + YARN</div>
+
+        <div class="sub-heading">Flash Cards — Quick Answers</div>
+        <div class="revision-grid">
+          <div class="rev-card"><div class="rev-q">Who introduced the 3Vs?</div><div class="rev-a">Doug Laney, in 2001 (META Group report)</div></div>
+          <div class="rev-card"><div class="rev-q">What does HDFS stand for?</div><div class="rev-a">Hadoop Distributed File System — stores data across multiple machines with replication.</div></div>
+          <div class="rev-card"><div class="rev-q">What is Tableau used for?</div><div class="rev-a">Data visualization & BI — creating interactive charts/dashboards without coding.</div></div>
+          <div class="rev-card"><div class="rev-q">What is R language based on?</div><div class="rev-a">S language, developed by AT&T Bell Labs. Open-source under GNU GPL.</div></div>
+          <div class="rev-card"><div class="rev-q">What does SaaS stand for?</div><div class="rev-a">Software as a Service — cloud delivery model for Big Data processing tools.</div></div>
+          <div class="rev-card"><div class="rev-q">First step in DS lifecycle?</div><div class="rev-a">Business Understanding — define the problem, objectives, and success criteria.</div></div>
+          <div class="rev-card"><div class="rev-q">What is Velocity in Big Data?</div><div class="rev-a">The speed at which data is generated and must be processed (real-time, batch, streaming).</div></div>
+          <div class="rev-card"><div class="rev-q">What does EDA stand for?</div><div class="rev-a">Exploratory Data Analysis — visual and statistical exploration of data before modeling.</div></div>
+          <div class="rev-card"><div class="rev-q">Which Hadoop tool does warehousing?</div><div class="rev-a">Apache Hive — SQL-like interface to query HDFS data.</div></div>
+          <div class="rev-card"><div class="rev-q">What is Kafka used for?</div><div class="rev-a">Messaging/Streaming system — building real-time data pipelines.</div></div>
+          <div class="rev-card"><div class="rev-q">Data Scientist vs Data Engineer?</div><div class="rev-a">Scientist = builds models &amp; insights; Engineer = builds data pipelines &amp; infrastructure.</div></div>
+          <div class="rev-card"><div class="rev-q">5th V of Big Data?</div><div class="rev-a">Value — the business worth / actionable insight derived from the data.</div></div>
+        </div>
+
+        <div class="sub-heading">Unit I – Complete Topic Checklist</div>
+        <div class="box teal">
+          <div class="box-title">📋 All Topics Covered</div>
+          ✅ Data science and its need &nbsp;|&nbsp; ✅ Applications of data science/Big data &nbsp;|&nbsp; ✅ Data science lifecycle with use case &nbsp;|&nbsp; ✅ Big data and its 3Vs &nbsp;|&nbsp; ✅ Challenges of Big data &nbsp;|&nbsp; ✅ Skill needed for Big data &nbsp;|&nbsp; ✅ Apache Hadoop &nbsp;|&nbsp; ✅ Tableau &nbsp;|&nbsp; ✅ R language &nbsp;|&nbsp; ✅ Excel &nbsp;|&nbsp; ✅ Big Data on the Cloud &nbsp;|&nbsp; ✅ Use of Big Data in different areas &nbsp;|&nbsp; ✅ Job roles and skillset for Data science and Big data
+        </div>
+
+        <div class="sub-heading">Predicted Exam Questions</div>
+        <ul class="notes-list">
+          <li>Define Big Data. Explain the 3Vs with examples.</li>
+          <li>What is Data Science? Explain its lifecycle with a use case.</li>
+          <li>Explain the challenges of Big Data with suitable examples.</li>
+          <li>Describe Apache Hadoop and its ecosystem components.</li>
+          <li>What is Tableau? List its key features.</li>
+          <li>How is Big Data used in Healthcare? Give examples.</li>
+          <li>Explain the role of cloud computing in Big Data processing.</li>
+          <li>Differentiate between a Data Scientist and a Data Engineer.</li>
+          <li>What skills are needed to become a Big Data professional?</li>
+          <li>Compare R Language and Excel for data analysis purposes.</li>
+        </ul>
+
+        <div class="box imp">
+          <div class="box-title">🎯 Exam Strategy</div>
+          Unit I questions typically ask for: <strong>definitions (2 marks)</strong>, <strong>explain with examples (5 marks)</strong>, and <strong>compare/contrast (5 marks)</strong>. Always include the 3Vs when answering anything about Big Data. Always include lifecycle when answering about Data Science.
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════
+         MCQ SECTION — 50 Questions
+    ════════════════════════════════════════ -->
+    <div id="mcq-section">
+      <div class="mcq-header">
+        <h2>🧠 MCQ Practice — Unit I</h2>
+        <p>Data Science & Big Data · 50 Questions · Click options to check answers</p>
+        <div class="mcq-progress-bar-wrap">
+          <div class="mcq-progress-fill" id="mcq-progress-fill"></div>
+        </div>
+        <div class="mcq-progress-text" id="mcq-progress-text">0 of 50 attempted</div>
+      </div>
+      <div class="mcq-body">
+        <div id="mcq-container"></div>
+        <div class="mcq-nav">
+          <button class="mcq-btn prev" id="btn-prev" onclick="changeMCQ(-1)" disabled>← Previous</button>
+          <span class="q-counter">Question <strong id="q-current">1</strong> / <strong>50</strong></span>
+          <button class="mcq-btn next" id="btn-next" onclick="changeMCQ(1)">Next →</button>
+        </div>
+        <div class="score-panel" id="score-panel">
+          <div class="score-emoji" id="score-emoji">🎉</div>
+          <div class="score-title">Quiz Complete!</div>
+          <div class="score-value" id="score-value"></div>
+          <button class="score-restart" onclick="restartMCQ()">🔄 Restart Quiz</button>
+        </div>
+      </div>
+    </div>
+
+  </main>
+</div><!-- end layout -->
+
+<script>
+// ─── SPIRAL HOLES GENERATOR ───────────────────────────────
+function addHoles(containerId, count) {
+  const el = document.getElementById(containerId);
+  if (!el) return;
+  for (let i = 0; i < count; i++) {
+    const hole = document.createElement('div');
+    hole.className = 'spiral-hole';
+    el.appendChild(hole);
+  }
+}
+['holes-cover','holes-ds','holes-bd','holes-tools','holes-cloud','holes-areas','holes-jobs','holes-rev'].forEach(id => {
+  const el = document.getElementById(id);
+  if (!el) return;
+  const h = el.parentElement.offsetHeight || 600;
+  addHoles(id, Math.max(8, Math.floor(h / 60)));
+});
+// Re-add after layout
+window.addEventListener('load', () => {
+  ['holes-cover','holes-ds','holes-bd','holes-tools','holes-cloud','holes-areas','holes-jobs','holes-rev'].forEach(id => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.innerHTML = '';
+    const h = el.parentElement.offsetHeight || 600;
+    addHoles(id, Math.max(8, Math.floor(h / 60)));
+  });
+});
+
+// ─── PROGRESS BAR ─────────────────────────────────────────
+function updateProgressBar() {
+  const el = document.documentElement;
+  const scrolled = el.scrollTop || document.body.scrollTop;
+  const total = el.scrollHeight - el.clientHeight;
+  const pct = total > 0 ? (scrolled / total) * 100 : 0;
+  document.getElementById('progress-bar').style.width = pct + '%';
+}
+window.addEventListener('scroll', updateProgressBar, { passive: true });
+
+// ─── COLLAPSIBLE ──────────────────────────────────────────
+function toggleCollapse(btn) {
+  btn.classList.toggle('open');
+  const body = btn.nextElementSibling;
+  if (body) body.classList.toggle('open');
+}
+
+// ─── SIDEBAR TOGGLE ───────────────────────────────────────
+const menuBtn = document.getElementById('menu-toggle');
+const sidebar = document.getElementById('sidebar');
+const overlay = document.getElementById('sidebar-overlay');
+menuBtn.addEventListener('click', () => {
+  sidebar.classList.toggle('open');
+  overlay.style.display = sidebar.classList.contains('open') ? 'block' : 'none';
+});
+overlay.addEventListener('click', () => {
+  sidebar.classList.remove('open');
+  overlay.style.display = 'none';
+});
+sidebar.querySelectorAll('.toc-item').forEach(a => {
+  a.addEventListener('click', () => {
+    if (window.innerWidth <= 768) {
+      sidebar.classList.remove('open');
+      overlay.style.display = 'none';
+    }
+  });
+});
+
+// ─── ACTIVE SIDEBAR LINK ──────────────────────────────────
+const sections = document.querySelectorAll('[id^="sec-"], [id^="cover"], [id^="mcq"]');
+const tocLinks = document.querySelectorAll('.toc-item');
+const obsOpts = { threshold: 0.15 };
+const sectionObs = new IntersectionObserver(entries => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      const id = entry.target.id;
+      tocLinks.forEach(link => {
+        link.classList.toggle('active', link.getAttribute('href') === '#' + id);
+      });
+    }
+  });
+}, obsOpts);
+sections.forEach(s => sectionObs.observe(s));
+
+// ─── SCROLL REVEAL ────────────────────────────────────────
+const revealEls = document.querySelectorAll('.reveal');
+const revObs = new IntersectionObserver(entries => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) entry.target.classList.add('visible');
+  });
+}, { threshold: 0.08 });
+revealEls.forEach(el => revObs.observe(el));
+
+// ─── MCQ DATA ─────────────────────────────────────────────
+const mcqs = [
+  // Data Science (Q1–15)
+  {q:"What is the primary goal of Data Science?",opts:["To store data in databases","To extract meaningful insights from data","To manage hardware systems","To perform only mathematical calculations"],ans:1,exp:"Data Science aims to extract knowledge and insights from structured and unstructured data to support decision-making. Storage and hardware management are separate concerns."},
+  {q:"Data Science is best described as a combination of which three fields?",opts:["Hardware, Networking, and Software","Statistics, Programming, and Domain Expertise","SQL, NoSQL, and NewSQL","Cloud, IoT, and Blockchain"],ans:1,exp:"The three core pillars of Data Science are Statistics (mathematical foundation), Programming (implementation), and Domain Expertise (understanding the problem context)."},
+  {q:"What percentage of a data scientist's time is typically spent on data cleaning?",opts:["10–20%","30–40%","60–80%","90–95%"],ans:2,exp:"Studies consistently show that data scientists spend 60–80% of their time collecting, cleaning, and preparing data — the most time-consuming part of the data science workflow."},
+  {q:"Which of the following is the FIRST step in the Data Science Lifecycle?",opts:["Data Collection","Data Cleaning","Business Understanding","Model Building"],ans:2,exp:"The Data Science Lifecycle begins with Business Understanding — defining the problem, objectives, and what success looks like, before any data is collected."},
+  {q:"EDA stands for:",opts:["Extended Data Analytics","Exploratory Data Analysis","External Database Access","Efficient Data Algorithm"],ans:1,exp:"EDA stands for Exploratory Data Analysis — the process of visually and statistically exploring data to find patterns, outliers, and relationships before model building."},
+  {q:"Which type of data includes information organized in rows and columns?",opts:["Unstructured data","Semi-structured data","Structured data","Binary data"],ans:2,exp:"Structured data is organized in a predefined format — rows and columns — like data in Excel spreadsheets or relational databases (SQL)."},
+  {q:"Amazon's recommendation engine, which generates 35% of its revenue, is an example of Data Science applied to:",opts:["Healthcare","E-commerce","Transport","Agriculture"],ans:1,exp:"Amazon uses collaborative filtering and purchase history analysis (Data Science) to power its recommendation engine, contributing to approximately 35% of total revenue."},
+  {q:"What is the step in the Data Science Lifecycle where models are put into production?",opts:["Data Cleaning","EDA","Model Building","Deployment"],ans:3,exp:"Deployment is the final stage where a trained ML model is put into production so real users and systems can benefit from its predictions and insights."},
+  {q:"Which of the following best describes 'Data Drift' in deployed models?",opts:["Model becoming faster over time","Real-world data changing causing model performance to degrade","Model consuming less memory","Data being compressed automatically"],ans:1,exp:"Data Drift occurs when the statistical properties of real-world input data change over time, causing a previously accurate model's performance to degrade. Models need continuous monitoring."},
+  {q:"In Data Science, which type of data includes tweets, images, and video files?",opts:["Structured","Relational","Unstructured","Normalized"],ans:3,exp:"Unstructured data has no predefined format — it includes text (tweets, documents), images, audio, and video files. It accounts for ~80% of all data generated."},
+  {q:"Which visualization library in Python is commonly used for data science?",opts:["Requests","Flask","matplotlib","Django"],ans:2,exp:"matplotlib (along with seaborn) is the foundational Python visualization library used in data science for creating plots, charts, and graphs."},
+  {q:"The Data Science Lifecycle is described as 'cyclic' because:",opts:["It runs in circles like a clock","Insights from deployment may require going back to earlier steps","Data is collected in cycles","Models are retrained every cycle"],ans:1,exp:"The lifecycle is cyclic because findings at any stage may reveal new questions or data requirements, sending you back to earlier steps (e.g., deployment issues may require new data collection)."},
+  {q:"Data Science applications in healthcare include all EXCEPT:",opts:["Medical image analysis","Drug discovery","Algorithmic stock trading","Bioinformatics"],ans:2,exp:"Algorithmic stock trading is a finance application, not healthcare. Healthcare applications include medical image analysis, drug discovery, bioinformatics, virtual assistants, and disease prediction."},
+  {q:"Which metrics are used to evaluate classification models in Data Science?",opts:["RMSE and MAE","Accuracy, Precision, Recall, and F1-score","Gradient and Derivative","Entropy and Information Gain only"],ans:1,exp:"Classification model evaluation uses Accuracy (overall correctness), Precision (positive prediction quality), Recall (sensitivity), and F1-score (harmonic mean of precision and recall)."},
+  {q:"The 'Need' for Data Science arose primarily because of:",opts:["Decrease in computing power","Explosion of large volumes of data from digital sources","Shortage of mathematicians","Government regulations"],ans:1,exp:"The digital revolution created an explosion of data from social media, IoT, e-commerce, etc. Traditional tools couldn't process this volume, creating the need for Data Science."},
+  // Big Data (Q16–32)
+  {q:"Who introduced the concept of 3Vs of Big Data?",opts:["John McCarthy","Doug Laney","Tim Berners-Lee","Larry Page"],ans:1,exp:"Doug Laney introduced the 3Vs (Volume, Velocity, Variety) framework in a 2001 research note published while at META Group. This became the standard definition of Big Data."},
+  {q:"Which of the following is NOT one of the original 3Vs of Big Data?",opts:["Volume","Velocity","Validity","Variety"],ans:2,exp:"The original 3Vs are Volume (amount), Velocity (speed), and Variety (types). 'Validity' is not one of them. Later additions include Veracity, Value, and Variability."},
+  {q:"'Velocity' in Big Data context refers to:",opts:["The physical speed of hard drives","The speed at which data is generated and must be processed","The size of individual data files","The number of different data types"],ans:1,exp:"Velocity refers to the speed of data generation and the requirement to process it quickly. Examples: social media posts, sensor readings, financial transactions — all generated in real-time."},
+  {q:"Which 'V' of Big Data describes the quality and accuracy of data?",opts:["Volume","Velocity","Variety","Veracity"],ans:3,exp:"Veracity (4th V) refers to the quality, accuracy, and trustworthiness of data. Data can be biased, inconsistent, or noisy — veracity addresses these data quality challenges."},
+  {q:"Big Data stored in records, tables, and files is an example of which 'V'?",opts:["Velocity","Variety","Volume","Veracity"],ans:2,exp:"Volume refers to the amount of data — stored in kilobytes, terabytes, petabytes — in records, tables, and files, both from online and offline transactions."},
+  {q:"Which of the following is the BIGGEST challenge in working with Big Data?",opts:["Finding computers","Budget requirements and infrastructure costs","Lack of internet connection","Too few users"],ans:1,exp:"Building and maintaining Big Data infrastructure requires massive investment in hardware, software licenses, cloud services, and skilled personnel — making budget one of the top challenges."},
+  {q:"'The Storage Bulge' in Big Data challenges refers to:",opts:["Data scientists gaining weight","Rapid growth of data exceeding storage capacity and budget","Compression algorithms failing","Network bandwidth limitations"],ans:1,exp:"The Storage Bulge describes the crisis where continuously generated data overwhelms available storage capacity. Although cost per GB decreases, total storage needed grows even faster."},
+  {q:"Big Data in banking is primarily used for:",opts:["Hiring employees","Fraud detection, credit risk modeling, and algorithmic trading","Designing bank interiors","Printing currency notes"],ans:1,exp:"Banking uses Big Data extensively for real-time fraud detection (analyzing millions of transactions), credit risk modeling, algorithmic high-frequency trading, and customer segmentation."},
+  {q:"Which of the following industries uses Big Data for 'predictive maintenance'?",opts:["Entertainment","Manufacturing","Agriculture only","Government"],ans:1,exp:"Manufacturing industries use Big Data and IoT sensors to monitor equipment in real-time and predict failures before they occur (predictive maintenance), saving millions in downtime costs."},
+  {q:"Social Media Monitoring in Big Data refers to:",opts:["Installing cameras in social media offices","Analyzing social media posts to track brand mentions, trends, and sentiment","Creating social media accounts","Monitoring employees' social media usage"],ans:1,exp:"Social Media Monitoring uses Big Data analytics to track brand mentions, sentiment (positive/negative), viral trends, and customer opinions across platforms like Twitter, Instagram, and Facebook."},
+  {q:"Big Data analytics leads to which of the following BENEFITS? (Choose the most complete answer)",opts:["Only cost reductions","Only time reductions","Cost reductions, time reductions, smarter decisions, and new products/services","Only new product development"],ans:2,exp:"The four key benefits of Big Data Analytics are: Cost Reductions, Time Reductions, Smarter Business Decisions, and development of New Products and Services."},
+  {q:"Which 'V' represents the diversity of data types in Big Data?",opts:["Volume","Velocity","Variety","Value"],ans:2,exp:"Variety describes the diverse types of data — structured (databases, spreadsheets), unstructured (text, images, video), and semi-structured (JSON, XML) — both human and machine-generated."},
+  {q:"Which sector uses Big Data for 'crop disease detection'?",opts:["Banking","Manufacturing","Agriculture","Telecom"],ans:2,exp:"Agriculture uses Big Data and image recognition AI to analyze photos of crops and detect diseases early, enabling timely treatment and preventing large-scale yield losses."},
+  {q:"'Behavioral Analytics' in Big Data means:",opts:["Studying human psychology in labs","Analyzing how users interact with apps and websites to improve experience","Tracking criminal behavior","Monitoring employee productivity"],ans:1,exp:"Behavioral Analytics studies how users interact with digital products — clicks, page visits, purchase patterns — to improve user experience, increase conversions, and reduce churn."},
+  {q:"A company that uses Big Data to send targeted advertisements based on your browsing history is an example of:",opts:["Volume","Customer Segmentation","Data Cleaning","Data Engineering"],ans:1,exp:"This is Customer Segmentation — grouping users based on behavior and characteristics to deliver personalized marketing. Used by Facebook, Google, and Amazon to serve targeted ads."},
+  {q:"The 5th 'V' of Big Data, referring to its business worth, is:",opts:["Velocity","Veracity","Value","Variety"],ans:2,exp:"Value is the 5th V — it represents the business worth or actionable insight that can be derived from the data. Without value, collecting large amounts of data is pointless."},
+  {q:"Big Data's 'Variety' includes which data types?",opts:["Only text data","Only structured data","Structured, unstructured, and semi-structured data","Only machine-generated data"],ans:2,exp:"Variety includes all three data types: Structured (databases, spreadsheets), Unstructured (text, images, video, audio), and Semi-structured (JSON, XML, HTML)."},
+  // Tools (Q33–43)
+  {q:"Apache Hadoop is written in which programming language?",opts:["Python","C++","Java","Ruby"],ans:2,exp:"Apache Hadoop is written in Java. Being open-source and Java-based makes it platform-independent and accessible for organizations to customize and extend."},
+  {q:"HDFS stands for:",opts:["Hardware Data File System","Hadoop Distributed File System","High Definition File Storage","Hierarchical Data Format System"],ans:1,exp:"HDFS stands for Hadoop Distributed File System — it stores large files by splitting them into blocks and distributing those blocks across multiple nodes in a cluster."},
+  {q:"In Hadoop's MapReduce, what does the 'Map' phase do?",opts:["Combines results from all nodes","Divides the task into smaller sub-tasks distributed across nodes","Stores final output in HDFS","Manages cluster resources"],ans:1,exp:"The Map phase takes input data, breaks it into key-value pairs, and distributes processing across multiple nodes in parallel. The Reduce phase then aggregates all the intermediate results."},
+  {q:"Which Hadoop component is used for SQL-like querying of HDFS data?",opts:["Apache Pig","Apache Hive","Apache Kafka","Apache Spark"],ans:1,exp:"Apache Hive provides a SQL-like interface (HiveQL) to query data stored in HDFS. It converts SQL queries into MapReduce/Tez/Spark jobs automatically, making Big Data accessible to SQL users."},
+  {q:"Apache Kafka is best described as a:",opts:["Database management system","Real-time data processing engine","Distributed messaging/streaming system","Visualization tool"],ans:2,exp:"Apache Kafka is a distributed messaging and streaming platform used to build real-time data pipelines. It's used for high-throughput, fault-tolerant, publish-subscribe messaging between systems."},
+  {q:"Tableau requires which of the following to use?",opts:["Advanced programming skills","Coding in Python","No coding skills — drag and drop interface","Hadoop certification"],ans:2,exp:"Tableau's key selling point is that it requires NO coding skills. Its drag-and-drop interface allows anyone to create sophisticated data visualizations by simply dragging data fields onto a canvas."},
+  {q:"Which is a key feature of Tableau?",opts:["Requires expert coding","Only works with small datasets","Creates interactive visualizations and provides mobile access","Cannot connect to cloud data sources"],ans:2,exp:"Tableau creates interactive, shareable visualizations from almost any data source. It includes mobile access, real-time data connections, collaboration features, and time series analysis."},
+  {q:"R Language is open-source under which license?",opts:["MIT License","Apache License","GNU General Public License (GPL)","Creative Commons"],ans:2,exp:"R is distributed under the GNU General Public License (GPL), making it completely free to use, modify, and distribute. This is why it's widely adopted in academia and research."},
+  {q:"Which of the following is NOT a feature of R language?",opts:["Statistical computing","Data visualization","Drag-and-drop no-code interface","Linear and nonlinear modeling"],ans:2,exp:"Drag-and-drop no-code interface describes Tableau, not R. R is a programming language that requires writing code. It is known for statistical computing, visualization, and modeling."},
+  {q:"Apache Spark is faster than Hadoop's MapReduce because:",opts:["It uses more hard disk storage","It performs in-memory computation instead of disk I/O","It has a simpler algorithm","It doesn't support Big Data"],ans:1,exp:"Apache Spark processes data in-memory (RAM), while Hadoop MapReduce writes intermediate results to disk between operations. In-memory processing makes Spark up to 100x faster than MapReduce."},
+  {q:"HBase in the Hadoop ecosystem is classified as which type of database?",opts:["Relational Database","NoSQL Database","Graph Database","Time-series Database"],ans:1,exp:"HBase is a NoSQL (column-family) database built on top of HDFS. It provides real-time, random read/write access to data stored in Hadoop, unlike HDFS which is optimized for batch reads."},
+  // Cloud (Q44–46)
+  {q:"Big Data on the Cloud primarily uses which delivery model?",opts:["Infrastructure as a Service (IaaS) only","Platform as a Service (PaaS) only","Software as a Service (SaaS) model","Desktop as a Service (DaaS)"],ans:2,exp:"Big Data on the Cloud primarily uses the SaaS (Software as a Service) model — organizations access Big Data processing tools over the internet without managing underlying infrastructure."},
+  {q:"Which of the following is AWS's Big Data processing service (Hadoop/Spark managed)?",opts:["AWS Lambda","AWS EMR (Elastic MapReduce)","AWS Route 53","AWS IAM"],ans:1,exp:"AWS EMR (Elastic MapReduce) is Amazon's managed Big Data service that runs Hadoop, Spark, Hive, and other frameworks on the cloud without needing to set up and manage clusters manually."},
+  {q:"'Elastic Scalability' in Cloud Computing means:",opts:["Data expands automatically when compressed","Resources can be instantly scaled up or down based on demand","Files become elastic in cloud storage","Internet bandwidth adjusts elastically"],ans:1,exp:"Elastic Scalability means cloud resources (servers, storage, compute) can be rapidly provisioned or released based on demand — scale up for peak loads, scale down to save costs."},
+  // Jobs (Q47–50)
+  {q:"Which job role is responsible for building and maintaining data pipelines?",opts:["Data Journalist","Data Engineer","Decision Scientist","Financial Analyst"],ans:1,exp:"Data Engineers build and maintain the pipelines, data lakes, and warehouse infrastructure that enable data scientists to access clean, organized data for analysis and modeling."},
+  {q:"Which role bridges the gap between data teams and business stakeholders?",opts:["Database Administrator","Machine Learning Engineer","Business Analyst","Data Journalist"],ans:2,exp:"Business Analysts translate business requirements into data questions and communicate data insights back to non-technical stakeholders in business terms, bridging the gap between data and decisions."},
+  {q:"A 'Machine Learning Engineer' primarily focuses on:",opts:["Creating charts and dashboards","Building and deploying ML models at production scale","Writing financial reports","Managing SQL databases"],ans:1,exp:"ML Engineers focus on building production-grade ML systems — optimizing model performance, building serving infrastructure, automating training pipelines, and ensuring models run reliably at scale."},
+  {q:"Which of the following is listed as a required skill for Big Data professionals in the course?",opts:["Cooking skills","Data Visualization using Tableau or Power BI","Interior design","Musical instrument proficiency"],ans:1,exp:"Data Visualization (using Tableau, Power BI, matplotlib, etc.) is one of the core skills listed for Big Data professionals — transforming complex data into understandable visual insights."},
+  {q:"The 'Chief Data Officer (CDO)' is best described as:",opts:["The officer who cleans data daily","A senior executive responsible for organizational data strategy, governance, and monetization","A database system administrator","A software developer who writes data queries"],ans:1,exp:"The Chief Data Officer (CDO) is a C-suite executive role responsible for an organization's data strategy, data governance, data monetization, and ensuring data assets create business value."}
+];
+
+// ─── MCQ RENDERING ────────────────────────────────────────
+let currentQ = 0;
+const answered = new Array(mcqs.length).fill(false);
+const scores = new Array(mcqs.length).fill(null);
+
+function renderMCQ(idx) {
+  const container = document.getElementById('mcq-container');
+  container.innerHTML = '';
+  const data = mcqs[idx];
+  const div = document.createElement('div');
+  div.className = 'mcq-question-block active';
+  const optLetters = ['A','B','C','D'];
+  let optHtml = data.opts.map((o, i) =>
+    `<div class="q-option ${answered[idx] ? (i === data.ans ? 'reveal-correct' : (scores[idx] === i ? 'wrong' : '')) : ''}" 
+     onclick="selectOpt(${idx}, ${i}, this)" data-idx="${i}">
+      <span class="opt-label">${optLetters[i]}.</span>
+      <span>${o}</span>
+    </div>`
+  ).join('');
+  div.innerHTML = `
+    <div class="q-number">Question ${idx + 1} of ${mcqs.length}</div>
+    <div class="q-text">${data.q}</div>
+    <div class="q-options">${optHtml}</div>
+    <div class="q-explanation ${answered[idx] ? 'show' : ''}" id="exp-${idx}">
+      <div class="exp-title">💡 Explanation</div>
+      ${data.exp}
+    </div>
+  `;
+  container.appendChild(div);
+  if (answered[idx]) {
+    div.querySelectorAll('.q-option').forEach(o => o.style.pointerEvents = 'none');
+  }
+  document.getElementById('q-current').textContent = idx + 1;
+  document.getElementById('btn-prev').disabled = idx === 0;
+  document.getElementById('btn-next').textContent = idx === mcqs.length - 1 ? 'Finish Quiz' : 'Next →';
+  updateMCQProgress();
+}
+
+function selectOpt(qIdx, optIdx, el) {
+  if (answered[qIdx]) return;
+  answered[qIdx] = true;
+  scores[qIdx] = optIdx;
+  const data = mcqs[qIdx];
+  const opts = el.parentElement.querySelectorAll('.q-option');
+  opts.forEach(o => {
+    o.style.pointerEvents = 'none';
+    const i = parseInt(o.dataset.idx);
+    if (i === data.ans) o.classList.add('reveal-correct');
+    if (i === optIdx && optIdx !== data.ans) o.classList.add('wrong');
+  });
+  const exp = document.getElementById(`exp-${qIdx}`);
+  if (exp) exp.classList.add('show');
+  updateMCQProgress();
+}
+
+function changeMCQ(dir) {
+  const newIdx = currentQ + dir;
+  if (newIdx >= mcqs.length) {
+    showScore(); return;
+  }
+  if (newIdx < 0) return;
+  currentQ = newIdx;
+  renderMCQ(currentQ);
+}
+
+function updateMCQProgress() {
+  const attempted = answered.filter(Boolean).length;
+  const pct = (attempted / mcqs.length) * 100;
+  document.getElementById('mcq-progress-fill').style.width = pct + '%';
+  document.getElementById('mcq-progress-text').textContent = `${attempted} of ${mcqs.length} attempted`;
+}
+
+function showScore() {
+  document.getElementById('mcq-container').style.display = 'none';
+  document.querySelector('.mcq-nav').style.display = 'none';
+  const correct = scores.reduce((acc, s, i) => acc + (s === mcqs[i].ans ? 1 : 0), 0);
+  const pct = Math.round((correct / mcqs.length) * 100);
+  const panel = document.getElementById('score-panel');
+  panel.classList.add('show');
+  document.getElementById('score-value').textContent = `${correct} / ${mcqs.length} correct (${pct}%)`;
+  let emoji = '😅', msg = 'Keep practicing!';
+  if (pct >= 90) { emoji = '🏆'; msg = 'Outstanding! Exam-ready!'; }
+  else if (pct >= 75) { emoji = '🎉'; msg = 'Great job! Almost there!'; }
+  else if (pct >= 60) { emoji = '👍'; msg = 'Good effort! Review weak areas.'; }
+  document.getElementById('score-emoji').textContent = emoji;
+  document.querySelector('.score-title').textContent = msg;
+  document.getElementById('mcq-progress-fill').style.width = '100%';
+  document.getElementById('mcq-progress-text').textContent = `Quiz Complete — ${correct}/${mcqs.length} correct`;
+}
+
+function restartMCQ() {
+  answered.fill(false);
+  scores.fill(null);
+  currentQ = 0;
+  document.getElementById('mcq-container').style.display = 'block';
+  document.querySelector('.mcq-nav').style.display = 'flex';
+  document.getElementById('score-panel').classList.remove('show');
+  renderMCQ(0);
+}
+
+// ─── INIT ─────────────────────────────────────────────────
+renderMCQ(0);
+</script>
+</body>
+</html>

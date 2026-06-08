@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CSE121 – Comprehensive Short Notes</title>
+<meta name="description" content="Detailed short notes covering all topics of CSE121.">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Caveat:wght@400;500;600;700&family=Kalam:wght@300;400;700&family=Patrick+Hand&family=Nunito:ital,wght@0,300;0,400;0,600;0,700;1,400&display=swap');
+
+  :root {
+    --paper: #fdfcf7;
+    --paper2: #f9f8f0;
+    --lines: #c8dff5;
+    --ink: #1a1a2e;
+    --ink-light: #3a3a5c;
+    --rose: #e11d48;
+    --rose-light: #ffe4e6;
+    --blue: #2563eb;
+    --blue-light: #dbeafe;
+    --green: #16a34a;
+    --green-light: #dcfce7;
+    --amber: #d97706;
+    --amber-light: #fef3c7;
+    --purple: #7c3aed;
+    --purple-light: #ede9fe;
+    --teal: #0d9488;
+    --teal-light: #ccfbf1;
+    --orange: #ea580c;
+    --orange-light: #fff7ed;
+    --shadow: rgba(37,99,235,0.10);
+    --hole-shadow: rgba(0,0,0,0.12);
+    --spiral: #9ca3af;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: 'Nunito', sans-serif;
+    background: #e8edf5; background-image: radial-gradient(#c3d1e8 1px, transparent 1px); background-size: 24px 24px;
+    color: var(--ink); min-height: 100vh; padding: 40px 20px;
+  }
+
+  .container { max-width: 1000px; margin: 0 auto; }
+
+  .nav-back {
+    display: inline-flex; align-items: center; gap: 8px;
+    font-family: 'Kalam', cursive; font-size: 1.1rem; font-weight: 700;
+    color: var(--rose); text-decoration: none;
+    background: var(--paper); padding: 8px 16px; border-radius: 20px;
+    box-shadow: 0 4px 12px var(--shadow); margin-bottom: 24px; transition: transform 0.2s;
+  }
+  .nav-back:hover { transform: translateY(-2px); background: var(--rose-light); }
+
+  .notebook-page {
+    background: var(--paper); border-radius: 4px 12px 12px 4px; margin-bottom: 28px;
+    box-shadow: 4px 4px 20px var(--shadow), 1px 1px 0 rgba(0,0,0,.04); position: relative; overflow: hidden;
+  }
+  .notebook-page::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 44px; background: var(--paper2); border-right: 2px solid var(--lines); }
+  .spiral-holes { position: absolute; left: 0; top: 0; bottom: 0; width: 44px; display: flex; flex-direction: column; align-items: center; justify-content: space-evenly; z-index: 2; pointer-events: none; }
+  .spiral-hole { width: 14px; height: 14px; border-radius: 50%; background: #e8edf5; border: 2px solid var(--spiral); box-shadow: inset 0 1px 3px var(--hole-shadow); flex-shrink: 0; }
+  .page-content { padding: 34px 38px 38px 68px; background-image: repeating-linear-gradient(transparent, transparent 27px, var(--lines) 28px); min-height: 200px; }
+
+  .title-section { text-align: center; margin-bottom: 30px; }
+  .title-section h1 { font-family: 'Caveat', cursive; font-size: 3rem; color: var(--ink); line-height: 1.2; }
+  .title-section p { font-family: 'Patrick Hand', cursive; font-size: 1.2rem; color: var(--rose); }
+
+  .unit-card {
+    background: var(--paper2); border: 2px solid var(--lines); border-radius: 12px; padding: 24px; margin-bottom: 24px;
+  }
+  .unit-card.u1 { border-color: var(--blue); background: var(--blue-light); }
+  .unit-card.u2 { border-color: var(--green); background: var(--green-light); }
+  .unit-card.u3 { border-color: var(--rose); background: var(--rose-light); }
+  .unit-card.u4 { border-color: var(--orange); background: var(--orange-light); }
+  .unit-card.u5 { border-color: var(--purple); background: var(--purple-light); }
+  .unit-card.u6 { border-color: var(--teal); background: var(--teal-light); }
+
+  .unit-title { font-family: 'Caveat', cursive; font-size: 2.2rem; font-weight: 700; margin-bottom: 16px; display: flex; align-items: center; gap: 10px; border-bottom: 2px dashed rgba(0,0,0,0.1); padding-bottom: 8px;}
+  .u1 .unit-title { color: var(--blue); }
+  .u2 .unit-title { color: var(--green); }
+  .u3 .unit-title { color: var(--rose); }
+  .u4 .unit-title { color: var(--orange); }
+  .u5 .unit-title { color: var(--purple); }
+  .u6 .unit-title { color: var(--teal); }
+
+  .notes-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+  @media (max-width: 768px) { .notes-grid { grid-template-columns: 1fr; } }
+
+  .notes-list { list-style-type: none; padding: 0; }
+  .notes-list li {
+    font-family: 'Patrick Hand', cursive; font-size: 1rem; line-height: 1.6; color: var(--ink);
+    margin-bottom: 10px; padding-left: 20px; position: relative;
+  }
+  .notes-list li::before { content: '•'; position: absolute; left: 4px; font-weight: bold; font-size: 1.2rem; }
+  .u1 .notes-list li::before { color: var(--blue); }
+  .u2 .notes-list li::before { color: var(--green); }
+  .u3 .notes-list li::before { color: var(--rose); }
+  .u4 .notes-list li::before { color: var(--orange); }
+  .u5 .notes-list li::before { color: var(--purple); }
+  .u6 .notes-list li::before { color: var(--teal); }
+  
+  .topic-head { font-family: 'Kalam', cursive; font-weight: 700; color: var(--ink); display: inline-block; }
+  .u1 .topic-head { color: var(--blue); }
+  .u2 .topic-head { color: var(--green); }
+  .u3 .topic-head { color: var(--rose); }
+  .u4 .topic-head { color: var(--orange); }
+  .u5 .topic-head { color: var(--purple); }
+  .u6 .topic-head { color: var(--teal); }
+</style>
+</head>
+<body>
+
+<div class="container">
+  <a href="index.html" class="nav-back">← Back to Main Menu</a>
+
+  <div class="notebook-page">
+    <div class="spiral-holes" id="holes"></div>
+    <div class="page-content">
+      <div class="title-section">
+        <h1>⚡ Comprehensive Short Notes</h1>
+        <p>Every topic covered concisely for thorough exam preparation!</p>
+      </div>
+
+      <!-- Unit 1 -->
+      <div class="unit-card u1">
+        <div class="unit-title"><span>📊</span> Unit 1: Data Science & Big Data</div>
+        <div class="notes-grid">
+          <ul class="notes-list">
+            <li><span class="topic-head">Data Science:</span> Interdisciplinary field extracting knowledge from structured and unstructured data using scientific methods, algorithms, and systems.</li>
+            <li><span class="topic-head">Job Roles:</span> Data Scientist (builds models), Data Analyst (finds trends/reports), Data Engineer (builds data pipelines/infrastructure).</li>
+            <li><span class="topic-head">Big Data:</span> Data so large and complex that traditional data processing tools can't handle it.</li>
+            <li><span class="topic-head">The 5 V's of Big Data:</span> <strong>Volume</strong> (scale/size), <strong>Velocity</strong> (speed of generation), <strong>Variety</strong> (types/formats), <strong>Veracity</strong> (accuracy/quality), <strong>Value</strong> (usefulness).</li>
+            <li><span class="topic-head">Hadoop Ecosystem:</span> Open-source framework for distributed storage & processing.</li>
+          </ul>
+          <ul class="notes-list">
+            <li><span class="topic-head">Hadoop Components:</span> <strong>HDFS</strong> (Storage across clusters), <strong>MapReduce</strong> (Processing parallelly), <strong>YARN</strong> (Resource Management).</li>
+            <li><span class="topic-head">Other Big Data Tools:</span> Hive (SQL-like querying), Pig (Scripting), HBase (NoSQL Database), Spark (In-memory processing, 100x faster).</li>
+            <li><span class="topic-head">Data Visualization:</span> Graphical representation of data to spot patterns/trends.</li>
+            <li><span class="topic-head">Tableau:</span> Leading visual analytics platform. Drag-and-drop interface requiring <strong>no coding skills</strong>.</li>
+            <li><span class="topic-head">R Language:</span> Open-source programming language for statistical computing and graphics. Free under GNU GPL license.</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Unit 2 -->
+      <div class="unit-card u2">
+        <div class="unit-title"><span>🤖</span> Unit 2: Artificial Intelligence & ML</div>
+        <div class="notes-grid">
+          <ul class="notes-list">
+            <li><span class="topic-head">Artificial Intelligence (AI):</span> Simulation of human intelligence by machines. Allows machines to think, reason, and solve problems.</li>
+            <li><span class="topic-head">Types of AI:</span> Narrow AI (specific tasks like Siri), General AI (human-level cognition), Super AI (surpasses human intelligence).</li>
+            <li><span class="topic-head">Machine Learning (ML):</span> A subset of AI where machines learn from data and improve over time without being explicitly programmed.</li>
+            <li><span class="topic-head">Supervised Learning:</span> Model is trained on <strong>labeled data</strong> (inputs with known outputs). Examples: Classification (spam detection), Regression (price prediction).</li>
+            <li><span class="topic-head">Unsupervised Learning:</span> Model is trained on <strong>unlabeled data</strong>. Finds hidden patterns. Example: Clustering (customer segmentation).</li>
+          </ul>
+          <ul class="notes-list">
+            <li><span class="topic-head">Reinforcement Learning:</span> Agent learns by trial-and-error using <strong>rewards and penalties</strong> (e.g., self-driving cars, chess AI).</li>
+            <li><span class="topic-head">Deep Learning:</span> Subset of ML using <strong>Artificial Neural Networks (ANN)</strong> with many layers. Mimics the human brain structure. Best for image and speech recognition.</li>
+            <li><span class="topic-head">NLP (Natural Language Processing):</span> Enables computers to understand, interpret, and generate human language. Examples: Chatbots, Google Translate, Sentiment Analysis.</li>
+            <li><span class="topic-head">Computer Vision:</span> Enables machines to interpret visual information from the world (images/video). Examples: Facial recognition, medical image analysis.</li>
+            <li><span class="topic-head">Expert Systems:</span> AI programs that emulate the decision-making ability of a human expert using a knowledge base and inference engine.</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Unit 3 -->
+      <div class="unit-card u3">
+        <div class="unit-title"><span>🛡️</span> Unit 3: Cybersecurity</div>
+        <div class="notes-grid">
+          <ul class="notes-list">
+            <li><span class="topic-head">Cybersecurity:</span> Practice of protecting systems, networks, and data from digital attacks, theft, or damage.</li>
+            <li><span class="topic-head">CIA Triad:</span> The foundation of security. <strong>Confidentiality</strong> (encryption/access limits), <strong>Integrity</strong> (hashing/preventing tampering), <strong>Availability</strong> (backups/redundancy).</li>
+            <li><span class="topic-head">Malware Types:</span> <strong>Virus</strong> (attaches to files), <strong>Worm</strong> (self-replicates over networks), <strong>Trojan</strong> (disguised as legit software), <strong>Spyware</strong> (monitors activity secretly), <strong>Ransomware</strong> (encrypts data for money).</li>
+            <li><span class="topic-head">Phishing:</span> Social engineering attack using fake emails/messages to steal credentials. "Spear phishing" targets specific individuals.</li>
+            <li><span class="topic-head">DoS & DDoS Attacks:</span> Denial of Service. Overwhelming a server with traffic so legitimate users cannot access it. Distributed (DDoS) uses botnets.</li>
+          </ul>
+          <ul class="notes-list">
+            <li><span class="topic-head">Brute Force:</span> Systematic trial-and-error guessing of passwords. Prevented by strong passwords and account lockouts.</li>
+            <li><span class="topic-head">Zero-Day Attack:</span> Exploit of an unknown vulnerability with no available patch ("zero days" to fix).</li>
+            <li><span class="topic-head">Secure Browsing:</span> Look for HTTPS (encrypted connection) and a padlock icon. Avoid suspicious links.</li>
+            <li><span class="topic-head">Digital Footprint:</span> Trace of online activities. <strong>Active</strong> (posts/comments you make) vs <strong>Passive</strong> (cookies/tracking without input).</li>
+            <li><span class="topic-head">Security Tools:</span> <strong>Nmap</strong> (Network scanning & port discovery), <strong>Wireshark</strong> (Packet sniffing & traffic analysis), AI-based detection.</li>
+            <li><span class="topic-head">Compliance:</span> Adhering to laws. Examples: ISO 27001 (ISMS), GDPR (EU privacy), IT Act 2000 (India).</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Unit 4 -->
+      <div class="unit-card u4">
+        <div class="unit-title"><span>🔄</span> Unit 4: DevOps & Software Testing</div>
+        <div class="notes-grid">
+          <ul class="notes-list">
+            <li><span class="topic-head">DevOps:</span> Development (Dev) + Operations (Ops). Culture and practices emphasizing collaboration, automation, and CI/CD for rapid delivery.</li>
+            <li><span class="topic-head">DevOps Lifecycle:</span> 8 phases: Plan → Develop → Build → Test → Release → Deploy → Operate → Monitor. A continuous cycle.</li>
+            <li><span class="topic-head">CI/CD:</span> <strong>Continuous Integration</strong> (auto-merging & testing code daily). <strong>Continuous Delivery</strong> (code is always deployable, manual approval). <strong>Continuous Deployment</strong> (fully automated release to production).</li>
+            <li><span class="topic-head">DevOps Tools:</span> <strong>Git</strong> (Version Control), <strong>Docker</strong> (Containerization), <strong>Kubernetes</strong> (Container Orchestration), <strong>Jenkins</strong> (CI/CD server), <strong>Maven</strong> (Build tool), <strong>Ansible/Puppet</strong> (Config management).</li>
+            <li><span class="topic-head">Software Testing:</span> Verifying a software application is bug-free, meets requirements, and satisfies users.</li>
+          </ul>
+          <ul class="notes-list">
+            <li><span class="topic-head">Testing Types:</span> <strong>Black Box</strong> (testing inputs/outputs without code knowledge). <strong>White Box</strong> (testing internal logic/code structure). <strong>Gray Box</strong> (hybrid).</li>
+            <li><span class="topic-head">Testing Levels:</span> <strong>Unit</strong> (individual components) → <strong>Integration</strong> (modules combined) → <strong>System</strong> (complete system) → <strong>Acceptance</strong> (end-user validation).</li>
+            <li><span class="topic-head">Manual vs Automation:</span> Manual (human testers, good for UI). Automation (scripts/tools like Selenium, good for repetitive/regression testing).</li>
+            <li><span class="topic-head">Test Case Design:</span> Includes ID, description, steps, expected result. Methods: Boundary Value Analysis (testing edges), Equivalence Partitioning.</li>
+            <li><span class="topic-head">Defect Life Cycle:</span> New → Assigned → Open → Fixed → Retest → Verified → Closed. (Deferred = postponed, Rejected = not a bug).</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Unit 5 -->
+      <div class="unit-card u5">
+        <div class="unit-title"><span>☁️</span> Unit 5: Cloud Computing</div>
+        <div class="notes-grid">
+          <ul class="notes-list">
+            <li><span class="topic-head">Cloud Computing:</span> On-demand delivery of computing services (servers, storage, databases, networking) over the internet with pay-as-you-go pricing.</li>
+            <li><span class="topic-head">Key Characteristics:</span> Broad network access, Resource pooling, Rapid elasticity (scaling up/down), Measured service.</li>
+            <li><span class="topic-head">IaaS (Infrastructure as a Service):</span> Renting IT infrastructure (servers, VMs, storage). You manage the OS and apps. Example: AWS EC2, Azure VMs.</li>
+            <li><span class="topic-head">PaaS (Platform as a Service):</span> Provides an environment/framework for developers to build apps without managing underlying infrastructure. Example: Heroku, Google App Engine.</li>
+            <li><span class="topic-head">SaaS (Software as a Service):</span> Delivering software applications over the internet on a subscription basis. You just use the app. Example: Gmail, Salesforce.</li>
+          </ul>
+          <ul class="notes-list">
+            <li><span class="topic-head">Public Cloud:</span> Owned by third-party providers (AWS, Google). Shared resources, cost-effective, scalable.</li>
+            <li><span class="topic-head">Private Cloud:</span> Used exclusively by one organization. High security, maintained on a private network.</li>
+            <li><span class="topic-head">Hybrid Cloud:</span> Combines public and private clouds, allowing data to be shared between them for flexibility.</li>
+            <li><span class="topic-head">Virtualization:</span> Creating virtual versions of computing resources using a <strong>Hypervisor</strong>.</li>
+            <li><span class="topic-head">Hypervisor Types:</span> <strong>Type 1 (Bare Metal):</strong> Runs directly on hardware (e.g., VMware ESXi). <strong>Type 2 (Hosted):</strong> Runs on top of a host OS (e.g., VirtualBox, VMware Workstation).</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Unit 6 -->
+      <div class="unit-card u6">
+        <div class="unit-title"><span>🌐</span> Unit 6: Web Dev & UI/UX</div>
+        <div class="notes-grid">
+          <ul class="notes-list">
+            <li><span class="topic-head">Web Development:</span> Building/maintaining websites. Consists of Frontend (client-side), Backend (server-side), and Full Stack (both).</li>
+            <li><span class="topic-head">UI (User Interface):</span> The visual part. Focuses on aesthetics, layout, buttons, interactivity. Types: GUI (Graphical), VUI (Voice), MDI (Menu-driven).</li>
+            <li><span class="topic-head">UX (User Experience):</span> The feel and journey. Focuses on usability, logic, ease of use, and overall user satisfaction.</li>
+            <li><span class="topic-head">Frontend Trinity:</span> <strong>HTML</strong> (Skeleton/Structure), <strong>CSS</strong> (Styling/Appearance), <strong>JavaScript</strong> (Behavior/Interactivity).</li>
+            <li><span class="topic-head">Backend:</span> Server-side logic & database interactions. Technologies: PHP, Node.js, Python, Java.</li>
+            <li><span class="topic-head">PHP:</span> Server-side scripting language (.php files). Executes on server, returns HTML to browser. Open-source.</li>
+          </ul>
+          <ul class="notes-list">
+            <li><span class="topic-head">CRUD Operations:</span> The 4 basic database functions: <strong>C</strong>reate, <strong>R</strong>ead, <strong>U</strong>pdate, <strong>D</strong>elete.</li>
+            <li><span class="topic-head">Responsive Design:</span> Adapting layout to screen sizes using <strong>CSS Media Queries</strong>. "Mobile-first" = design for smallest screens first.</li>
+            <li><span class="topic-head">SPA (Single Page Application):</span> Rewrites current page dynamically rather than loading new entire pages (e.g., Gmail, Netflix). Faster UX.</li>
+            <li><span class="topic-head">AR (Augmented Reality):</span> Overlays digital objects onto the real world (partially immersive). Uses SLAM (Simultaneous Localization & Mapping). E.g., Pokémon GO.</li>
+            <li><span class="topic-head">VR (Virtual Reality):</span> Creates a completely simulated 3D environment replacing reality (fully immersive). Requires VR headsets.</li>
+            <li><span class="topic-head">Tools & IDEs:</span> VS Code (popular code editor), Unity/Unreal Engine (AR/VR dev), Figma (UI/UX design).</li>
+          </ul>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script>
+  function updateHoles() {
+    const h = document.querySelector('.notebook-page').offsetHeight;
+    const count = Math.max(3, Math.floor(h / 60));
+    document.getElementById('holes').innerHTML = Array.from({length: count}, () => '<div class="spiral-hole"></div>').join('');
+  }
+  window.addEventListener('load', updateHoles);
+  window.addEventListener('resize', updateHoles);
+</script>
+</body>
+</html>

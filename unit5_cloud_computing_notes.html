@@ -1,0 +1,1865 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Unit V – Cloud Computing | CSE 121 Notes</title>
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;500;600;700&family=Kalam:wght@300;400;700&family=Nunito:ital,wght@0,300;0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #1a1a2e;
+    --ink-light: #2d3561;
+    --paper: #fefefe;
+    --paper-off: #f7f8fc;
+    --line: #c8d8f0;
+    --line-subtle: #e4edf8;
+    --accent: #3a7bd5;
+    --accent-light: #e8f0fb;
+    --accent-soft: #ddeeff;
+    --highlight-yellow: #fff9c4;
+    --highlight-green: #e8f5e9;
+    --highlight-red: #fce4ec;
+    --highlight-purple: #f3e5f5;
+    --shadow: rgba(58,123,213,0.10);
+    --shadow-deep: rgba(58,123,213,0.18);
+    --correct: #388e3c;
+    --wrong: #c62828;
+    --correct-bg: #e8f5e9;
+    --wrong-bg: #fce4ec;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'Nunito', sans-serif;
+    background: #dce6f5;
+    min-height: 100vh;
+    color: var(--ink);
+  }
+
+  /* ── PROGRESS BAR ── */
+  #progress-bar {
+    position: fixed; top: 0; left: 0; height: 4px; width: 0%;
+    background: linear-gradient(90deg, var(--accent), #6ab0f5);
+    z-index: 9999; transition: width 0.2s;
+    border-radius: 0 2px 2px 0;
+  }
+
+  /* ── SIDEBAR ── */
+  #sidebar {
+    position: fixed; top: 0; left: 0; width: 270px; height: 100vh;
+    background: #fff; border-right: 1.5px solid var(--line);
+    overflow-y: auto; z-index: 200;
+    transform: translateX(-100%);
+    transition: transform 0.35s cubic-bezier(.4,0,.2,1);
+    box-shadow: 2px 0 20px var(--shadow);
+    padding: 0 0 30px 0;
+  }
+  #sidebar.open { transform: translateX(0); }
+  #sidebar-header {
+    background: var(--accent); color: #fff;
+    padding: 18px 18px 14px;
+    font-family: 'Caveat', cursive; font-size: 1.3rem;
+    display: flex; justify-content: space-between; align-items: center;
+    position: sticky; top: 0; z-index: 1;
+  }
+  #sidebar-close {
+    background: none; border: none; color: #fff; font-size: 1.4rem;
+    cursor: pointer; line-height: 1;
+  }
+  .sidebar-section { padding: 6px 0; }
+  .sidebar-section-label {
+    font-size: 0.68rem; font-weight: 700; color: var(--accent);
+    text-transform: uppercase; letter-spacing: 1.5px;
+    padding: 10px 18px 4px;
+  }
+  .sidebar-link {
+    display: block; padding: 7px 18px 7px 22px;
+    color: var(--ink-light); text-decoration: none;
+    font-size: 0.88rem; font-weight: 600;
+    border-left: 3px solid transparent;
+    transition: all 0.2s;
+  }
+  .sidebar-link:hover, .sidebar-link.active {
+    background: var(--accent-light);
+    border-left-color: var(--accent);
+    color: var(--accent);
+  }
+  .sidebar-sub-link {
+    display: block; padding: 5px 18px 5px 32px;
+    color: #556; text-decoration: none;
+    font-size: 0.81rem;
+    transition: background 0.2s;
+  }
+  .sidebar-sub-link:hover { background: var(--line-subtle); }
+
+  /* ── OVERLAY ── */
+  #overlay {
+    display: none; position: fixed; inset: 0;
+    background: rgba(0,0,0,0.25); z-index: 199;
+  }
+  #overlay.show { display: block; }
+
+  /* ── TOP NAV ── */
+  #topnav {
+    position: sticky; top: 4px; z-index: 100;
+    max-width: 900px; margin: 0 auto 0;
+    background: rgba(255,255,255,0.92);
+    border-radius: 14px; border: 1.5px solid var(--line);
+    padding: 10px 22px;
+    display: flex; align-items: center; gap: 14px;
+    backdrop-filter: blur(8px);
+    box-shadow: 0 4px 18px var(--shadow);
+  }
+  #menu-btn {
+    background: none; border: none; cursor: pointer;
+    font-size: 1.3rem; color: var(--accent); line-height: 1;
+    padding: 2px 6px; border-radius: 6px;
+    transition: background 0.2s;
+  }
+  #menu-btn:hover { background: var(--accent-light); }
+  .topnav-title {
+    font-family: 'Caveat', cursive; font-size: 1.25rem;
+    color: var(--accent); font-weight: 700; flex: 1;
+  }
+  .topnav-progress-text {
+    font-size: 0.78rem; color: #778; font-weight: 600;
+  }
+
+  /* ── MAIN WRAPPER ── */
+  #main {
+    max-width: 900px; margin: 0 auto;
+    padding: 10px 10px 60px;
+  }
+
+  /* ── NOTEBOOK PAGES ── */
+  .page {
+    background: var(--paper);
+    border-radius: 4px 16px 16px 4px;
+    box-shadow: 3px 4px 22px var(--shadow-deep), -1px 0 0 #c8d8f0;
+    margin-bottom: 28px;
+    overflow: hidden;
+    position: relative;
+    opacity: 0; transform: translateY(24px);
+    transition: opacity 0.55s ease, transform 0.55s ease;
+  }
+  .page.visible { opacity: 1; transform: translateY(0); }
+
+  /* left margin red line */
+  .page::before {
+    content: ''; position: absolute;
+    left: 48px; top: 0; bottom: 0; width: 2px;
+    background: rgba(220,100,100,0.28);
+  }
+  /* ruled lines */
+  .page-body {
+    padding: 30px 36px 36px 66px;
+    background-image: repeating-linear-gradient(
+      to bottom,
+      transparent,
+      transparent 31px,
+      var(--line-subtle) 31px,
+      var(--line-subtle) 32px
+    );
+    background-size: 100% 32px;
+    min-height: 100px;
+  }
+
+  /* ── COVER PAGE ── */
+  .cover-page {
+    background: linear-gradient(135deg, #e8f0fb 0%, #fff 60%, #f0f7ff 100%);
+    text-align: center;
+    padding: 56px 36px 48px;
+  }
+  .cover-page::before { display: none; }
+  .cover-badge {
+    display: inline-block;
+    background: var(--accent); color: #fff;
+    font-family: 'Caveat', cursive; font-size: 1rem;
+    padding: 5px 18px; border-radius: 20px;
+    margin-bottom: 16px; letter-spacing: 1px;
+  }
+  .cover-unit {
+    font-family: 'Kalam', cursive; font-size: 3.2rem;
+    color: var(--ink); line-height: 1.15; margin-bottom: 8px;
+  }
+  .cover-unit span { color: var(--accent); }
+  .cover-subject {
+    font-family: 'Nunito', sans-serif; font-size: 1rem;
+    color: #778; font-weight: 600; letter-spacing: 0.5px;
+    margin-bottom: 24px;
+  }
+  .cover-divider {
+    width: 80px; height: 3px; background: var(--accent);
+    border-radius: 3px; margin: 0 auto 20px;
+  }
+  .cover-topics {
+    display: flex; flex-wrap: wrap; gap: 8px;
+    justify-content: center; max-width: 600px; margin: 0 auto 28px;
+  }
+  .cover-topic-chip {
+    background: var(--accent-soft); color: var(--ink-light);
+    font-size: 0.82rem; font-weight: 600;
+    padding: 5px 14px; border-radius: 20px;
+    border: 1px solid var(--line);
+  }
+  .cover-meta {
+    font-size: 0.82rem; color: #aab;
+    font-family: 'Kalam', cursive;
+  }
+
+  /* ── SECTION HEADINGS ── */
+  .section-heading {
+    font-family: 'Caveat', cursive; font-size: 2rem;
+    color: var(--accent); font-weight: 700;
+    margin-bottom: 18px; padding-bottom: 8px;
+    border-bottom: 2.5px solid var(--line);
+    display: flex; align-items: center; gap: 10px;
+  }
+  .section-heading .hnum {
+    background: var(--accent); color: #fff;
+    font-size: 1rem; width: 30px; height: 30px;
+    border-radius: 50%; display: grid; place-items: center;
+    flex-shrink: 0;
+  }
+
+  /* ── TOPIC HEADINGS ── */
+  .topic-heading {
+    font-family: 'Kalam', cursive; font-size: 1.45rem;
+    color: var(--ink); margin: 26px 0 10px;
+    padding-left: 12px;
+    border-left: 4px solid var(--accent);
+  }
+  .sub-heading {
+    font-family: 'Kalam', cursive; font-size: 1.12rem;
+    color: var(--ink-light); margin: 18px 0 7px;
+    font-weight: 700;
+  }
+
+  /* ── BODY TEXT ── */
+  p { line-height: 1.85; margin-bottom: 10px; font-size: 0.97rem; }
+  li { line-height: 1.8; margin-bottom: 4px; font-size: 0.95rem; }
+  ul, ol { padding-left: 22px; margin-bottom: 12px; }
+  ul li::marker { color: var(--accent); }
+
+  /* ── DEFINITION BOX ── */
+  .def-box {
+    background: var(--accent-light);
+    border-left: 5px solid var(--accent);
+    border-radius: 0 10px 10px 0;
+    padding: 14px 18px; margin: 14px 0;
+  }
+  .def-box .def-label {
+    font-family: 'Caveat', cursive; font-size: 1.05rem;
+    color: var(--accent); font-weight: 700; margin-bottom: 4px;
+  }
+  .def-box p { margin: 0; font-size: 0.94rem; }
+
+  /* ── NOTE BOX ── */
+  .note-box {
+    background: var(--highlight-yellow);
+    border: 1.5px dashed #f5c518;
+    border-radius: 10px; padding: 13px 16px; margin: 14px 0;
+    position: relative;
+  }
+  .note-box::before {
+    content: '📌 Note'; font-family: 'Caveat', cursive;
+    font-size: 0.95rem; font-weight: 700; color: #b8860b;
+    display: block; margin-bottom: 5px;
+  }
+  .note-box p { margin: 0; font-size: 0.93rem; }
+
+  /* ── EXAM TIP ── */
+  .exam-tip {
+    background: var(--highlight-green);
+    border: 1.5px solid #81c784;
+    border-radius: 10px; padding: 13px 16px; margin: 14px 0;
+  }
+  .exam-tip::before {
+    content: '🎯 Exam Tip'; font-family: 'Caveat', cursive;
+    font-size: 0.95rem; font-weight: 700; color: #2e7d32;
+    display: block; margin-bottom: 5px;
+  }
+  .exam-tip p { margin: 0; font-size: 0.93rem; }
+
+  /* ── IMPORTANT BOX ── */
+  .important-box {
+    background: var(--highlight-red);
+    border: 1.5px solid #ef9a9a;
+    border-radius: 10px; padding: 13px 16px; margin: 14px 0;
+  }
+  .important-box::before {
+    content: '⚠️ Important'; font-family: 'Caveat', cursive;
+    font-size: 0.95rem; font-weight: 700; color: #b71c1c;
+    display: block; margin-bottom: 5px;
+  }
+  .important-box p { margin: 0; font-size: 0.93rem; }
+
+  /* ── TABLE ── */
+  .note-table-wrap { overflow-x: auto; margin: 14px 0; }
+  .note-table {
+    width: 100%; border-collapse: collapse;
+    font-size: 0.9rem;
+  }
+  .note-table th {
+    background: var(--accent); color: #fff;
+    padding: 9px 13px; text-align: left;
+    font-family: 'Kalam', cursive; font-size: 1rem;
+  }
+  .note-table td {
+    padding: 8px 13px; border-bottom: 1px solid var(--line);
+  }
+  .note-table tr:nth-child(even) td { background: var(--line-subtle); }
+  .note-table tr:hover td { background: var(--accent-soft); }
+
+  /* ── COLLAPSIBLE ── */
+  .collapsible-btn {
+    width: 100%; background: var(--accent-light);
+    border: 1.5px solid var(--line); border-radius: 10px;
+    padding: 12px 18px; cursor: pointer; text-align: left;
+    font-family: 'Kalam', cursive; font-size: 1.08rem;
+    color: var(--ink-light); font-weight: 700;
+    display: flex; justify-content: space-between; align-items: center;
+    margin: 12px 0 0; transition: background 0.2s;
+  }
+  .collapsible-btn:hover { background: var(--accent-soft); }
+  .collapsible-btn .arrow {
+    transition: transform 0.3s; font-size: 1rem;
+  }
+  .collapsible-btn.open .arrow { transform: rotate(180deg); }
+  .collapsible-content {
+    max-height: 0; overflow: hidden;
+    transition: max-height 0.45s cubic-bezier(.4,0,.2,1), padding 0.3s;
+    padding: 0 18px;
+    background: var(--paper-off);
+    border: 1.5px solid var(--line); border-top: none;
+    border-radius: 0 0 10px 10px; margin-bottom: 4px;
+  }
+  .collapsible-content.open {
+    max-height: 2000px; padding: 14px 18px;
+  }
+
+  /* ── SUMMARY BOX ── */
+  .summary-box {
+    background: linear-gradient(135deg, #e3f0ff, #f0f8ff);
+    border: 2px solid var(--accent); border-radius: 12px;
+    padding: 18px 22px; margin: 22px 0;
+  }
+  .summary-box .sum-title {
+    font-family: 'Caveat', cursive; font-size: 1.2rem;
+    color: var(--accent); font-weight: 700; margin-bottom: 10px;
+  }
+
+  /* ── HIGHLIGHT TEXT ── */
+  .hl { background: var(--highlight-yellow); padding: 1px 4px; border-radius: 3px; }
+  .hl-blue { background: var(--accent-soft); padding: 1px 4px; border-radius: 3px; }
+  .hl-green { background: var(--highlight-green); padding: 1px 4px; border-radius: 3px; }
+  strong { color: var(--ink); }
+
+  /* ── REVISION SECTION ── */
+  .revision-grid {
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 14px; margin: 14px 0;
+  }
+  .revision-card {
+    background: var(--paper); border: 1.5px solid var(--line);
+    border-radius: 12px; padding: 14px 16px;
+    box-shadow: 2px 3px 10px var(--shadow);
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+  .revision-card:hover {
+    transform: translateY(-3px); box-shadow: 3px 6px 18px var(--shadow-deep);
+  }
+  .revision-card .rc-title {
+    font-family: 'Kalam', cursive; font-size: 1rem;
+    color: var(--accent); margin-bottom: 6px; font-weight: 700;
+  }
+  .revision-card p { font-size: 0.85rem; margin: 0; line-height: 1.6; }
+
+  /* ── MCQ SECTION ── */
+  .mcq-header {
+    text-align: center; padding: 40px 30px 28px;
+    background: linear-gradient(135deg, #e8f0fb, #fff8f0);
+  }
+  .mcq-header h2 {
+    font-family: 'Caveat', cursive; font-size: 2.4rem;
+    color: var(--accent); margin-bottom: 6px;
+  }
+  .mcq-header p { color: #778; font-size: 0.92rem; }
+  .mcq-stats {
+    display: flex; gap: 20px; justify-content: center; margin-top: 16px;
+    flex-wrap: wrap;
+  }
+  .mcq-stat {
+    background: var(--accent-light); border-radius: 10px;
+    padding: 8px 18px; text-align: center;
+  }
+  .mcq-stat .val {
+    font-family: 'Caveat', cursive; font-size: 1.5rem;
+    color: var(--accent); font-weight: 700;
+  }
+  .mcq-stat .lbl { font-size: 0.75rem; color: #778; }
+
+  /* MCQ tracker */
+  .mcq-tracker {
+    display: flex; flex-wrap: wrap; gap: 6px;
+    padding: 16px 20px; background: var(--paper-off);
+    border-bottom: 1px solid var(--line);
+  }
+  .tracker-dot {
+    width: 28px; height: 28px; border-radius: 50%;
+    border: 2px solid var(--line);
+    display: grid; place-items: center;
+    font-size: 0.72rem; font-weight: 700; cursor: pointer;
+    transition: all 0.2s; background: #fff;
+  }
+  .tracker-dot.answered { background: var(--accent); color: #fff; border-color: var(--accent); }
+  .tracker-dot.correct { background: var(--correct); color: #fff; border-color: var(--correct); }
+  .tracker-dot.wrong { background: var(--wrong); color: #fff; border-color: var(--wrong); }
+  .tracker-dot.current { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
+
+  /* MCQ card */
+  .mcq-body { padding: 24px 30px; }
+  .mcq-question-card {
+    background: var(--paper);
+    border: 1.5px solid var(--line);
+    border-radius: 14px; overflow: hidden;
+    box-shadow: 2px 4px 16px var(--shadow);
+    display: none;
+  }
+  .mcq-question-card.active { display: block; animation: fadeSlide 0.35s ease; }
+  @keyframes fadeSlide {
+    from { opacity: 0; transform: translateX(20px); }
+    to { opacity: 1; transform: translateX(0); }
+  }
+  .mcq-q-header {
+    background: var(--accent-light);
+    padding: 14px 20px;
+    display: flex; align-items: center; gap: 12px;
+  }
+  .mcq-q-num {
+    background: var(--accent); color: #fff;
+    font-family: 'Caveat', cursive; font-size: 1rem;
+    width: 34px; height: 34px; border-radius: 50%;
+    display: grid; place-items: center; flex-shrink: 0;
+  }
+  .mcq-q-text {
+    font-family: 'Kalam', cursive; font-size: 1.08rem;
+    color: var(--ink); line-height: 1.5;
+  }
+  .mcq-options { padding: 16px 20px; display: flex; flex-direction: column; gap: 10px; }
+  .mcq-option {
+    display: flex; align-items: flex-start; gap: 10px;
+    padding: 10px 14px; border-radius: 10px;
+    border: 1.5px solid var(--line);
+    cursor: pointer; transition: all 0.2s;
+    font-size: 0.93rem; background: #fff;
+  }
+  .mcq-option:hover { background: var(--accent-soft); border-color: var(--accent); }
+  .mcq-option.selected { border-color: var(--accent); background: var(--accent-light); }
+  .mcq-option.correct { background: var(--correct-bg); border-color: var(--correct); }
+  .mcq-option.wrong { background: var(--wrong-bg); border-color: var(--wrong); }
+  .opt-letter {
+    background: var(--line-subtle); border-radius: 6px;
+    width: 24px; height: 24px; display: grid; place-items: center;
+    font-family: 'Kalam', cursive; font-size: 0.9rem; font-weight: 700;
+    flex-shrink: 0; color: var(--ink-light);
+  }
+  .mcq-option.correct .opt-letter { background: var(--correct); color: #fff; }
+  .mcq-option.wrong .opt-letter { background: var(--wrong); color: #fff; }
+
+  .mcq-explanation {
+    margin: 0 20px 16px;
+    background: var(--highlight-green);
+    border: 1.5px solid #a5d6a7;
+    border-radius: 10px; padding: 12px 16px;
+    font-size: 0.9rem; display: none;
+    animation: fadeIn 0.3s ease;
+  }
+  .mcq-explanation.show { display: block; }
+  .mcq-explanation strong { color: var(--correct); }
+
+  .mcq-nav {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 14px 20px 20px; border-top: 1px solid var(--line-subtle);
+  }
+  .mcq-nav-btn {
+    background: var(--accent); color: #fff;
+    border: none; border-radius: 10px;
+    padding: 9px 22px; font-family: 'Kalam', cursive; font-size: 1rem;
+    cursor: pointer; transition: background 0.2s, transform 0.15s;
+  }
+  .mcq-nav-btn:hover { background: #2563ba; transform: scale(1.04); }
+  .mcq-nav-btn:disabled { background: #ccc; cursor: not-allowed; transform: none; }
+  .mcq-progress-label {
+    font-family: 'Caveat', cursive; font-size: 1.1rem; color: #778;
+  }
+
+  @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+  /* ── SCORE CARD ── */
+  .score-card {
+    display: none; text-align: center; padding: 40px 30px;
+    background: linear-gradient(135deg, #e8f5e9, #e3f2fd);
+    border-top: 1px solid var(--line);
+  }
+  .score-card.show { display: block; animation: fadeIn 0.5s ease; }
+  .score-big {
+    font-family: 'Caveat', cursive; font-size: 4rem;
+    color: var(--accent); line-height: 1;
+  }
+  .score-msg { font-size: 1.1rem; margin: 12px 0 20px; color: #445; }
+
+  /* ── TOC ── */
+  .toc-grid {
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(200px,1fr));
+    gap: 10px; margin-top: 14px;
+  }
+  .toc-item {
+    background: var(--accent-soft); border-radius: 10px;
+    padding: 10px 14px; text-decoration: none;
+    color: var(--ink-light); font-size: 0.88rem; font-weight: 600;
+    border: 1.5px solid var(--line);
+    transition: all 0.2s;
+    display: flex; align-items: center; gap: 7px;
+  }
+  .toc-item:hover {
+    background: var(--accent); color: #fff;
+    border-color: var(--accent); transform: translateY(-2px);
+  }
+
+  /* Responsive */
+  @media (max-width: 640px) {
+    .page-body { padding: 22px 16px 26px 46px; }
+    .cover-unit { font-size: 2.2rem; }
+    .section-heading { font-size: 1.6rem; }
+    #topnav { padding: 8px 12px; }
+    .mcq-body { padding: 14px 14px; }
+    .mcq-q-header { padding: 12px 14px; }
+    .mcq-options { padding: 12px 14px; }
+  }
+</style>
+</head>
+<body>
+<div id="progress-bar"></div>
+
+<!-- Sidebar -->
+<div id="sidebar">
+  <div id="sidebar-header">
+    📒 Unit V — Contents
+    <button id="sidebar-close">✕</button>
+  </div>
+  <div class="sidebar-section">
+    <div class="sidebar-section-label">Overview</div>
+    <a class="sidebar-link" href="#cover">Cover Page</a>
+    <a class="sidebar-link" href="#toc">Table of Contents</a>
+  </div>
+  <div class="sidebar-section">
+    <div class="sidebar-section-label">Notes</div>
+    <a class="sidebar-link" href="#intro">1. Introduction</a>
+    <a class="sidebar-link" href="#uses">2. Uses in Application Services</a>
+    <a class="sidebar-link" href="#deployment">3. Platform Deployments</a>
+    <a class="sidebar-link" href="#cloud-models">4. Cloud Deployment Models</a>
+    <a class="sidebar-sub-link" href="#public-cloud">↳ Public Cloud</a>
+    <a class="sidebar-sub-link" href="#private-cloud">↳ Private Cloud</a>
+    <a class="sidebar-sub-link" href="#hybrid-cloud">↳ Hybrid Cloud</a>
+    <a class="sidebar-sub-link" href="#community-cloud">↳ Community Cloud</a>
+    <a class="sidebar-link" href="#service-models">5. Cloud Service Models</a>
+    <a class="sidebar-sub-link" href="#iaas">↳ IaaS</a>
+    <a class="sidebar-sub-link" href="#paas">↳ PaaS</a>
+    <a class="sidebar-sub-link" href="#saas">↳ SaaS</a>
+    <a class="sidebar-link" href="#analytics">6. Data Analytics in Cloud</a>
+    <a class="sidebar-link" href="#virtualization">7. Virtualization</a>
+    <a class="sidebar-link" href="#tools">8. Tools &amp; Techniques</a>
+    <a class="sidebar-link" href="#jobs">9. Job Roles &amp; Skillset</a>
+    <a class="sidebar-link" href="#revision">10. Revision</a>
+  </div>
+  <div class="sidebar-section">
+    <div class="sidebar-section-label">Practice</div>
+    <a class="sidebar-link" href="#mcq">50 MCQs</a>
+  </div>
+</div>
+<div id="overlay"></div>
+
+<!-- Top Nav -->
+<div id="topnav">
+  <button id="menu-btn">☰</button>
+  <span class="topnav-title">Unit V – Cloud Computing</span>
+  <span class="topnav-progress-text" id="read-progress">0% read</span>
+</div>
+
+<div id="main">
+
+<!-- ══════════════ COVER ══════════════ -->
+<section class="page" id="cover">
+  <div class="cover-page">
+    <div class="cover-badge">CSE 121 · Session 2025–26</div>
+    <div class="cover-unit">Unit <span>V</span><br>Cloud Computing</div>
+    <div class="cover-subject">Orientation to Computing – II &nbsp;|&nbsp; B.Tech CSE 1st Year</div>
+    <div class="cover-divider"></div>
+    <div class="cover-topics">
+      <span class="cover-topic-chip">Introduction to Cloud</span>
+      <span class="cover-topic-chip">Uses in Applications</span>
+      <span class="cover-topic-chip">Platform Deployments</span>
+      <span class="cover-topic-chip">Deployment Models</span>
+      <span class="cover-topic-chip">Service Models (IaaS/PaaS/SaaS)</span>
+      <span class="cover-topic-chip">Data Analytics</span>
+      <span class="cover-topic-chip">Virtualization</span>
+      <span class="cover-topic-chip">Tools &amp; Techniques</span>
+      <span class="cover-topic-chip">Job Roles &amp; Skillset</span>
+    </div>
+    <div class="cover-meta">✍️ Detailed · Exam-Oriented · Interactive · 50 MCQs</div>
+  </div>
+</section>
+
+<!-- ══════════════ TABLE OF CONTENTS ══════════════ -->
+<section class="page" id="toc">
+  <div class="page-body">
+    <div class="section-heading"><span class="hnum">📋</span>Table of Contents</div>
+    <div class="toc-grid">
+      <a class="toc-item" href="#intro">☁️ Introduction</a>
+      <a class="toc-item" href="#uses">🔌 Uses in App Services</a>
+      <a class="toc-item" href="#deployment">🖥️ Platform Deployments</a>
+      <a class="toc-item" href="#cloud-models">🏗️ Deployment Models</a>
+      <a class="toc-item" href="#service-models">🛠️ Service Models</a>
+      <a class="toc-item" href="#analytics">📊 Data Analytics</a>
+      <a class="toc-item" href="#virtualization">💻 Virtualization</a>
+      <a class="toc-item" href="#tools">🔧 Tools &amp; Techniques</a>
+      <a class="toc-item" href="#jobs">💼 Job Roles &amp; Skills</a>
+      <a class="toc-item" href="#revision">🔄 Revision</a>
+      <a class="toc-item" href="#mcq">❓ 50 MCQs</a>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════ SECTION 1 – INTRODUCTION ══════════════ -->
+<section class="page" id="intro">
+  <div class="page-body">
+    <div class="section-heading"><span class="hnum">1</span>Introduction to Cloud Computing</div>
+
+    <div class="def-box">
+      <div class="def-label">📖 Definition</div>
+      <p><strong>Cloud Computing</strong> is the delivery of computing services — including servers, storage, databases, networking, software, analytics, and intelligence — <span class="hl">over the Internet ("the cloud")</span> to offer faster innovation, flexible resources, and economies of scale. You pay only for what you use.</p>
+    </div>
+
+    <p>Instead of buying and maintaining physical servers or data centers in your own office, you can <strong>access technology services, such as computing power, storage, and databases, on an as-needed basis</strong> from a cloud provider.</p>
+
+    <div class="topic-heading">Why Cloud Computing? (Need)</div>
+    <ul>
+      <li><strong>Cost Saving:</strong> Eliminates the capital expense of buying hardware and software and setting up on-site data centers. No need for servers, round-the-clock electricity, or IT experts to manage infrastructure.</li>
+      <li><strong>Speed:</strong> Most cloud computing services are provided self-service and on demand. Vast amounts of computing resources can be provisioned in minutes.</li>
+      <li><strong>Global Scale:</strong> Cloud computing services include the ability to scale elastically. In cloud speak, that means delivering the right amount of IT resources — more or less computing power, storage — right when needed from the right location.</li>
+      <li><strong>Productivity:</strong> On-site data centers typically require a lot of "racking and stacking" — hardware setup, software patching, and other time-consuming IT management chores. Cloud frees up IT teams to focus on important business goals.</li>
+      <li><strong>Performance:</strong> The biggest cloud services run on a worldwide network of secure data centers, which are upgraded regularly to the latest generation of fast and efficient computing hardware.</li>
+      <li><strong>Reliability:</strong> Cloud computing makes data backup, disaster recovery, and business continuity easier and less expensive, because data can be mirrored at multiple redundant sites on the cloud provider's network.</li>
+      <li><strong>Security:</strong> Many cloud providers offer broad sets of policies, technologies, and controls that strengthen your security posture overall.</li>
+    </ul>
+
+    <div class="topic-heading">Key Characteristics of Cloud Computing</div>
+    <div class="note-table-wrap">
+      <table class="note-table">
+        <tr><th>Characteristic</th><th>Meaning</th></tr>
+        <tr><td>On-demand Self-service</td><td>A user can provision computing capabilities without human interaction from the provider.</td></tr>
+        <tr><td>Broad Network Access</td><td>Capabilities available over the network accessed through standard devices (laptops, mobiles).</td></tr>
+        <tr><td>Resource Pooling</td><td>Provider's computing resources are pooled to serve multiple consumers (multi-tenant model).</td></tr>
+        <tr><td>Rapid Elasticity</td><td>Resources can be rapidly and elastically provisioned — scale up/down quickly.</td></tr>
+        <tr><td>Measured Service</td><td>Resource usage is monitored, controlled, and reported — pay-as-you-go billing.</td></tr>
+      </table>
+    </div>
+
+    <div class="topic-heading">Brief History</div>
+    <ul>
+      <li><strong>1960s:</strong> John McCarthy proposed computing as a utility (like electricity).</li>
+      <li><strong>1990s:</strong> Salesforce.com delivered enterprise applications via websites (precursor to SaaS).</li>
+      <li><strong>2002:</strong> Amazon Web Services (AWS) launched storage, computation, and infrastructure services.</li>
+      <li><strong>2006:</strong> Amazon launched EC2 — Elastic Compute Cloud — allowing users to rent virtual computers.</li>
+      <li><strong>2008:</strong> Google App Engine launched (PaaS era began).</li>
+      <li><strong>2010:</strong> Microsoft Azure became commercially available.</li>
+      <li><strong>Present:</strong> Multi-cloud and hybrid cloud architectures dominate the enterprise landscape.</li>
+    </ul>
+
+    <div class="exam-tip">
+      <p>The 5 key characteristics of cloud computing (NIST definition) are very commonly asked in exams: On-demand Self-service, Broad Network Access, Resource Pooling, Rapid Elasticity, and Measured Service.</p>
+    </div>
+
+    <div class="topic-heading">Advantages of Cloud Computing</div>
+    <ul>
+      <li>Reduced IT costs — no need to buy expensive hardware.</li>
+      <li>Scalability — scale up or down as per business demand.</li>
+      <li>Business continuity — data backed up in multiple locations.</li>
+      <li>Collaboration efficiency — team members worldwide can access the same files.</li>
+      <li>Flexibility — staff can work from anywhere with internet access.</li>
+      <li>Automatic updates — provider handles software updates and patches.</li>
+      <li>Environmental sustainability — shared resources mean lower carbon footprint per user.</li>
+    </ul>
+
+    <div class="topic-heading">Disadvantages of Cloud Computing</div>
+    <ul>
+      <li>Requires internet connection — no internet means no access.</li>
+      <li>Security and privacy concerns — sensitive data stored on third-party servers.</li>
+      <li>Vendor lock-in — switching providers can be difficult.</li>
+      <li>Downtime risk — service outages by the provider affect all users.</li>
+      <li>Limited control — users do not manage underlying infrastructure.</li>
+      <li>Compliance issues — data stored in different countries may face legal challenges.</li>
+    </ul>
+
+    <div class="important-box">
+      <p>Cloud computing does NOT mean everything is free or infinitely fast. You pay for what you use, and performance depends on your internet connection and the provider's network.</p>
+    </div>
+
+  </div>
+</section>
+
+<!-- ══════════════ SECTION 2 – USES ══════════════ -->
+<section class="page" id="uses">
+  <div class="page-body">
+    <div class="section-heading"><span class="hnum">2</span>Uses of Cloud Computing in Application Services</div>
+
+    <p>Cloud computing is used in almost every domain today. Below are the major areas where cloud services power real-world applications:</p>
+
+    <div class="topic-heading">1. Storage and Backup</div>
+    <p>Cloud storage allows users to save data on remote servers accessed via the internet. Examples: <span class="hl-blue">Google Drive, Dropbox, OneDrive, Amazon S3</span>. Files can be accessed from anywhere, on any device. Cloud backup ensures data recovery in case of hardware failure.</p>
+
+    <div class="topic-heading">2. Email and Communication</div>
+    <p>Email services like <span class="hl-blue">Gmail (Google Workspace)</span> and <span class="hl-blue">Microsoft Outlook 365</span> are entirely cloud-based. Collaboration tools like <strong>Microsoft Teams, Slack, Zoom</strong> run on cloud infrastructure.</p>
+
+    <div class="topic-heading">3. Streaming Services</div>
+    <p><strong>Netflix, YouTube, Spotify, Amazon Prime Video</strong> — all run on cloud platforms. They use cloud computing to stream audio and video to millions of concurrent users globally without needing each user to download content.</p>
+
+    <div class="topic-heading">4. E-commerce</div>
+    <p>Websites like <strong>Amazon, Flipkart</strong> use cloud to handle variable traffic (huge spike during sales events). Cloud auto-scaling ensures the site does not crash during high demand.</p>
+
+    <div class="topic-heading">5. Healthcare</div>
+    <p>Electronic Health Records (EHR), telemedicine platforms, and medical imaging (like MRI analysis) use cloud. Cloud allows hospitals to share patient data securely across departments and cities. AI-powered diagnostics run on cloud platforms.</p>
+
+    <div class="topic-heading">6. Education</div>
+    <p>Online Learning Management Systems (LMS) like <strong>Google Classroom, Moodle, Coursera, NPTEL</strong> are cloud-based. Students and teachers can access course materials, assignments, and video lectures from anywhere.</p>
+
+    <div class="topic-heading">7. Banking and Finance</div>
+    <p>Banks use cloud for core banking, fraud detection, real-time payment processing. Fintech apps like <strong>Paytm, GPay, PhonePe</strong> depend on cloud infrastructure. Risk analytics and portfolio management are cloud-powered.</p>
+
+    <div class="topic-heading">8. Gaming</div>
+    <p>Cloud gaming platforms like <strong>Google Stadia, NVIDIA GeForce Now, Xbox Cloud Gaming</strong> allow users to play high-end games on low-end devices by processing everything on cloud servers.</p>
+
+    <div class="topic-heading">9. Artificial Intelligence & Machine Learning</div>
+    <p>Training ML models requires massive compute power. Platforms like <strong>AWS SageMaker, Google AI Platform, Azure ML</strong> provide cloud-based GPU clusters for training. Without cloud, AI research would be limited to well-funded organizations.</p>
+
+    <div class="topic-heading">10. Internet of Things (IoT)</div>
+    <p>IoT devices (smart home, wearables, industrial sensors) send data to the cloud for processing and storage. <strong>AWS IoT, Google Cloud IoT</strong> provide platforms for managing billions of connected devices.</p>
+
+    <div class="topic-heading">11. Social Media</div>
+    <p><strong>Facebook, Instagram, Twitter/X, LinkedIn</strong> — all run on massive cloud infrastructure. User posts, images, videos, and messages are stored and delivered through cloud servers.</p>
+
+    <div class="topic-heading">12. Government Services</div>
+    <p>E-governance portals, digital India initiatives, and public data repositories run on government cloud (GovCloud). India has its own <span class="hl-blue">MeghRaj (National Cloud)</span> for government services.</p>
+
+    <div class="summary-box">
+      <div class="sum-title">📝 Quick Summary — Uses of Cloud</div>
+      <p>Cloud computing powers: Storage &amp; Backup, Email, Streaming, E-commerce, Healthcare, Education, Banking, Gaming, AI/ML, IoT, Social Media, and Government Services. Basically — every major digital service you use today runs on cloud infrastructure!</p>
+    </div>
+
+  </div>
+</section>
+
+<!-- ══════════════ SECTION 3 – PLATFORM DEPLOYMENTS ══════════════ -->
+<section class="page" id="deployment">
+  <div class="page-body">
+    <div class="section-heading"><span class="hnum">3</span>Platform Deployments</div>
+
+    <p>Platform deployment in cloud computing refers to how and where the cloud platform is set up and operated. It deals with the <strong>physical and logical placement of cloud resources</strong> — whether on-premises, in a provider's data center, or a mix.</p>
+
+    <div class="topic-heading">On-Premises vs Cloud Deployment</div>
+    <div class="note-table-wrap">
+      <table class="note-table">
+        <tr><th>Aspect</th><th>On-Premises</th><th>Cloud Deployment</th></tr>
+        <tr><td>Location</td><td>In-house servers at your office/building</td><td>Provider's remote data centers</td></tr>
+        <tr><td>Capital Cost</td><td>Very high (buy hardware)</td><td>Low or zero (operational cost)</td></tr>
+        <tr><td>Maintenance</td><td>Done by your own IT team</td><td>Done by cloud provider</td></tr>
+        <tr><td>Scalability</td><td>Limited by physical hardware</td><td>Near-infinite scalability</td></tr>
+        <tr><td>Upfront Investment</td><td>High</td><td>Low (pay-as-you-go)</td></tr>
+        <tr><td>Control</td><td>Full control</td><td>Shared responsibility</td></tr>
+        <tr><td>Security</td><td>Fully in your hands</td><td>Shared with provider</td></tr>
+      </table>
+    </div>
+
+    <div class="topic-heading">Cloud Platform Deployment Layers</div>
+    <p>When deploying applications on cloud platforms, organizations go through the following stages:</p>
+    <ol>
+      <li><strong>Infrastructure Layer:</strong> Physical servers, storage, and networking (managed by provider in IaaS).</li>
+      <li><strong>Platform Layer:</strong> OS, runtime environment, middleware — for developers to build apps (PaaS).</li>
+      <li><strong>Application Layer:</strong> Software applications running for end users (SaaS).</li>
+    </ol>
+
+    <div class="topic-heading">Major Cloud Platforms</div>
+    <div class="note-table-wrap">
+      <table class="note-table">
+        <tr><th>Platform</th><th>Provider</th><th>Key Services</th></tr>
+        <tr><td>AWS (Amazon Web Services)</td><td>Amazon</td><td>EC2, S3, Lambda, RDS, SageMaker</td></tr>
+        <tr><td>Microsoft Azure</td><td>Microsoft</td><td>Azure VM, Blob Storage, Azure DevOps</td></tr>
+        <tr><td>Google Cloud Platform (GCP)</td><td>Google</td><td>Compute Engine, BigQuery, TensorFlow</td></tr>
+        <tr><td>IBM Cloud</td><td>IBM</td><td>Watson AI, Kubernetes, OpenShift</td></tr>
+        <tr><td>Oracle Cloud</td><td>Oracle</td><td>OCI, Autonomous Database</td></tr>
+        <tr><td>Alibaba Cloud</td><td>Alibaba</td><td>ECS, OSS, MaxCompute</td></tr>
+      </table>
+    </div>
+
+    <div class="note-box">
+      <p>AWS holds the largest market share in cloud (~33%), followed by Azure (~22%), then GCP (~11%). Together they are known as the "Big Three" of cloud computing.</p>
+    </div>
+
+    <div class="topic-heading">Cloud Regions and Availability Zones</div>
+    <ul>
+      <li><strong>Region:</strong> A geographical area that contains multiple data centers (e.g., Mumbai Region, US East Region). AWS has 30+ regions worldwide.</li>
+      <li><strong>Availability Zone (AZ):</strong> One or more discrete data centers within a region, each with redundant power, networking, and connectivity. Deploying across multiple AZs ensures high availability.</li>
+      <li><strong>Edge Locations:</strong> Mini data centers used by CDN (Content Delivery Networks) to cache content closer to end users for lower latency.</li>
+    </ul>
+
+    <div class="exam-tip">
+      <p>Remember: Region → contains multiple Availability Zones → each AZ has multiple data centers. This hierarchy is important for exam questions on high availability and disaster recovery.</p>
+    </div>
+
+  </div>
+</section>
+
+<!-- ══════════════ SECTION 4 – CLOUD DEPLOYMENT MODELS ══════════════ -->
+<section class="page" id="cloud-models">
+  <div class="page-body">
+    <div class="section-heading"><span class="hnum">4</span>Types of Cloud Deployment Models</div>
+
+    <p>The cloud deployment model defines <strong>where the cloud infrastructure is located</strong> and <strong>who can use it</strong>. There are four main deployment models:</p>
+
+    <!-- PUBLIC CLOUD -->
+    <div class="topic-heading" id="public-cloud">1. Public Cloud</div>
+    <div class="def-box">
+      <div class="def-label">Definition</div>
+      <p>A public cloud is owned and operated by a <strong>third-party cloud service provider</strong> (like AWS, Azure, or GCP). They deliver their computing resources such as servers and storage over the internet. All hardware, software, and other supporting infrastructure is owned and managed by the cloud provider.</p>
+    </div>
+    <div class="sub-heading">Key Features</div>
+    <ul>
+      <li>Resources are shared among multiple organizations (multi-tenant).</li>
+      <li>Accessible by anyone over the internet.</li>
+      <li>Fully managed by the provider.</li>
+      <li>Pay-as-you-go pricing model.</li>
+    </ul>
+    <div class="sub-heading">Advantages</div>
+    <ul>
+      <li>No capital expenditure — no need to buy hardware.</li>
+      <li>Highly scalable — resources available on demand.</li>
+      <li>Reliable — provider ensures uptime (99.9% SLA).</li>
+      <li>No maintenance required by user.</li>
+    </ul>
+    <div class="sub-heading">Disadvantages</div>
+    <ul>
+      <li>Less control over data and infrastructure.</li>
+      <li>Security concerns — data on shared infrastructure.</li>
+      <li>Not suitable for highly sensitive or regulated data.</li>
+      <li>Potential vendor lock-in.</li>
+    </ul>
+    <div class="sub-heading">Examples</div>
+    <p>AWS, Microsoft Azure, Google Cloud Platform (GCP), IBM Cloud.</p>
+    <div class="sub-heading">Use Case</div>
+    <p>Startups, small businesses, development &amp; testing environments, email hosting, web applications.</p>
+
+    <!-- PRIVATE CLOUD -->
+    <div class="topic-heading" id="private-cloud">2. Private Cloud</div>
+    <div class="def-box">
+      <div class="def-label">Definition</div>
+      <p>A private cloud is cloud infrastructure operated solely for a <strong>single organization</strong>. It may be managed internally or by a third party, and may be hosted on-premises or at a remote location. Resources are NOT shared with other organizations.</p>
+    </div>
+    <div class="sub-heading">Key Features</div>
+    <ul>
+      <li>Single-tenant environment — dedicated to one organization.</li>
+      <li>Can be on-premises or hosted by a provider.</li>
+      <li>Organization has full control over the infrastructure.</li>
+      <li>Higher level of customization and security.</li>
+    </ul>
+    <div class="sub-heading">Advantages</div>
+    <ul>
+      <li>Greater security and privacy.</li>
+      <li>Full control over infrastructure and data.</li>
+      <li>Customizable to meet specific business needs.</li>
+      <li>Better performance due to dedicated resources.</li>
+      <li>Compliance with strict regulatory requirements (banking, healthcare).</li>
+    </ul>
+    <div class="sub-heading">Disadvantages</div>
+    <ul>
+      <li>High cost — organization must buy and maintain its own hardware.</li>
+      <li>Requires skilled in-house IT staff.</li>
+      <li>Less scalable than public cloud.</li>
+      <li>Limited geographic distribution.</li>
+    </ul>
+    <div class="sub-heading">Examples</div>
+    <p>VMware vSphere, OpenStack, Microsoft Azure Stack.</p>
+    <div class="sub-heading">Use Case</div>
+    <p>Banks, government agencies, military organizations, healthcare institutions — where data sensitivity and compliance are critical.</p>
+
+    <!-- HYBRID CLOUD -->
+    <div class="topic-heading" id="hybrid-cloud">3. Hybrid Cloud</div>
+    <div class="def-box">
+      <div class="def-label">Definition</div>
+      <p>A hybrid cloud is a <strong>combination of public and private clouds</strong>, bound together by technology that allows data and applications to be shared between them. Organizations can run sensitive workloads in the private cloud while using the public cloud for less-sensitive workloads or when they need to scale.</p>
+    </div>
+    <div class="sub-heading">Key Features</div>
+    <ul>
+      <li>Uses both on-premises and public cloud resources.</li>
+      <li>Applications/data move between private and public clouds as needed.</li>
+      <li>"Cloud Bursting" — overflow work to public cloud when private cloud reaches capacity.</li>
+    </ul>
+    <div class="sub-heading">Advantages</div>
+    <ul>
+      <li>Best of both worlds — security of private + scalability of public.</li>
+      <li>Cost-effective — use private cloud for everyday work, public cloud for peaks.</li>
+      <li>Greater flexibility and control.</li>
+      <li>Business continuity — if private cloud fails, public cloud can take over.</li>
+    </ul>
+    <div class="sub-heading">Disadvantages</div>
+    <ul>
+      <li>Complex architecture — harder to manage.</li>
+      <li>Higher cost of implementation.</li>
+      <li>Security concerns at the integration points between public and private.</li>
+      <li>Requires specialized skills to manage the hybrid environment.</li>
+    </ul>
+    <div class="sub-heading">Use Case</div>
+    <p>E-commerce (store customer data in private, handle traffic spikes in public), healthcare (patient records in private, analytics in public).</p>
+
+    <!-- COMMUNITY CLOUD -->
+    <div class="topic-heading" id="community-cloud">4. Community Cloud</div>
+    <div class="def-box">
+      <div class="def-label">Definition</div>
+      <p>A community cloud is shared among several organizations that have <strong>common concerns</strong> — such as security requirements, compliance requirements, policy, or mission. It can be managed by the organizations or a third-party provider.</p>
+    </div>
+    <div class="sub-heading">Key Features</div>
+    <ul>
+      <li>Shared infrastructure among a group of organizations with similar needs.</li>
+      <li>Multi-tenant but limited to the community.</li>
+      <li>Costs are shared among community members.</li>
+    </ul>
+    <div class="sub-heading">Advantages</div>
+    <ul>
+      <li>Cost sharing among organizations reduces individual cost.</li>
+      <li>Better security than public cloud.</li>
+      <li>Customized to meet community-specific compliance needs.</li>
+      <li>Collaboration is easier among community members.</li>
+    </ul>
+    <div class="sub-heading">Disadvantages</div>
+    <ul>
+      <li>Governance issues — who manages the shared infrastructure?</li>
+      <li>Less scalable than public cloud.</li>
+      <li>Limited flexibility compared to private cloud.</li>
+    </ul>
+    <div class="sub-heading">Use Case</div>
+    <p>Government agencies (sharing a common compliance framework), research institutes, hospitals belonging to the same healthcare network.</p>
+
+    <div class="summary-box">
+      <div class="sum-title">📝 Deployment Models at a Glance</div>
+      <div class="note-table-wrap">
+        <table class="note-table">
+          <tr><th>Model</th><th>Who Uses It</th><th>Security</th><th>Cost</th><th>Scalability</th></tr>
+          <tr><td>Public</td><td>Anyone</td><td>Low</td><td>Low</td><td>Very High</td></tr>
+          <tr><td>Private</td><td>One org</td><td>Very High</td><td>High</td><td>Limited</td></tr>
+          <tr><td>Hybrid</td><td>One org (both)</td><td>High</td><td>Medium</td><td>High</td></tr>
+          <tr><td>Community</td><td>Group of orgs</td><td>Medium-High</td><td>Shared</td><td>Medium</td></tr>
+        </table>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ══════════════ SECTION 5 – SERVICE MODELS ══════════════ -->
+<section class="page" id="service-models">
+  <div class="page-body">
+    <div class="section-heading"><span class="hnum">5</span>Types of Cloud Service Models</div>
+
+    <p>Cloud service models define <strong>what kind of service</strong> you are getting from the cloud. There are three fundamental service models: <span class="hl">IaaS, PaaS, and SaaS</span>. A helpful analogy is <strong>pizza delivery</strong> — how much of the pizza stack do you prepare yourself vs. get pre-made?</p>
+
+    <div class="def-box">
+      <div class="def-label">The Pizza Analogy 🍕</div>
+      <p><strong>On-premises:</strong> You make everything from scratch. | <strong>IaaS:</strong> You get a kitchen and oven but buy and cook the pizza yourself. | <strong>PaaS:</strong> You get the dough and sauce; you just add toppings. | <strong>SaaS:</strong> You order the ready pizza and eat it.</p>
+    </div>
+
+    <!-- IAAS -->
+    <div class="topic-heading" id="iaas">1. IaaS — Infrastructure as a Service</div>
+    <div class="def-box">
+      <div class="def-label">Definition</div>
+      <p>IaaS provides <strong>virtualized computing infrastructure</strong> — virtual machines, storage, and networking — over the internet. The user manages the OS, applications, and data; the provider manages the physical hardware.</p>
+    </div>
+    <div class="sub-heading">What the Provider Manages</div>
+    <p>Physical servers, data center, networking hardware, virtualization layer.</p>
+    <div class="sub-heading">What YOU Manage</div>
+    <p>Operating System, middleware, runtime, applications, and data.</p>
+    <div class="sub-heading">Key Features</div>
+    <ul>
+      <li>Resources available on-demand (virtual machines, storage, load balancers).</li>
+      <li>Highly flexible — use any OS, any software stack.</li>
+      <li>You are responsible for security of your OS and applications.</li>
+      <li>Pay-per-use billing.</li>
+    </ul>
+    <div class="sub-heading">Advantages</div>
+    <ul>
+      <li>No need to buy physical hardware.</li>
+      <li>Maximum flexibility and control over infrastructure.</li>
+      <li>Scale up or down as required.</li>
+      <li>Ideal for organizations with existing IT staff.</li>
+    </ul>
+    <div class="sub-heading">Disadvantages</div>
+    <ul>
+      <li>User responsible for managing OS, security patches, applications.</li>
+      <li>Requires technical expertise.</li>
+      <li>More complex to manage than PaaS or SaaS.</li>
+    </ul>
+    <div class="sub-heading">Examples</div>
+    <p><span class="hl-blue">Amazon EC2, Microsoft Azure VMs, Google Compute Engine, Rackspace, DigitalOcean.</span></p>
+    <div class="sub-heading">Use Cases</div>
+    <p>Website hosting, test &amp; development environments, storage &amp; backup, big data analytics, high-performance computing.</p>
+
+    <!-- PAAS -->
+    <div class="topic-heading" id="paas">2. PaaS — Platform as a Service</div>
+    <div class="def-box">
+      <div class="def-label">Definition</div>
+      <p>PaaS provides a <strong>ready-to-use platform</strong> for developers to build, run, and manage applications without dealing with the underlying infrastructure. The provider manages the hardware, OS, middleware, and runtime.</p>
+    </div>
+    <div class="sub-heading">What the Provider Manages</div>
+    <p>Everything in IaaS PLUS: Operating System, middleware, and runtime environment.</p>
+    <div class="sub-heading">What YOU Manage</div>
+    <p>Applications and Data only.</p>
+    <div class="sub-heading">Key Features</div>
+    <ul>
+      <li>Provides a complete development and deployment environment in the cloud.</li>
+      <li>Built-in tools for development, testing, deployment, and version control.</li>
+      <li>Supports multiple programming languages and frameworks.</li>
+      <li>Automatic OS updates and patches.</li>
+    </ul>
+    <div class="sub-heading">Advantages</div>
+    <ul>
+      <li>Developers focus only on coding — no infrastructure headaches.</li>
+      <li>Faster application development and deployment.</li>
+      <li>Built-in tools for collaboration, testing, and deployment.</li>
+      <li>Reduces time-to-market for new applications.</li>
+    </ul>
+    <div class="sub-heading">Disadvantages</div>
+    <ul>
+      <li>Less control over the underlying infrastructure.</li>
+      <li>Vendor lock-in risk — hard to migrate apps to another platform.</li>
+      <li>Runtime/language limitations depending on the provider.</li>
+    </ul>
+    <div class="sub-heading">Examples</div>
+    <p><span class="hl-blue">Google App Engine, Microsoft Azure App Services, Heroku, AWS Elastic Beanstalk, Red Hat OpenShift.</span></p>
+    <div class="sub-heading">Use Cases</div>
+    <p>Application development, API development, business intelligence/analytics, IoT app backends.</p>
+
+    <!-- SAAS -->
+    <div class="topic-heading" id="saas">3. SaaS — Software as a Service</div>
+    <div class="def-box">
+      <div class="def-label">Definition</div>
+      <p>SaaS delivers <strong>fully functional software applications</strong> over the internet on a subscription basis. The user does not manage any infrastructure, platform, or even application configuration — they just use the software via a web browser or app.</p>
+    </div>
+    <div class="sub-heading">What the Provider Manages</div>
+    <p>Everything — infrastructure, platform, AND the application itself.</p>
+    <div class="sub-heading">What YOU Manage</div>
+    <p>Just your data and user accounts.</p>
+    <div class="sub-heading">Key Features</div>
+    <ul>
+      <li>Accessible from any device with a web browser.</li>
+      <li>No installation, setup, or maintenance required.</li>
+      <li>Subscription-based pricing (monthly/annual).</li>
+      <li>Automatic updates — always using the latest version.</li>
+      <li>Multi-tenant architecture.</li>
+    </ul>
+    <div class="sub-heading">Advantages</div>
+    <ul>
+      <li>Extremely easy to use — no technical expertise needed.</li>
+      <li>No software installation on local machines.</li>
+      <li>Accessible from anywhere, any device.</li>
+      <li>Provider handles all maintenance, updates, and security.</li>
+      <li>Lower upfront cost — subscription model.</li>
+    </ul>
+    <div class="sub-heading">Disadvantages</div>
+    <ul>
+      <li>Less flexibility — use the software as provided, limited customization.</li>
+      <li>Data security concerns — all data on provider's server.</li>
+      <li>Internet dependency — not accessible offline.</li>
+      <li>Vendor lock-in — migrating data from one SaaS to another can be hard.</li>
+    </ul>
+    <div class="sub-heading">Examples</div>
+    <p><span class="hl-blue">Gmail, Google Workspace, Microsoft 365, Salesforce CRM, Dropbox, Zoom, Slack, Netflix.</span></p>
+    <div class="sub-heading">Use Cases</div>
+    <p>Email, collaboration tools, CRM, ERP systems, video conferencing, project management.</p>
+
+    <div class="summary-box">
+      <div class="sum-title">📝 IaaS vs PaaS vs SaaS Comparison</div>
+      <div class="note-table-wrap">
+        <table class="note-table">
+          <tr><th>Layer</th><th>IaaS</th><th>PaaS</th><th>SaaS</th></tr>
+          <tr><td>Applications</td><td>You</td><td>You</td><td>Provider</td></tr>
+          <tr><td>Data</td><td>You</td><td>You</td><td>You</td></tr>
+          <tr><td>Runtime</td><td>You</td><td>Provider</td><td>Provider</td></tr>
+          <tr><td>Middleware</td><td>You</td><td>Provider</td><td>Provider</td></tr>
+          <tr><td>OS</td><td>You</td><td>Provider</td><td>Provider</td></tr>
+          <tr><td>Virtualization</td><td>Provider</td><td>Provider</td><td>Provider</td></tr>
+          <tr><td>Hardware</td><td>Provider</td><td>Provider</td><td>Provider</td></tr>
+          <tr><td>Target User</td><td>IT Admins</td><td>Developers</td><td>End Users</td></tr>
+        </table>
+      </div>
+    </div>
+
+    <div class="exam-tip">
+      <p>Remember the acronym: <strong>I</strong> am <strong>P</strong>aying for <strong>S</strong>oftware → IaaS (Infrastructure), PaaS (Platform), SaaS (Software). IaaS gives most control, SaaS gives least control. Also know: XaaS (Anything as a Service) is the broader umbrella term used today.</p>
+    </div>
+
+    <div class="topic-heading">Other Service Models (Extended)</div>
+    <div class="note-table-wrap">
+      <table class="note-table">
+        <tr><th>Model</th><th>Full Form</th><th>Example</th></tr>
+        <tr><td>FaaS</td><td>Function as a Service (Serverless)</td><td>AWS Lambda, Google Cloud Functions</td></tr>
+        <tr><td>DBaaS</td><td>Database as a Service</td><td>Amazon RDS, Google Cloud SQL</td></tr>
+        <tr><td>STaaS</td><td>Storage as a Service</td><td>Amazon S3, Google Cloud Storage</td></tr>
+        <tr><td>SECaaS</td><td>Security as a Service</td><td>Cloudflare, Zscaler</td></tr>
+        <tr><td>CaaS</td><td>Container as a Service</td><td>Google Kubernetes Engine (GKE)</td></tr>
+      </table>
+    </div>
+
+  </div>
+</section>
+
+<!-- ══════════════ SECTION 6 – DATA ANALYTICS ══════════════ -->
+<section class="page" id="analytics">
+  <div class="page-body">
+    <div class="section-heading"><span class="hnum">6</span>Data Analytics in Cloud</div>
+
+    <div class="def-box">
+      <div class="def-label">Definition</div>
+      <p><strong>Data Analytics</strong> is the process of examining raw data to find trends, draw conclusions, and make decisions. When done on cloud platforms, it is called <strong>Cloud-based Data Analytics</strong> — leveraging the cloud's massive compute and storage to process and analyze large datasets.</p>
+    </div>
+
+    <div class="topic-heading">Why Use Cloud for Data Analytics?</div>
+    <ul>
+      <li>Traditional servers cannot handle petabytes of data.</li>
+      <li>Cloud provides near-infinite storage and processing power.</li>
+      <li>Pay only for the compute you use — cost-effective for batch analytics.</li>
+      <li>Built-in ML and AI integration for advanced analytics.</li>
+      <li>Real-time data streaming and analysis possible.</li>
+    </ul>
+
+    <div class="topic-heading">Types of Data Analytics</div>
+    <div class="note-table-wrap">
+      <table class="note-table">
+        <tr><th>Type</th><th>What it Does</th><th>Key Question</th><th>Example</th></tr>
+        <tr><td>Descriptive</td><td>Summarizes past data</td><td>What happened?</td><td>Sales report of last month</td></tr>
+        <tr><td>Diagnostic</td><td>Finds root cause</td><td>Why did it happen?</td><td>Why did sales drop in Q3?</td></tr>
+        <tr><td>Predictive</td><td>Forecasts future</td><td>What will happen?</td><td>Predict next month's demand</td></tr>
+        <tr><td>Prescriptive</td><td>Recommends actions</td><td>What should we do?</td><td>Recommend best pricing strategy</td></tr>
+      </table>
+    </div>
+
+    <div class="topic-heading">Cloud Data Analytics Pipeline</div>
+    <ol>
+      <li><strong>Data Collection:</strong> Gather data from various sources — databases, IoT sensors, social media, web logs.</li>
+      <li><strong>Data Ingestion:</strong> Load data into cloud storage (e.g., Amazon S3, Google Cloud Storage).</li>
+      <li><strong>Data Processing:</strong> Clean, transform, and aggregate data using tools like Apache Spark, AWS Glue, Dataflow.</li>
+      <li><strong>Data Storage:</strong> Store processed data in Data Warehouses (e.g., Amazon Redshift, BigQuery, Azure Synapse).</li>
+      <li><strong>Analysis:</strong> Use SQL queries, ML models, or BI tools to derive insights.</li>
+      <li><strong>Visualization:</strong> Present results using dashboards — Tableau, Power BI, Google Looker Studio.</li>
+    </ol>
+
+    <div class="topic-heading">Key Cloud Analytics Services</div>
+    <div class="note-table-wrap">
+      <table class="note-table">
+        <tr><th>Provider</th><th>Service</th><th>Use</th></tr>
+        <tr><td>AWS</td><td>Amazon Redshift</td><td>Data Warehouse — SQL analytics on petabytes</td></tr>
+        <tr><td>AWS</td><td>AWS Athena</td><td>Query S3 data using SQL without servers</td></tr>
+        <tr><td>Google</td><td>BigQuery</td><td>Serverless data warehouse for massive datasets</td></tr>
+        <tr><td>Azure</td><td>Azure Synapse Analytics</td><td>Integrated analytics service</td></tr>
+        <tr><td>All</td><td>Apache Spark on Cloud</td><td>Distributed big data processing</td></tr>
+      </table>
+    </div>
+
+    <div class="topic-heading">Data Warehouse vs Data Lake</div>
+    <div class="note-table-wrap">
+      <table class="note-table">
+        <tr><th>Feature</th><th>Data Warehouse</th><th>Data Lake</th></tr>
+        <tr><td>Data Type</td><td>Structured (SQL tables)</td><td>Structured + unstructured (anything)</td></tr>
+        <tr><td>Schema</td><td>Schema on write</td><td>Schema on read</td></tr>
+        <tr><td>Users</td><td>Business analysts</td><td>Data scientists</td></tr>
+        <tr><td>Purpose</td><td>Business intelligence</td><td>ML, exploration</td></tr>
+        <tr><td>Example</td><td>Amazon Redshift, BigQuery</td><td>Amazon S3, Azure Data Lake Store</td></tr>
+      </table>
+    </div>
+
+    <div class="note-box">
+      <p>Real-time analytics (streaming analytics) processes data as it arrives. Tools: Apache Kafka, AWS Kinesis, Google Dataflow. Used for fraud detection, live dashboards, and recommendation engines.</p>
+    </div>
+
+  </div>
+</section>
+
+<!-- ══════════════ SECTION 7 – VIRTUALIZATION ══════════════ -->
+<section class="page" id="virtualization">
+  <div class="page-body">
+    <div class="section-heading"><span class="hnum">7</span>Virtualization</div>
+
+    <div class="def-box">
+      <div class="def-label">Definition</div>
+      <p><strong>Virtualization</strong> is the process of creating a <span class="hl">virtual (software-based) version</span> of something — a server, storage device, network, or operating system — where the virtual version acts and functions like a real one. It is the <strong>foundational technology that makes cloud computing possible</strong>.</p>
+    </div>
+
+    <p>Without virtualization, one physical server could only run one operating system. With virtualization, one powerful physical server can run <strong>many virtual machines (VMs)</strong>, each with its own OS and applications — all isolated from each other.</p>
+
+    <div class="topic-heading">Hypervisor</div>
+    <div class="def-box">
+      <div class="def-label">Hypervisor (VMM — Virtual Machine Monitor)</div>
+      <p>A <strong>hypervisor</strong> is the software layer that sits between the physical hardware and the virtual machines. It manages the creation, execution, and resource allocation of VMs.</p>
+    </div>
+    <div class="note-table-wrap">
+      <table class="note-table">
+        <tr><th>Type</th><th>Name</th><th>Description</th><th>Examples</th></tr>
+        <tr><td>Type 1 (Bare-metal)</td><td>Native Hypervisor</td><td>Runs directly on hardware — no host OS needed. More efficient and used in data centers.</td><td>VMware ESXi, Microsoft Hyper-V, Xen</td></tr>
+        <tr><td>Type 2 (Hosted)</td><td>Hosted Hypervisor</td><td>Runs on top of a host OS. Used for personal/development use.</td><td>VirtualBox, VMware Workstation, QEMU</td></tr>
+      </table>
+    </div>
+
+    <div class="topic-heading">Types of Virtualization</div>
+
+    <button class="collapsible-btn" onclick="toggleCollapsible(this)">
+      🖥️ 1. Server Virtualization <span class="arrow">▼</span>
+    </button>
+    <div class="collapsible-content">
+      <p><strong>Server virtualization</strong> divides one physical server into multiple virtual servers (VMs). Each VM runs its own OS and applications independently. This is the most common form used in data centers.</p>
+      <p><strong>Benefits:</strong> Better resource utilization, reduced hardware cost, easy backup and migration.</p>
+      <p><strong>Example:</strong> A company runs one powerful server but hosts 10 virtual web servers on it — each for a different client.</p>
+    </div>
+
+    <button class="collapsible-btn" onclick="toggleCollapsible(this)">
+      💾 2. Storage Virtualization <span class="arrow">▼</span>
+    </button>
+    <div class="collapsible-content">
+      <p><strong>Storage virtualization</strong> pools physical storage from multiple storage devices into a single logical storage unit. Users see one unified storage pool, even though data may be spread across many physical disks.</p>
+      <p><strong>Benefits:</strong> Easier management, better utilization, seamless expansion.</p>
+      <p><strong>Example:</strong> Amazon S3 (Simple Storage Service) — you store files on "S3" without knowing which physical disk holds your data.</p>
+    </div>
+
+    <button class="collapsible-btn" onclick="toggleCollapsible(this)">
+      🌐 3. Network Virtualization <span class="arrow">▼</span>
+    </button>
+    <div class="collapsible-content">
+      <p><strong>Network virtualization</strong> creates virtual networks from physical network hardware. It allows multiple virtual networks to run on a single physical network, each isolated from the other.</p>
+      <p><strong>Key technologies:</strong> VLAN (Virtual LAN), SDN (Software-Defined Networking), NFV (Network Function Virtualization).</p>
+      <p><strong>Example:</strong> A company sets up separate VLANs for the Finance department and HR department on the same physical network — they cannot see each other's traffic.</p>
+    </div>
+
+    <button class="collapsible-btn" onclick="toggleCollapsible(this)">
+      🖱️ 4. Desktop Virtualization (VDI) <span class="arrow">▼</span>
+    </button>
+    <div class="collapsible-content">
+      <p><strong>Virtual Desktop Infrastructure (VDI)</strong> — virtual desktops hosted on servers, accessed by users remotely. The user's computer is just a terminal; all processing happens on the server.</p>
+      <p><strong>Example:</strong> Citrix Virtual Desktop, Amazon WorkSpaces. Used in hospitals, schools, and offices where employees work on thin clients.</p>
+    </div>
+
+    <button class="collapsible-btn" onclick="toggleCollapsible(this)">
+      📦 5. Application Virtualization <span class="arrow">▼</span>
+    </button>
+    <div class="collapsible-content">
+      <p>Applications run in a virtual environment, isolated from the underlying OS. They behave like locally installed apps but run from a centralized server.</p>
+      <p><strong>Example:</strong> Microsoft App-V. You run Photoshop without installing it on your machine — it streams from a server.</p>
+    </div>
+
+    <button class="collapsible-btn" onclick="toggleCollapsible(this)">
+      🐳 6. Containerization (Modern Virtualization) <span class="arrow">▼</span>
+    </button>
+    <div class="collapsible-content">
+      <p>Containers package an application and all its dependencies into a single unit that runs consistently on any system. Unlike VMs, containers share the host OS kernel — making them <strong>lighter and faster</strong> than full VMs.</p>
+      <p><strong>Key tools:</strong> Docker (create containers), Kubernetes (manage/orchestrate containers).</p>
+      <p><strong>VM vs Container:</strong> A VM includes a full OS (~GB), a container only includes app + libs (~MB). Containers start in seconds, VMs take minutes.</p>
+    </div>
+
+    <div class="topic-heading">Virtual Machine (VM) Lifecycle</div>
+    <ol>
+      <li><strong>Creation:</strong> Allocate virtual CPU, RAM, storage.</li>
+      <li><strong>Running:</strong> VM boots like a physical machine; runs an OS.</li>
+      <li><strong>Snapshot:</strong> Save the current state of the VM at a point in time (like a save game).</li>
+      <li><strong>Migration:</strong> Move a running VM from one physical host to another without downtime (Live Migration / vMotion).</li>
+      <li><strong>Suspension:</strong> Pause the VM (saves state to disk).</li>
+      <li><strong>Deletion:</strong> Remove VM and release resources.</li>
+    </ol>
+
+    <div class="topic-heading">Benefits of Virtualization for Cloud</div>
+    <ul>
+      <li><strong>Resource Efficiency:</strong> Multiple VMs on one server → better hardware utilization (typically 60–80% vs 10–15% without virtualization).</li>
+      <li><strong>Isolation:</strong> Each VM is isolated — a crash in one does not affect others.</li>
+      <li><strong>Portability:</strong> VMs can be moved between physical servers seamlessly.</li>
+      <li><strong>Disaster Recovery:</strong> VM snapshots allow quick restoration after failure.</li>
+      <li><strong>Scalability:</strong> Spin up new VMs in minutes — critical for cloud elasticity.</li>
+      <li><strong>Cost Reduction:</strong> Fewer physical servers → less power, cooling, and space.</li>
+    </ul>
+
+    <div class="exam-tip">
+      <p>Very common exam question: <strong>"What is the difference between a VM and a Container?"</strong> Key answer: VM has a full OS; containers share the host OS. VMs are heavier but more isolated; containers are lighter and faster.</p>
+    </div>
+
+    <div class="important-box">
+      <p>Virtualization ≠ Cloud Computing. Virtualization is the technology; Cloud Computing is the delivery model that uses virtualization. You can have virtualization without cloud (e.g., VMs in your office data center).</p>
+    </div>
+
+  </div>
+</section>
+
+<!-- ══════════════ SECTION 8 – TOOLS ══════════════ -->
+<section class="page" id="tools">
+  <div class="page-body">
+    <div class="section-heading"><span class="hnum">8</span>Tools and Techniques for Cloud Computing</div>
+
+    <p>Cloud computing has a rich ecosystem of tools for infrastructure management, deployment, monitoring, security, and development. Here are the most important categories:</p>
+
+    <div class="topic-heading">1. Cloud Management Platforms (CMP)</div>
+    <p>These tools help manage cloud resources across multiple providers from a single dashboard.</p>
+    <div class="note-table-wrap">
+      <table class="note-table">
+        <tr><th>Tool</th><th>Purpose</th></tr>
+        <tr><td>AWS Management Console</td><td>Web-based UI to manage all AWS services</td></tr>
+        <tr><td>Microsoft Azure Portal</td><td>Web-based interface for Azure resource management</td></tr>
+        <tr><td>Google Cloud Console</td><td>GCP's management dashboard</td></tr>
+        <tr><td>CloudHealth</td><td>Multi-cloud cost management and optimization</td></tr>
+        <tr><td>RightScale</td><td>Multi-cloud governance and management</td></tr>
+      </table>
+    </div>
+
+    <div class="topic-heading">2. Infrastructure as Code (IaC) Tools</div>
+    <p>IaC tools allow you to define and manage cloud infrastructure using code/configuration files instead of manual clicks. This makes infrastructure reproducible, version-controlled, and automated.</p>
+    <div class="note-table-wrap">
+      <table class="note-table">
+        <tr><th>Tool</th><th>Description</th></tr>
+        <tr><td><strong>Terraform</strong></td><td>Open-source IaC tool by HashiCorp. Works with AWS, Azure, GCP. Uses HCL (HashiCorp Config Language).</td></tr>
+        <tr><td><strong>AWS CloudFormation</strong></td><td>AWS-native IaC using JSON/YAML templates.</td></tr>
+        <tr><td><strong>Azure Resource Manager (ARM)</strong></td><td>Azure-native IaC using JSON templates.</td></tr>
+        <tr><td><strong>Ansible</strong></td><td>Configuration management and automation tool — uses YAML playbooks. Agentless.</td></tr>
+        <tr><td><strong>Puppet</strong></td><td>Configuration management — ensures servers are in desired state. Uses its own DSL.</td></tr>
+        <tr><td><strong>Chef</strong></td><td>Configuration management using Ruby-based recipes and cookbooks.</td></tr>
+      </table>
+    </div>
+
+    <div class="topic-heading">3. Containerization Tools</div>
+    <div class="note-table-wrap">
+      <table class="note-table">
+        <tr><th>Tool</th><th>Role</th></tr>
+        <tr><td><strong>Docker</strong></td><td>Build, ship, and run containers. Creates Docker images from Dockerfiles.</td></tr>
+        <tr><td><strong>Kubernetes (K8s)</strong></td><td>Orchestrates (manages, scales, deploys) containers in production. Google-developed, now CNCF.</td></tr>
+        <tr><td><strong>Docker Compose</strong></td><td>Define and run multi-container apps using a YAML file.</td></tr>
+        <tr><td><strong>Helm</strong></td><td>Package manager for Kubernetes (like apt for Ubuntu).</td></tr>
+        <tr><td><strong>OpenShift</strong></td><td>Red Hat's enterprise Kubernetes platform.</td></tr>
+      </table>
+    </div>
+
+    <div class="topic-heading">4. Monitoring and Logging Tools</div>
+    <div class="note-table-wrap">
+      <table class="note-table">
+        <tr><th>Tool</th><th>Purpose</th></tr>
+        <tr><td>Amazon CloudWatch</td><td>Monitor AWS resources — CPU, memory, network metrics; set alarms.</td></tr>
+        <tr><td>Azure Monitor</td><td>Collect and analyze telemetry from Azure resources.</td></tr>
+        <tr><td>Google Cloud Monitoring</td><td>Monitor and observe GCP services.</td></tr>
+        <tr><td>Prometheus</td><td>Open-source metrics collection and alerting system. Often used with Kubernetes.</td></tr>
+        <tr><td>Grafana</td><td>Open-source visualization dashboard — connects to Prometheus, CloudWatch, etc.</td></tr>
+        <tr><td>ELK Stack</td><td>Elasticsearch + Logstash + Kibana — for log collection, search, and visualization.</td></tr>
+      </table>
+    </div>
+
+    <div class="topic-heading">5. Cloud Storage Tools</div>
+    <ul>
+      <li><strong>Amazon S3 (Simple Storage Service):</strong> Object storage — store any file. Virtually unlimited storage. Highly durable (99.999999999% — 11 nines).</li>
+      <li><strong>Amazon EBS (Elastic Block Store):</strong> Block storage attached to EC2 instances — like a virtual hard disk.</li>
+      <li><strong>Google Cloud Storage:</strong> Object storage similar to S3.</li>
+      <li><strong>Azure Blob Storage:</strong> Microsoft's object storage.</li>
+      <li><strong>HDFS (Hadoop Distributed File System):</strong> Distributed storage for big data.</li>
+    </ul>
+
+    <div class="topic-heading">6. Cloud Database Tools</div>
+    <div class="note-table-wrap">
+      <table class="note-table">
+        <tr><th>Tool</th><th>Type</th><th>Use</th></tr>
+        <tr><td>Amazon RDS</td><td>Relational (SQL)</td><td>MySQL, PostgreSQL, Oracle on cloud</td></tr>
+        <tr><td>Amazon DynamoDB</td><td>NoSQL (key-value)</td><td>High-speed lookups, gaming, IoT</td></tr>
+        <tr><td>Google BigQuery</td><td>Data Warehouse</td><td>Analytics on massive datasets</td></tr>
+        <tr><td>Azure Cosmos DB</td><td>Multi-model NoSQL</td><td>Globally distributed apps</td></tr>
+        <tr><td>MongoDB Atlas</td><td>NoSQL (document)</td><td>Cloud-native document database</td></tr>
+      </table>
+    </div>
+
+    <div class="topic-heading">7. Serverless Computing</div>
+    <div class="def-box">
+      <div class="def-label">Serverless Computing</div>
+      <p>In <strong>serverless computing</strong>, the cloud provider automatically manages the infrastructure. Developers just write code (functions); the provider handles server provisioning, scaling, and billing per execution. You are billed only when the code runs.</p>
+    </div>
+    <ul>
+      <li><strong>AWS Lambda:</strong> Run code without managing servers. Triggered by events (HTTP request, file upload, database change).</li>
+      <li><strong>Google Cloud Functions:</strong> Google's serverless execution platform.</li>
+      <li><strong>Azure Functions:</strong> Microsoft's serverless offering.</li>
+    </ul>
+    <p><strong>Example:</strong> An image upload triggers a Lambda function that automatically resizes the image and stores it — no server needed, you pay per 100ms of execution.</p>
+
+    <div class="topic-heading">8. Cloud Security Tools</div>
+    <ul>
+      <li><strong>IAM (Identity and Access Management):</strong> Controls who can access what resources. AWS IAM, Azure Active Directory.</li>
+      <li><strong>AWS Shield / Azure DDoS Protection:</strong> Protects against DDoS attacks.</li>
+      <li><strong>AWS WAF (Web Application Firewall):</strong> Filters malicious HTTP traffic.</li>
+      <li><strong>VPC (Virtual Private Cloud):</strong> Creates an isolated network within the cloud for your resources.</li>
+      <li><strong>SSL/TLS Certificates:</strong> Encrypt data in transit. AWS Certificate Manager automates this.</li>
+    </ul>
+
+    <div class="exam-tip">
+      <p>Tools frequently asked: <strong>Terraform</strong> (IaC), <strong>Docker</strong> (Containers), <strong>Kubernetes</strong> (Container Orchestration), <strong>AWS Lambda</strong> (Serverless), <strong>AWS CloudWatch</strong> (Monitoring). Know each tool's PURPOSE, not just its name.</p>
+    </div>
+
+  </div>
+</section>
+
+<!-- ══════════════ SECTION 9 – JOB ROLES ══════════════ -->
+<section class="page" id="jobs">
+  <div class="page-body">
+    <div class="section-heading"><span class="hnum">9</span>Job Roles and Skillset for Cloud Computing</div>
+
+    <p>Cloud computing is one of the <strong>fastest-growing sectors in IT</strong>. The demand for cloud professionals far exceeds supply globally. Below are the key job roles, their responsibilities, and required skills:</p>
+
+    <div class="topic-heading">Major Cloud Job Roles</div>
+
+    <div class="note-table-wrap">
+      <table class="note-table">
+        <tr><th>Job Role</th><th>Responsibilities</th><th>Avg. Salary (India)</th></tr>
+        <tr><td>Cloud Architect</td><td>Design cloud infrastructure and architecture for organizations</td><td>₹18–35 LPA</td></tr>
+        <tr><td>Cloud Engineer</td><td>Build, deploy, and manage cloud infrastructure</td><td>₹8–20 LPA</td></tr>
+        <tr><td>DevOps Engineer</td><td>Automate CI/CD pipelines; manage Docker/Kubernetes</td><td>₹10–25 LPA</td></tr>
+        <tr><td>Cloud Security Engineer</td><td>Secure cloud infrastructure; implement IAM, encryption</td><td>₹12–28 LPA</td></tr>
+        <tr><td>Cloud Data Engineer</td><td>Build data pipelines on cloud; manage data warehouses</td><td>₹10–22 LPA</td></tr>
+        <tr><td>Site Reliability Engineer (SRE)</td><td>Ensure cloud services are reliable, scalable, and fast</td><td>₹15–30 LPA</td></tr>
+        <tr><td>Cloud Developer</td><td>Develop cloud-native applications (serverless, microservices)</td><td>₹8–18 LPA</td></tr>
+        <tr><td>Cloud Consultant</td><td>Advise organizations on cloud migration strategy</td><td>₹15–40 LPA</td></tr>
+      </table>
+    </div>
+
+    <div class="topic-heading">Detailed Role Descriptions</div>
+
+    <button class="collapsible-btn" onclick="toggleCollapsible(this)">
+      🏛️ Cloud Architect <span class="arrow">▼</span>
+    </button>
+    <div class="collapsible-content">
+      <p><strong>Role:</strong> Design end-to-end cloud infrastructure solutions. Create cloud migration plans. Evaluate new cloud technologies and products. Collaborate with business and development teams to translate business requirements into technical architecture.</p>
+      <p><strong>Skills Required:</strong> Deep knowledge of AWS/Azure/GCP, networking (VPC, DNS, load balancing), security architecture, IaC (Terraform, CloudFormation), cost optimization, enterprise architecture frameworks.</p>
+      <p><strong>Certifications:</strong> AWS Solutions Architect Professional, Google Professional Cloud Architect, Azure Solutions Architect Expert.</p>
+    </div>
+
+    <button class="collapsible-btn" onclick="toggleCollapsible(this)">
+      ⚙️ Cloud / DevOps Engineer <span class="arrow">▼</span>
+    </button>
+    <div class="collapsible-content">
+      <p><strong>Role:</strong> Deploy and manage cloud infrastructure. Implement CI/CD pipelines. Automate infrastructure provisioning using IaC. Monitor system health. Manage containers with Docker and Kubernetes.</p>
+      <p><strong>Skills Required:</strong> Linux/Unix, scripting (Python, Bash, PowerShell), Git, Docker, Kubernetes, Terraform, Ansible, Jenkins, monitoring tools (Prometheus, Grafana).</p>
+      <p><strong>Certifications:</strong> AWS DevOps Engineer, CKA (Certified Kubernetes Administrator), HashiCorp Terraform Associate.</p>
+    </div>
+
+    <button class="collapsible-btn" onclick="toggleCollapsible(this)">
+      🔒 Cloud Security Engineer <span class="arrow">▼</span>
+    </button>
+    <div class="collapsible-content">
+      <p><strong>Role:</strong> Implement and manage security controls in cloud environments. Conduct security audits and risk assessments. Set up IAM policies, encryption, VPCs, and firewalls. Monitor for threats and respond to incidents.</p>
+      <p><strong>Skills Required:</strong> IAM, cloud-native security services (AWS GuardDuty, Azure Security Center), compliance frameworks (ISO 27001, SOC2, PCI-DSS), cryptography, network security.</p>
+      <p><strong>Certifications:</strong> Certified Cloud Security Professional (CCSP), AWS Security Specialty, CompTIA Cloud+.</p>
+    </div>
+
+    <button class="collapsible-btn" onclick="toggleCollapsible(this)">
+      📊 Cloud Data Engineer <span class="arrow">▼</span>
+    </button>
+    <div class="collapsible-content">
+      <p><strong>Role:</strong> Design and build data pipelines on cloud. Set up and maintain data warehouses (Redshift, BigQuery). Integrate data from multiple sources. Ensure data quality and availability for analytics teams.</p>
+      <p><strong>Skills Required:</strong> SQL, Python/Scala, Apache Spark, Kafka, ETL/ELT processes, data modeling, BigQuery/Redshift/Azure Synapse, Airflow (workflow orchestration).</p>
+    </div>
+
+    <div class="topic-heading">Key Skills for Cloud Computing (General)</div>
+    <div class="revision-grid">
+      <div class="revision-card">
+        <div class="rc-title">☁️ Cloud Platforms</div>
+        <p>AWS, Azure, or GCP — learn at least one deeply. AWS is most popular, Azure dominates in enterprises.</p>
+      </div>
+      <div class="revision-card">
+        <div class="rc-title">🐧 Linux/Unix</div>
+        <p>Essential for all cloud roles. Command-line proficiency, shell scripting, process management.</p>
+      </div>
+      <div class="revision-card">
+        <div class="rc-title">🐍 Programming</div>
+        <p>Python is the #1 language for cloud automation and scripting. Bash/PowerShell also important.</p>
+      </div>
+      <div class="revision-card">
+        <div class="rc-title">🌐 Networking</div>
+        <p>TCP/IP, DNS, HTTP/S, load balancing, VPC, firewalls — cloud is built on networking concepts.</p>
+      </div>
+      <div class="revision-card">
+        <div class="rc-title">🐳 Containers</div>
+        <p>Docker and Kubernetes are must-know for modern cloud engineering roles.</p>
+      </div>
+      <div class="revision-card">
+        <div class="rc-title">🔧 IaC</div>
+        <p>Terraform and/or CloudFormation — manage infrastructure as code. Critical for senior roles.</p>
+      </div>
+      <div class="revision-card">
+        <div class="rc-title">🔒 Security</div>
+        <p>IAM, encryption, compliance, secure networking — security is everyone's responsibility in cloud.</p>
+      </div>
+      <div class="revision-card">
+        <div class="rc-title">📜 Certifications</div>
+        <p>AWS CCP → SAA → SAP track. Google ACE → PCA track. Certifications significantly boost salary.</p>
+      </div>
+    </div>
+
+    <div class="topic-heading">Cloud Career Roadmap for Beginners</div>
+    <ol>
+      <li><strong>Step 1:</strong> Learn Linux basics and networking fundamentals.</li>
+      <li><strong>Step 2:</strong> Create a free AWS/Azure/GCP account and explore the console.</li>
+      <li><strong>Step 3:</strong> Get the AWS Cloud Practitioner (CCP) certification — entry-level, great first cert.</li>
+      <li><strong>Step 4:</strong> Learn Python for automation and scripting.</li>
+      <li><strong>Step 5:</strong> Learn Docker and then Kubernetes basics.</li>
+      <li><strong>Step 6:</strong> Study for AWS Solutions Architect Associate (SAA) — the most valued cert globally.</li>
+      <li><strong>Step 7:</strong> Specialize — pick DevOps, Security, Data Engineering, or Architecture.</li>
+      <li><strong>Step 8:</strong> Build real projects (host a website on AWS, create a serverless API) and put them on GitHub.</li>
+    </ol>
+
+    <div class="note-box">
+      <p>The global cloud computing market is expected to reach <strong>$1.3 trillion by 2025</strong>. India alone needs millions of cloud professionals. Cloud skills are among the highest-paying in the IT industry.</p>
+    </div>
+
+  </div>
+</section>
+
+<!-- ══════════════ REVISION ══════════════ -->
+<section class="page" id="revision">
+  <div class="page-body">
+    <div class="section-heading"><span class="hnum">🔄</span>Quick Revision — Unit V</div>
+
+    <div class="topic-heading">Key Definitions to Remember</div>
+    <div class="revision-grid">
+      <div class="revision-card">
+        <div class="rc-title">Cloud Computing</div>
+        <p>Delivery of computing services (servers, storage, databases, software) over the Internet on a pay-as-you-go basis.</p>
+      </div>
+      <div class="revision-card">
+        <div class="rc-title">Public Cloud</div>
+        <p>Cloud owned by third-party provider; resources shared among multiple users over the internet. E.g., AWS, Azure.</p>
+      </div>
+      <div class="revision-card">
+        <div class="rc-title">Private Cloud</div>
+        <p>Cloud dedicated to a single organization; higher security, higher cost. E.g., on-prem VMware.</p>
+      </div>
+      <div class="revision-card">
+        <div class="rc-title">Hybrid Cloud</div>
+        <p>Combination of public + private cloud. Sensitive data in private; scalable workloads in public.</p>
+      </div>
+      <div class="revision-card">
+        <div class="rc-title">IaaS</div>
+        <p>Infrastructure as a Service. Virtual machines, storage, networking. E.g., Amazon EC2. You manage OS and apps.</p>
+      </div>
+      <div class="revision-card">
+        <div class="rc-title">PaaS</div>
+        <p>Platform as a Service. Development + deployment environment. E.g., Google App Engine. You manage only apps and data.</p>
+      </div>
+      <div class="revision-card">
+        <div class="rc-title">SaaS</div>
+        <p>Software as a Service. Fully managed software. E.g., Gmail. User manages nothing except own data.</p>
+      </div>
+      <div class="revision-card">
+        <div class="rc-title">Virtualization</div>
+        <p>Creating virtual versions of hardware/software. Foundation of cloud computing. Managed by a Hypervisor.</p>
+      </div>
+      <div class="revision-card">
+        <div class="rc-title">Hypervisor</div>
+        <p>Software that creates and manages VMs. Type 1 (bare-metal) — ESXi. Type 2 (hosted) — VirtualBox.</p>
+      </div>
+      <div class="revision-card">
+        <div class="rc-title">Serverless</div>
+        <p>Run code without managing servers. Billed per execution. E.g., AWS Lambda, Google Cloud Functions.</p>
+      </div>
+      <div class="revision-card">
+        <div class="rc-title">Docker</div>
+        <p>Tool to build and run containers. Containers share host OS — lighter and faster than VMs.</p>
+      </div>
+      <div class="revision-card">
+        <div class="rc-title">Kubernetes</div>
+        <p>Container orchestration platform. Manages deployment, scaling, and load balancing of containers.</p>
+      </div>
+    </div>
+
+    <div class="topic-heading">Important Points for Exam</div>
+    <div class="important-box">
+      <p>
+        • 5 NIST characteristics: On-demand, Broad network, Resource pooling, Rapid elasticity, Measured service.<br>
+        • 4 deployment models: Public, Private, Hybrid, Community.<br>
+        • 3 service models: IaaS (IT admins), PaaS (developers), SaaS (end users).<br>
+        • 4 analytics types: Descriptive, Diagnostic, Predictive, Prescriptive.<br>
+        • Virtualization types: Server, Storage, Network, Desktop (VDI), Application, Container.<br>
+        • Hypervisor Type 1 (bare-metal): ESXi, Xen. Type 2 (hosted): VirtualBox, VMware Workstation.<br>
+        • VM vs Container: VM has its own OS; Container shares host OS. Containers are lighter.<br>
+        • Terraform = IaC; Docker = Containers; Kubernetes = Container Orchestration.<br>
+        • AWS = largest cloud provider (~33% market share).<br>
+        • Cloud Bursting = overflow work to public cloud when private cloud is full.
+      </p>
+    </div>
+
+    <div class="topic-heading">Exam-Frequently Asked Questions</div>
+    <ol>
+      <li>What is cloud computing? Explain its characteristics. (5 marks)</li>
+      <li>Explain the different types of cloud deployment models with advantages and disadvantages. (10 marks)</li>
+      <li>Compare IaaS, PaaS, and SaaS with examples. (5 marks)</li>
+      <li>What is virtualization? Explain its types. (5 marks)</li>
+      <li>What is the difference between a Virtual Machine and a Container? (3 marks)</li>
+      <li>Explain the role of a Hypervisor. Compare Type 1 and Type 2 hypervisors. (4 marks)</li>
+      <li>What is serverless computing? Give examples. (3 marks)</li>
+      <li>Explain the types of data analytics with examples. (5 marks)</li>
+      <li>What are the job roles in cloud computing? Mention the skillset required. (5 marks)</li>
+      <li>Explain Hybrid Cloud and its advantages over Public and Private Cloud. (4 marks)</li>
+    </ol>
+
+  </div>
+</section>
+
+<!-- ══════════════ MCQ SECTION ══════════════ -->
+<section class="page" id="mcq">
+  <div class="mcq-header">
+    <h2>🎯 MCQ Practice — Unit V</h2>
+    <p>Cloud Computing | 50 Questions | Semester Exam Level</p>
+    <div class="mcq-stats">
+      <div class="mcq-stat"><div class="val" id="stat-answered">0</div><div class="lbl">Answered</div></div>
+      <div class="mcq-stat"><div class="val" id="stat-correct">0</div><div class="lbl">Correct</div></div>
+      <div class="mcq-stat"><div class="val" id="stat-wrong">0</div><div class="lbl">Wrong</div></div>
+      <div class="mcq-stat"><div class="val">50</div><div class="lbl">Total</div></div>
+    </div>
+  </div>
+
+  <div class="mcq-tracker" id="mcq-tracker"></div>
+
+  <div class="mcq-body" id="mcq-body"></div>
+
+  <div class="score-card" id="score-card">
+    <div class="score-big" id="score-display">0/50</div>
+    <div class="score-msg" id="score-msg"></div>
+    <button class="mcq-nav-btn" onclick="restartMCQ()">🔄 Restart Quiz</button>
+  </div>
+</section>
+
+</div><!-- end #main -->
+
+<script>
+// ── PROGRESS BAR ──
+window.addEventListener('scroll', () => {
+  const el = document.documentElement;
+  const pct = (el.scrollTop / (el.scrollHeight - el.clientHeight)) * 100;
+  document.getElementById('progress-bar').style.width = pct + '%';
+  document.getElementById('read-progress').textContent = Math.round(pct) + '% read';
+});
+
+// ── SIDEBAR ──
+document.getElementById('menu-btn').addEventListener('click', () => {
+  document.getElementById('sidebar').classList.toggle('open');
+  document.getElementById('overlay').classList.toggle('show');
+});
+document.getElementById('sidebar-close').addEventListener('click', closeSidebar);
+document.getElementById('overlay').addEventListener('click', closeSidebar);
+function closeSidebar() {
+  document.getElementById('sidebar').classList.remove('open');
+  document.getElementById('overlay').classList.remove('show');
+}
+document.querySelectorAll('.sidebar-link, .sidebar-sub-link').forEach(l => {
+  l.addEventListener('click', closeSidebar);
+});
+
+// ── SCROLL REVEAL ──
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+}, { threshold: 0.06 });
+document.querySelectorAll('.page').forEach(p => observer.observe(p));
+
+// ── COLLAPSIBLE ──
+function toggleCollapsible(btn) {
+  btn.classList.toggle('open');
+  const content = btn.nextElementSibling;
+  content.classList.toggle('open');
+}
+
+// ── MCQ DATA ──
+const mcqData = [
+  // --- Cloud Intro ---
+  {q:"Which of the following best defines cloud computing?",opts:["Storing data on a USB drive","Delivery of computing services over the internet on pay-as-you-go basis","Running applications only on local servers","Installing software on every workstation"],ans:1,exp:"Cloud computing is the delivery of computing services (servers, storage, databases, networking, software) over the internet on a pay-as-you-go or on-demand basis."},
+  {q:"Which organization's definition of cloud computing is most widely accepted?",opts:["IEEE","ISO","NIST (National Institute of Standards and Technology)","W3C"],ans:2,exp:"NIST (National Institute of Standards and Technology) provides the most widely accepted definition of cloud computing, outlining its five essential characteristics, three service models, and four deployment models."},
+  {q:"Which of the following is NOT one of the five essential characteristics of cloud computing (NIST)?",opts:["On-demand self-service","Rapid elasticity","Measured service","Dedicated hardware"],ans:3,exp:"The five NIST characteristics are: On-demand self-service, Broad network access, Resource pooling, Rapid elasticity, and Measured service. Dedicated hardware contradicts resource pooling."},
+  {q:"'Cloud Bursting' refers to:",opts:["A cloud service crashing due to overload","Overflowing workloads from private cloud to public cloud when capacity is reached","Migrating data from public to private cloud","A cyber attack on cloud servers"],ans:1,exp:"Cloud bursting is a configuration set up between a private cloud and public cloud. When computing demands in the private cloud reach capacity, the overflow traffic is directed to the public cloud — this is called bursting into the cloud."},
+  {q:"Pay-as-you-go pricing in cloud computing means:",opts:["You pay a fixed annual fee regardless of usage","You pay only for the computing resources you actually consume","You pay in advance for a year's usage","You pay after every 10 GB of data transferred"],ans:1,exp:"Pay-as-you-go is a cloud pricing model where customers only pay for the specific resources they use. There are no upfront costs and no termination fees."},
+  // --- Uses ---
+  {q:"Which cloud service is primarily used by Netflix for streaming video to millions of users?",opts:["Google Cloud Platform only","Microsoft Azure only","Amazon Web Services (AWS)","IBM Cloud"],ans:2,exp:"Netflix runs almost entirely on AWS. It migrated to AWS to handle its massive and unpredictable traffic loads using cloud scalability."},
+  {q:"Electronic Health Records (EHR) management in hospitals is an example of cloud computing in which domain?",opts:["E-commerce","Healthcare","Gaming","Education"],ans:1,exp:"Electronic Health Records (EHR) are stored and managed on cloud platforms, allowing secure access by authorized medical personnel across departments and facilities."},
+  {q:"MeghRaj is:",opts:["A weather forecasting app","India's National Cloud for government services","A private cloud for ISRO","An educational cloud platform"],ans:1,exp:"MeghRaj (also called GI Cloud) is India's National Cloud initiative by the Government of India, designed to speed up delivery of e-services in the country."},
+  {q:"Cloud gaming platforms like NVIDIA GeForce Now allow users with low-end devices to play high-end games because:",opts:["Games are simplified to run on low hardware","All processing is done on cloud servers and streamed to the device","Games are compressed and stored locally","A special GPU chip is installed remotely"],ans:1,exp:"Cloud gaming processes the game on powerful cloud servers and streams the video output to the user's device. The user's device only needs to display the stream and send input."},
+  {q:"Which of the following is a cloud-based Learning Management System (LMS)?",opts:["Microsoft Word","Adobe Photoshop","Google Classroom","Visual Studio Code"],ans:2,exp:"Google Classroom is a cloud-based LMS that allows teachers and students to access courses, assignments, and communication tools from anywhere via the internet."},
+  // --- Deployment Models ---
+  {q:"In which cloud deployment model are resources shared among multiple organizations with similar compliance needs?",opts:["Public Cloud","Private Cloud","Community Cloud","Hybrid Cloud"],ans:2,exp:"Community Cloud is shared infrastructure for a specific community with common concerns (security, compliance, jurisdiction). It is shared among several organizations, unlike private cloud (single org) and public cloud (everyone)."},
+  {q:"A hospital stores patient records on its own private cloud but uses AWS for analytics. This is an example of:",opts:["Public Cloud","Private Cloud","Community Cloud","Hybrid Cloud"],ans:3,exp:"This is a Hybrid Cloud setup — sensitive patient data stays in the private cloud for compliance, while less-sensitive analytics workloads are processed in the public cloud."},
+  {q:"Which cloud deployment model offers the HIGHEST level of security?",opts:["Public Cloud","Community Cloud","Private Cloud","Hybrid Cloud"],ans:2,exp:"Private Cloud offers the highest security as resources are dedicated to a single organization, not shared with others. The organization has full control over infrastructure and security policies."},
+  {q:"AWS, Microsoft Azure, and Google Cloud Platform are examples of:",opts:["Private Clouds","Community Clouds","Hybrid Clouds","Public Clouds"],ans:3,exp:"AWS, Azure, and GCP are major public cloud providers. Their infrastructure is owned and operated by the providers and made available to the general public over the internet."},
+  {q:"Which cloud model is MOST suitable for a startup with limited budget and unpredictable growth?",opts:["Private Cloud","Community Cloud","Public Cloud","Hybrid Cloud"],ans:2,exp:"Public Cloud is most suitable for startups because there is no upfront capital investment, resources can be scaled on demand, and you only pay for what you use."},
+  // --- Service Models ---
+  {q:"In which cloud service model does the user manage the Operating System?",opts:["SaaS","PaaS","IaaS","FaaS"],ans:2,exp:"In IaaS (Infrastructure as a Service), the cloud provider manages the physical hardware and virtualization layer. The USER manages the operating system, middleware, runtime, applications, and data."},
+  {q:"Google App Engine is an example of which cloud service model?",opts:["IaaS","SaaS","FaaS","PaaS"],ans:3,exp:"Google App Engine is a PaaS (Platform as a Service) offering. It provides a platform for developers to build and deploy web applications without managing the underlying infrastructure."},
+  {q:"Which service model is MOST suitable for end-users with no technical expertise?",opts:["IaaS","PaaS","SaaS","DBaaS"],ans:2,exp:"SaaS (Software as a Service) is most suitable for non-technical end-users because they just use the software application (like Gmail or Zoom) without managing anything — no infrastructure, no OS, no deployment."},
+  {q:"Gmail is an example of which cloud service model?",opts:["IaaS","PaaS","SaaS","XaaS"],ans:2,exp:"Gmail is a SaaS (Software as a Service) application. Users access fully functional email software via a web browser without installing or managing anything."},
+  {q:"Amazon EC2 (Elastic Compute Cloud) is an example of:",opts:["SaaS","PaaS","IaaS","CaaS"],ans:2,exp:"Amazon EC2 provides virtual machines (virtual servers) over the cloud — this is IaaS (Infrastructure as a Service). Users can configure and run their own OS and applications on these virtual servers."},
+  {q:"In which service model does the developer only write code and NOT manage servers?",opts:["IaaS","PaaS","SaaS","Serverless/FaaS"],ans:3,exp:"Serverless computing (FaaS — Function as a Service) allows developers to deploy individual functions without managing any server infrastructure. AWS Lambda and Google Cloud Functions are examples."},
+  {q:"The 'pizza analogy' for SaaS is:",opts:["You make pizza from scratch","You get ingredients and cook it","You order a ready pizza and eat it","You get the oven and make it yourself"],ans:2,exp:"SaaS = order and eat ready pizza. The provider delivers a complete, ready-to-use software product. PaaS = get dough and sauce (you add toppings/apps). IaaS = get a kitchen (you cook everything). On-premises = grow your own wheat."},
+  {q:"Salesforce CRM is an example of which cloud service model?",opts:["IaaS","PaaS","SaaS","STaaS"],ans:2,exp:"Salesforce is a SaaS (Software as a Service) product. It delivers a complete Customer Relationship Management (CRM) platform accessible via a web browser on a subscription basis."},
+  {q:"Which service model gives the MAXIMUM control over infrastructure to the user?",opts:["SaaS","PaaS","IaaS","FaaS"],ans:2,exp:"IaaS gives maximum control because the user manages the OS, middleware, runtime, applications, and data. In PaaS, the provider manages the OS. In SaaS, the provider manages everything."},
+  {q:"FaaS stands for:",opts:["Framework as a Service","File as a Service","Function as a Service","Frontend as a Service"],ans:2,exp:"FaaS (Function as a Service) is a serverless cloud execution model where individual functions are deployed and executed in response to events. AWS Lambda is the most popular FaaS platform."},
+  // --- Virtualization ---
+  {q:"What is the primary role of a hypervisor in cloud computing?",opts:["To manage user accounts in cloud","To create and manage Virtual Machines","To compress data for cloud storage","To encrypt network traffic"],ans:1,exp:"A hypervisor (also called a VMM — Virtual Machine Monitor) is the software layer that creates, manages, and allocates resources to Virtual Machines on a physical host server."},
+  {q:"Which type of hypervisor runs directly on physical hardware without a host OS?",opts:["Type 2 Hypervisor","Hosted Hypervisor","Type 1 (Bare-metal) Hypervisor","Software Hypervisor"],ans:2,exp:"Type 1 (Bare-metal) hypervisors run directly on physical hardware — there is no host OS in between. Examples: VMware ESXi, Microsoft Hyper-V, Xen. They are more efficient and used in production data centers."},
+  {q:"VirtualBox and VMware Workstation are examples of which type of hypervisor?",opts:["Type 1 Hypervisor","Bare-metal Hypervisor","Type 2 (Hosted) Hypervisor","Container Runtime"],ans:2,exp:"VirtualBox and VMware Workstation are Type 2 (Hosted) hypervisors — they run on top of a host operating system (like Windows or Linux). They are mainly used for personal use and development."},
+  {q:"Which of the following is the key difference between a Virtual Machine (VM) and a Container?",opts:["VMs are faster than containers","Containers include a full OS; VMs do not","VMs include a full OS; containers share the host OS kernel","Containers require a hypervisor; VMs do not"],ans:2,exp:"The key difference: VMs include a complete guest OS (making them heavier, ~GBs). Containers only include the application and its dependencies, sharing the host OS kernel — making them much lighter (~MBs) and faster to start."},
+  {q:"Docker is primarily used for:",opts:["Managing virtual machines","Building and running containers","Network virtualization","Cloud monitoring"],ans:1,exp:"Docker is a containerization platform used to build, ship, and run containers. It packages an application with all its dependencies into a portable container image."},
+  {q:"Kubernetes is used for:",opts:["Creating Docker images","Orchestrating (managing) containers at scale","Virtualizing network hardware","Building mobile applications"],ans:1,exp:"Kubernetes (K8s) is a container orchestration system that automates the deployment, scaling, and management of containerized applications across a cluster of machines."},
+  {q:"Live Migration (vMotion in VMware) refers to:",opts:["Moving data from cloud to local storage","Moving a running VM from one physical host to another without downtime","Migrating applications from PaaS to IaaS","Moving user accounts between cloud regions"],ans:1,exp:"Live Migration (called vMotion in VMware) allows a running virtual machine to be moved from one physical host to another without any downtime or disruption to the running applications."},
+  {q:"What is a VM Snapshot?",opts:["A screenshot of the VM's display","A saved state of a VM at a specific point in time","A backup of all files on the VM's disk","A record of VM's network traffic"],ans:1,exp:"A VM Snapshot saves the exact state of a virtual machine (memory, disk, and configuration) at a specific point in time. It allows the VM to be restored to that exact state if something goes wrong."},
+  {q:"Containerization is considered a 'modern' form of virtualization because:",opts:["It requires less coding","Containers are heavier than VMs","Containers are much lighter, faster to start, and more portable than VMs","Containers eliminate the need for operating systems entirely"],ans:2,exp:"Containers are lighter (share host OS kernel), start in seconds (VMs take minutes), are highly portable, and use far fewer resources than traditional VMs. This makes containerization ideal for microservices and DevOps workflows."},
+  {q:"VDI stands for:",opts:["Virtual Data Interface","Virtual Desktop Infrastructure","Virtualized Data Indexing","Virtual Deployment Instance"],ans:1,exp:"VDI (Virtual Desktop Infrastructure) is a virtualization approach that hosts desktop environments on a central server. Users access their virtual desktop remotely from thin clients or other devices."},
+  // --- Data Analytics ---
+  {q:"Which type of analytics asks 'What happened?'",opts:["Predictive Analytics","Prescriptive Analytics","Descriptive Analytics","Diagnostic Analytics"],ans:2,exp:"Descriptive analytics summarizes historical data to answer 'What happened?' It describes past events through reports, dashboards, and summary statistics. Example: Monthly sales report."},
+  {q:"Predictive Analytics is used for:",opts:["Summarizing past events","Finding root causes of past events","Forecasting future outcomes based on historical data","Recommending actions to take"],ans:2,exp:"Predictive analytics uses statistical models and machine learning on historical data to forecast future events. Example: Predicting next month's sales, predicting customer churn."},
+  {q:"Amazon Redshift is an example of a:",opts:["Object Storage Service","Relational Database (OLTP)","Cloud Data Warehouse","Container Registry"],ans:2,exp:"Amazon Redshift is a cloud Data Warehouse — it is designed for OLAP (Online Analytical Processing) and can handle analytics on petabyte-scale datasets using SQL queries."},
+  {q:"What is a Data Lake?",opts:["A cloud database that only stores images","A storage repository that holds raw data in its native format until needed","A type of private cloud for data scientists","A backup service for data warehouses"],ans:1,exp:"A Data Lake is a centralized repository that stores structured, semi-structured, and unstructured data at any scale in its raw format. Data is stored first, then schema applied when reading (schema-on-read). Example: Amazon S3 used as a data lake."},
+  {q:"What distinguishes a Data Warehouse from a Data Lake?",opts:["Data Warehouses store unstructured data; Data Lakes store structured data","Data Warehouses use schema-on-read; Data Lakes use schema-on-write","Data Warehouses store structured data with schema-on-write; Data Lakes store raw data with schema-on-read","Data Warehouses are always in the cloud; Data Lakes are always on-premises"],ans:2,exp:"Data Warehouse: stores structured, processed data; schema defined before writing (schema-on-write). Data Lake: stores raw data in any format; schema applied when reading (schema-on-read). Warehouses serve BI analysts; lakes serve data scientists."},
+  {q:"Google BigQuery is best described as:",opts:["A NoSQL database","A serverless, cloud-native data warehouse for analytics at scale","An object storage service","A machine learning training platform"],ans:1,exp:"Google BigQuery is a serverless, highly scalable, and cost-effective multi-cloud data warehouse designed for business agility. It allows SQL-based analytics on petabytes of data without managing any infrastructure."},
+  // --- Tools ---
+  {q:"Terraform is primarily used for:",opts:["Container orchestration","Web application development","Infrastructure as Code (IaC)","Log monitoring"],ans:2,exp:"Terraform by HashiCorp is an open-source Infrastructure as Code (IaC) tool. It allows you to define and provision cloud infrastructure using a declarative configuration language (HCL). It works across multiple cloud providers."},
+  {q:"AWS Lambda is an example of:",opts:["IaaS","Serverless/FaaS computing","PaaS","Container as a Service"],ans:1,exp:"AWS Lambda is Amazon's serverless compute service (FaaS — Function as a Service). You write functions in Python/Node.js/Java etc., Lambda runs them in response to events without you managing any server."},
+  {q:"Which tool would you use to monitor CPU usage and set alarms for AWS resources?",opts:["AWS Lambda","Amazon CloudWatch","AWS IAM","Amazon S3"],ans:1,exp:"Amazon CloudWatch is AWS's monitoring and observability service. It collects metrics (CPU, memory, disk) from AWS resources, displays dashboards, and can send alarms when thresholds are breached."},
+  {q:"IAM in cloud computing stands for:",opts:["Infrastructure and Management","Identity and Access Management","Integrated Application Monitoring","Internet and Application Management"],ans:1,exp:"IAM (Identity and Access Management) is a framework and service that controls authentication (who you are) and authorization (what you can do) for cloud resources. AWS IAM, Azure Active Directory are examples."},
+  {q:"Amazon S3 is best described as:",opts:["A virtual machine service","A relational database","An object storage service","A container registry"],ans:2,exp:"Amazon S3 (Simple Storage Service) is an object storage service that provides industry-leading scalability, data availability, security, and performance. It stores objects (files) in buckets. Durability: 99.999999999% (11 nines)."},
+  {q:"Ansible is different from Terraform in that Ansible is primarily used for:",opts:["Provisioning cloud infrastructure","Configuration management and automation of existing servers","Container orchestration","Cloud cost optimization"],ans:1,exp:"Ansible is primarily a configuration management and automation tool — it configures and manages the state of existing servers using YAML playbooks. Terraform is for provisioning (creating) infrastructure. Both are often used together."},
+  {q:"The ELK Stack in cloud monitoring refers to:",opts:["Elasticsearch, Lambda, Kubernetes","Elastic Load balancer, Linux, Kibana","Elasticsearch, Logstash, Kibana","Edge Load Kit"],ans:2,exp:"ELK Stack = Elasticsearch (search and analytics engine) + Logstash (log ingestion and processing pipeline) + Kibana (visualization dashboard). Together they provide powerful log collection, analysis, and visualization for cloud applications."},
+  {q:"A VPC (Virtual Private Cloud) is used to:",opts:["Create virtual desktop environments","Isolate a private network within the public cloud for your resources","Manage virtual machine snapshots","Monitor cloud application performance"],ans:1,exp:"A VPC (Virtual Private Cloud) allows you to create a logically isolated private network within a public cloud provider's infrastructure. Your cloud resources (VMs, databases) run inside this isolated network, enhancing security."},
+  // --- Careers & General ---
+  {q:"Which cloud certification is considered the best entry-level certification for beginners?",opts:["AWS Solutions Architect Professional","Certified Kubernetes Administrator (CKA)","AWS Cloud Practitioner (CCP)","Google Professional Cloud Architect"],ans:2,exp:"The AWS Cloud Practitioner (CCP) is widely recommended as the ideal entry-level cloud certification. It covers cloud fundamentals, AWS services, and cloud economics without requiring deep technical knowledge."},
+  {q:"A Cloud Architect is primarily responsible for:",opts:["Writing application code for cloud-native apps","Designing and planning cloud infrastructure solutions for organizations","Managing day-to-day server maintenance","Conducting cybersecurity penetration testing"],ans:1,exp:"A Cloud Architect designs end-to-end cloud infrastructure solutions, creates cloud migration strategies, and ensures that technical architectures meet business, security, and compliance requirements."},
+  {q:"Which of the following is the LARGEST cloud provider by market share?",opts:["Microsoft Azure","Google Cloud Platform","Amazon Web Services (AWS)","IBM Cloud"],ans:2,exp:"Amazon Web Services (AWS) holds the largest share of the cloud computing market (~33%), followed by Microsoft Azure (~22%), and Google Cloud Platform (~11%). AWS pioneered commercial cloud services with EC2 in 2006."},
+  {q:"'Elasticity' in cloud computing means:",opts:["The ability to stretch physical servers","The ability to automatically scale resources up or down based on demand","The flexibility to choose any cloud provider","The durability of data stored in cloud"],ans:1,exp:"Elasticity in cloud computing refers to the ability to automatically scale resources (compute, storage, network) up when demand increases and scale down when demand decreases — ensuring optimal performance and cost."},
+  {q:"Which of the following best describes the 'Shared Responsibility Model' in cloud security?",opts:["The cloud provider is responsible for ALL security","The customer is responsible for ALL security","Security responsibilities are divided between the cloud provider and the customer","Only third-party auditors are responsible for cloud security"],ans:2,exp:"The Shared Responsibility Model divides security obligations: the cloud provider secures the underlying infrastructure (hardware, data center, network) — 'security OF the cloud'. The customer secures their data, applications, and configurations — 'security IN the cloud'."}
+];
+
+// ── MCQ ENGINE ──
+let currentQ = 0;
+let answered = Array(50).fill(null); // null=unanswered, {chosen, correct}
+let stats = { answered: 0, correct: 0, wrong: 0 };
+
+function buildMCQ() {
+  const tracker = document.getElementById('mcq-tracker');
+  tracker.innerHTML = '';
+  mcqData.forEach((_, i) => {
+    const dot = document.createElement('div');
+    dot.className = 'tracker-dot' + (i === 0 ? ' current' : '');
+    dot.textContent = i + 1;
+    dot.onclick = () => goToQ(i);
+    dot.id = 'dot-' + i;
+    tracker.appendChild(dot);
+  });
+
+  const body = document.getElementById('mcq-body');
+  body.innerHTML = '';
+  mcqData.forEach((q, i) => {
+    const card = document.createElement('div');
+    card.className = 'mcq-question-card' + (i === 0 ? ' active' : '');
+    card.id = 'card-' + i;
+    card.innerHTML = `
+      <div class="mcq-q-header">
+        <div class="mcq-q-num">${i+1}</div>
+        <div class="mcq-q-text">${q.q}</div>
+      </div>
+      <div class="mcq-options" id="opts-${i}">
+        ${q.opts.map((o, oi) => `
+          <div class="mcq-option" data-qi="${i}" data-oi="${oi}" onclick="selectOption(this,${i},${oi})">
+            <span class="opt-letter">${String.fromCharCode(65+oi)}</span>
+            <span>${o}</span>
+          </div>`).join('')}
+      </div>
+      <div class="mcq-explanation" id="exp-${i}">
+        <strong>✅ Answer: ${String.fromCharCode(65+q.ans)}. ${q.opts[q.ans]}</strong><br>${q.exp}
+      </div>
+      <div class="mcq-nav">
+        <button class="mcq-nav-btn" onclick="goToQ(${i-1})" ${i===0?'disabled':''}>← Prev</button>
+        <span class="mcq-progress-label">${i+1} / 50</span>
+        <button class="mcq-nav-btn" onclick="${i===49?'showScore()':'goToQ('+(i+1)+')'}">${i===49?'Finish 🏁':'Next →'}</button>
+      </div>`;
+    body.appendChild(card);
+  });
+}
+
+function selectOption(el, qi, oi) {
+  if (answered[qi] !== null) return; // already answered
+  const q = mcqData[qi];
+  const opts = document.querySelectorAll(`#opts-${qi} .mcq-option`);
+  opts.forEach((o, i) => {
+    if (i === q.ans) o.classList.add('correct');
+    if (i === oi && oi !== q.ans) o.classList.add('wrong');
+    if (i === oi) o.classList.add('selected');
+  });
+  const isCorrect = oi === q.ans;
+  answered[qi] = { chosen: oi, correct: isCorrect };
+  stats.answered++;
+  if (isCorrect) stats.correct++; else stats.wrong++;
+  document.getElementById('exp-' + qi).classList.add('show');
+  updateStats();
+  updateDot(qi, isCorrect);
+}
+
+function goToQ(i) {
+  if (i < 0 || i >= 50) return;
+  document.getElementById('card-' + currentQ).classList.remove('active');
+  document.getElementById('dot-' + currentQ).classList.remove('current');
+  currentQ = i;
+  document.getElementById('card-' + currentQ).classList.add('active');
+  document.getElementById('dot-' + currentQ).classList.add('current');
+  document.getElementById('card-' + currentQ).scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
+function updateDot(qi, correct) {
+  const dot = document.getElementById('dot-' + qi);
+  dot.classList.remove('answered');
+  dot.classList.add(correct ? 'correct' : 'wrong');
+}
+
+function updateStats() {
+  document.getElementById('stat-answered').textContent = stats.answered;
+  document.getElementById('stat-correct').textContent = stats.correct;
+  document.getElementById('stat-wrong').textContent = stats.wrong;
+}
+
+function showScore() {
+  const sc = document.getElementById('score-card');
+  sc.classList.add('show');
+  document.getElementById('score-display').textContent = stats.correct + '/50';
+  const pct = (stats.correct / 50) * 100;
+  let msg = '';
+  if (pct >= 90) msg = '🏆 Excellent! You are well-prepared for the exam!';
+  else if (pct >= 70) msg = '👍 Good job! Revise a few more topics.';
+  else if (pct >= 50) msg = '📚 Average. Focus on the weak areas and revise.';
+  else msg = '💪 Keep practicing! Read the notes again carefully.';
+  document.getElementById('score-msg').textContent = msg;
+  sc.scrollIntoView({ behavior: 'smooth' });
+}
+
+function restartMCQ() {
+  answered = Array(50).fill(null);
+  stats = { answered: 0, correct: 0, wrong: 0 };
+  currentQ = 0;
+  document.getElementById('score-card').classList.remove('show');
+  updateStats();
+  buildMCQ();
+  document.getElementById('mcq-tracker').scrollIntoView({ behavior: 'smooth' });
+}
+
+// Initialize
+buildMCQ();
+</script>
+</body>
+</html>

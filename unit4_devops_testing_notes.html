@@ -1,0 +1,1062 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CSE121 – Unit IV: DevOps &amp; Software Testing</title>
+<meta name="description" content="Complete interactive notes for CSE121 Unit IV: DevOps & Software Testing - DevOps Lifecycle, CI/CD, Git, Docker, Testing Types, Defect Life Cycle and 50 MCQs">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Caveat:wght@400;500;600;700&family=Kalam:wght@300;400;700&family=Patrick+Hand&family=Nunito:ital,wght@0,300;0,400;0,600;0,700;1,400&display=swap');
+
+  :root {
+    --paper: #fdfcf7;
+    --paper2: #f9f8f0;
+    --lines: #c8dff5;
+    --ink: #1a1a2e;
+    --ink-light: #3a3a5c;
+    --blue: #2563eb;
+    --blue-light: #dbeafe;
+    --blue-mid: #93c5fd;
+    --teal: #0d9488;
+    --teal-light: #ccfbf1;
+    --amber: #d97706;
+    --amber-light: #fef3c7;
+    --rose: #e11d48;
+    --rose-light: #ffe4e6;
+    --green: #16a34a;
+    --green-light: #dcfce7;
+    --purple: #7c3aed;
+    --purple-light: #ede9fe;
+    --orange: #ea580c;
+    --orange-light: #fff7ed;
+    --shadow: rgba(37,99,235,0.10);
+    --hole-shadow: rgba(0,0,0,0.12);
+    --spiral: #9ca3af;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'Nunito', sans-serif;
+    background: #e8edf5;
+    background-image: radial-gradient(#c3d1e8 1px, transparent 1px);
+    background-size: 24px 24px;
+    color: var(--ink);
+    min-height: 100vh;
+  }
+
+  #progress-bar {
+    position: fixed; top: 0; left: 0; height: 3px;
+    background: linear-gradient(90deg, var(--orange), var(--teal), var(--blue));
+    width: 0%; z-index: 9999; transition: width 0.2s ease;
+    box-shadow: 0 0 6px rgba(234,88,12,.4);
+  }
+
+  #top-nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 1000;
+    background: rgba(253,252,247,.96); backdrop-filter: blur(8px);
+    border-bottom: 2px solid var(--lines);
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 20px; height: 54px;
+    box-shadow: 0 2px 12px var(--shadow);
+  }
+  #top-nav .brand { font-family: 'Caveat', cursive; font-size: 1.4rem; font-weight: 700; color: var(--orange); letter-spacing: 0.5px; }
+  #top-nav .brand span { color: var(--teal); }
+  #menu-toggle { display: none; flex-direction: column; gap: 5px; background: none; border: none; cursor: pointer; padding: 4px; }
+  #menu-toggle span { display: block; width: 22px; height: 2px; background: var(--ink); border-radius: 2px; transition: all .3s; }
+  .nav-links { display: flex; gap: 14px; flex-wrap: wrap; }
+  .nav-links a { font-family: 'Kalam', cursive; font-size: .85rem; font-weight: 700; color: var(--ink-light); text-decoration: none; padding: 4px 10px; border-radius: 20px; transition: all .2s; }
+  .nav-links a:hover, .nav-links a.active { background: var(--orange-light); color: var(--orange); }
+
+  .layout { display: flex; padding-top: 54px; min-height: 100vh; }
+
+  #sidebar {
+    position: fixed; top: 54px; left: 0; bottom: 0; width: 260px; overflow-y: auto;
+    background: var(--paper); border-right: 2px solid var(--lines);
+    padding: 16px 0 40px; z-index: 800; transition: transform .3s ease;
+    box-shadow: 2px 0 16px var(--shadow);
+  }
+  #sidebar::-webkit-scrollbar { width: 4px; }
+  #sidebar::-webkit-scrollbar-thumb { background: var(--lines); border-radius: 4px; }
+  .sidebar-title { font-family: 'Caveat', cursive; font-size: 1rem; font-weight: 700; color: var(--orange); padding: 0 16px 10px; border-bottom: 1.5px dashed var(--lines); margin-bottom: 8px; }
+  .toc-item { display: block; padding: 6px 16px 6px 20px; font-family: 'Patrick Hand', cursive; font-size: .82rem; color: var(--ink-light); text-decoration: none; border-left: 3px solid transparent; transition: all .2s; line-height: 1.4; }
+  .toc-item:hover, .toc-item.active { background: var(--orange-light); border-left-color: var(--orange); color: var(--orange); }
+  .toc-item.sub { padding-left: 30px; font-size: .77rem; opacity: .85; }
+  .toc-item.mcq-link { color: var(--purple); font-weight: bold; margin-top: 8px; }
+  .toc-item.mcq-link:hover { background: var(--purple-light); border-left-color: var(--purple); }
+
+  #main { margin-left: 260px; flex: 1; padding: 30px 24px 60px; max-width: 900px; }
+
+  .notebook-page { background: var(--paper); border-radius: 4px 12px 12px 4px; margin-bottom: 28px; box-shadow: 4px 4px 20px var(--shadow), 1px 1px 0 rgba(0,0,0,.04); position: relative; overflow: hidden; }
+  .notebook-page::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 44px; background: var(--paper2); border-right: 2px solid var(--lines); }
+  .spiral-holes { position: absolute; left: 0; top: 0; bottom: 0; width: 44px; display: flex; flex-direction: column; align-items: center; justify-content: space-evenly; z-index: 2; pointer-events: none; }
+  .spiral-hole { width: 14px; height: 14px; border-radius: 50%; background: #e8edf5; border: 2px solid var(--spiral); box-shadow: inset 0 1px 3px var(--hole-shadow); flex-shrink: 0; }
+  .page-content { padding: 24px 28px 28px 58px; background-image: repeating-linear-gradient(transparent, transparent 27px, var(--lines) 28px); min-height: 200px; }
+
+  .cover-page { text-align: center; padding: 48px 58px 40px 58px; background: var(--paper); background-image: none; }
+  .cover-subject { font-family: 'Kalam', cursive; font-size: .9rem; font-weight: 400; color: var(--teal); letter-spacing: 2px; text-transform: uppercase; margin-bottom: 8px; }
+  .cover-title { font-family: 'Caveat', cursive; font-size: 2.8rem; font-weight: 700; color: var(--ink); line-height: 1.2; margin-bottom: 6px; }
+  .cover-subtitle { font-family: 'Patrick Hand', cursive; font-size: 1.1rem; color: var(--orange); margin-bottom: 24px; }
+  .cover-divider { width: 100px; height: 3px; background: linear-gradient(90deg, var(--orange), var(--teal)); border-radius: 2px; margin: 0 auto 24px; }
+  .cover-meta { display: flex; justify-content: center; gap: 20px; flex-wrap: wrap; }
+  .cover-tag { background: var(--orange-light); color: var(--orange); border-radius: 20px; padding: 5px 14px; font-family: 'Patrick Hand', cursive; font-size: .82rem; border: 1.5px solid #fdba74; }
+
+  .section-heading { font-family: 'Caveat', cursive; font-size: 1.85rem; font-weight: 700; color: var(--ink); margin-bottom: 8px; display: flex; align-items: center; gap: 10px; padding-bottom: 6px; border-bottom: 2px solid var(--lines); }
+  .section-heading .icon { font-size: 1.4rem; flex-shrink: 0; }
+  .section-heading .badge { font-family: 'Patrick Hand', cursive; font-size: .75rem; background: var(--orange); color: #fff; border-radius: 20px; padding: 2px 10px; margin-left: auto; }
+  .sub-heading { font-family: 'Caveat', cursive; font-size: 1.35rem; font-weight: 600; color: var(--orange); margin: 18px 0 6px; padding-left: 10px; border-left: 3px solid var(--orange); }
+  .sub-heading2 { font-family: 'Kalam', cursive; font-size: 1.05rem; font-weight: 700; color: var(--teal); margin: 14px 0 5px; }
+
+  p { font-size: .96rem; line-height: 1.9; color: var(--ink-light); margin-bottom: 10px; font-family: 'Patrick Hand', cursive; }
+  strong { color: var(--ink); font-weight: 700; }
+
+  ul.notes-list, ol.notes-list { padding-left: 22px; margin: 8px 0 10px; }
+  ul.notes-list li, ol.notes-list li { font-family: 'Patrick Hand', cursive; font-size: .95rem; line-height: 1.8; color: var(--ink-light); margin-bottom: 4px; padding-left: 4px; }
+  ul.notes-list li::marker { color: var(--orange); }
+  ol.notes-list li::marker { color: var(--orange); font-weight: 700; }
+
+  .box { border-radius: 10px; padding: 14px 18px; margin: 14px 0; border-left: 4px solid; font-family: 'Patrick Hand', cursive; font-size: .93rem; line-height: 1.8; }
+  .box-title { font-family: 'Kalam', cursive; font-weight: 700; font-size: 1rem; margin-bottom: 5px; display: flex; align-items: center; gap: 6px; }
+  .box.def { background: var(--blue-light); border-color: var(--blue); }
+  .box.tip { background: var(--amber-light); border-color: var(--amber); }
+  .box.imp { background: var(--rose-light); border-color: var(--rose); }
+  .box.sum { background: var(--green-light); border-color: var(--green); }
+  .box.note { background: var(--purple-light); border-color: var(--purple); }
+  .box.teal { background: var(--teal-light); border-color: var(--teal); }
+
+  .cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 14px; margin: 14px 0; }
+  .card { background: var(--paper2); border: 1.5px solid var(--lines); border-radius: 10px; padding: 14px; transition: transform .2s, box-shadow .2s; cursor: default; }
+  .card:hover { transform: translateY(-3px); box-shadow: 0 6px 20px var(--shadow); }
+  .card .card-icon { font-size: 1.6rem; margin-bottom: 6px; }
+  .card .card-title { font-family: 'Kalam', cursive; font-size: .95rem; font-weight: 700; color: var(--ink); margin-bottom: 4px; }
+  .card .card-body { font-family: 'Patrick Hand', cursive; font-size: .83rem; color: var(--ink-light); line-height: 1.6; }
+
+  .notes-table { width: 100%; border-collapse: collapse; margin: 14px 0; font-family: 'Patrick Hand', cursive; font-size: .88rem; }
+  .notes-table th { background: var(--orange); color: #fff; padding: 8px 12px; text-align: left; font-family: 'Kalam', cursive; font-weight: 700; }
+  .notes-table td { padding: 8px 12px; border-bottom: 1px solid var(--lines); color: var(--ink-light); vertical-align: top; }
+  .notes-table tr:nth-child(even) td { background: var(--orange-light); }
+  .notes-table tr:hover td { background: var(--teal-light); }
+
+  .lifecycle { display: flex; flex-wrap: wrap; gap: 0; margin: 14px 0; align-items: center; }
+  .lc-step { background: var(--orange); color: #fff; padding: 10px 16px; font-family: 'Kalam', cursive; font-weight: 700; font-size: .83rem; clip-path: polygon(0 0,calc(100% - 12px) 0,100% 50%,calc(100% - 12px) 100%,0 100%,12px 50%); margin-right: -8px; min-width: 100px; text-align: center; line-height: 1.3; transition: transform .2s; }
+  .lc-step:first-child { clip-path: polygon(0 0,calc(100% - 12px) 0,100% 50%,calc(100% - 12px) 100%,0 100%); margin-left: 0; }
+  .lc-step:hover { transform: scale(1.05); z-index: 2; }
+  .lc-step:nth-child(2) { background: #c2410c; }
+  .lc-step:nth-child(3) { background: var(--amber); }
+  .lc-step:nth-child(4) { background: var(--teal); }
+  .lc-step:nth-child(5) { background: var(--blue); }
+  .lc-step:nth-child(6) { background: var(--purple); }
+  .lc-step:nth-child(7) { background: var(--green); }
+  .lc-step:nth-child(8) { background: var(--rose); }
+
+  .tool-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 14px; margin: 14px 0; }
+  .tool-card { border-radius: 12px; padding: 18px; border: 2px solid var(--lines); background: var(--paper); transition: transform .2s, box-shadow .2s; }
+  .tool-card:hover { transform: translateY(-4px); box-shadow: 0 8px 24px var(--shadow); }
+  .tool-card .tool-name { font-family: 'Caveat', cursive; font-size: 1.4rem; font-weight: 700; margin-bottom: 8px; }
+  .tool-card .tool-desc { font-family: 'Patrick Hand', cursive; font-size: .88rem; color: var(--ink-light); line-height: 1.7; }
+
+  .collapsible-btn { width: 100%; background: var(--paper2); border: 1.5px solid var(--lines); border-radius: 8px; padding: 10px 14px; text-align: left; font-family: 'Kalam', cursive; font-size: 1rem; font-weight: 700; color: var(--ink); cursor: pointer; display: flex; justify-content: space-between; align-items: center; transition: all .2s; margin: 8px 0; }
+  .collapsible-btn:hover { background: var(--orange-light); color: var(--orange); }
+  .collapsible-btn .arrow { transition: transform .3s; font-size: .9rem; }
+  .collapsible-btn.open .arrow { transform: rotate(90deg); }
+  .collapsible-body { display: none; padding: 12px 16px; background: var(--paper2); border: 1.5px solid var(--lines); border-top: none; border-radius: 0 0 8px 8px; font-family: 'Patrick Hand', cursive; font-size: .93rem; color: var(--ink-light); line-height: 1.8; animation: slideDown .3s ease; }
+  .collapsible-body.open { display: block; }
+  @keyframes slideDown { from { opacity: 0; transform: translateY(-8px); } to { opacity: 1; transform: translateY(0); } }
+
+  .revision-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 12px; margin: 14px 0; }
+  .rev-card { border-radius: 10px; padding: 14px; border: 1.5px dashed #fdba74; background: var(--orange-light); }
+  .rev-card .rev-q { font-family: 'Kalam', cursive; font-size: .88rem; font-weight: 700; color: var(--orange); margin-bottom: 5px; }
+  .rev-card .rev-a { font-family: 'Patrick Hand', cursive; font-size: .85rem; color: var(--ink-light); line-height: 1.6; }
+
+  #mcq-section { background: var(--paper); border-radius: 4px 12px 12px 4px; box-shadow: 4px 4px 20px var(--shadow); overflow: hidden; margin-bottom: 28px; }
+  .mcq-header { background: linear-gradient(135deg, var(--orange) 0%, var(--purple) 100%); color: #fff; padding: 28px 32px; position: relative; overflow: hidden; }
+  .mcq-header::after { content: '⚙️'; position: absolute; right: 28px; bottom: 8px; font-size: 4rem; opacity: .15; }
+  .mcq-header h2 { font-family: 'Caveat', cursive; font-size: 2rem; font-weight: 700; margin-bottom: 4px; }
+  .mcq-header p { font-family: 'Patrick Hand', cursive; font-size: .9rem; color: rgba(255,255,255,.85); margin: 0; }
+  .mcq-progress-bar-wrap { background: rgba(255,255,255,.2); border-radius: 20px; height: 8px; margin-top: 14px; overflow: hidden; }
+  .mcq-progress-fill { height: 100%; border-radius: 20px; background: rgba(255,255,255,.7); transition: width .4s ease; width: 0%; }
+  .mcq-progress-text { font-family: 'Patrick Hand', cursive; font-size: .82rem; color: rgba(255,255,255,.85); margin-top: 4px; }
+  .mcq-body { padding: 28px 32px; }
+  .mcq-question-block { display: none; animation: fadeIn .4s ease; }
+  .mcq-question-block.active { display: block; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateX(20px); } to { opacity: 1; transform: translateX(0); } }
+
+  .q-number { font-family: 'Kalam', cursive; font-size: .82rem; font-weight: 700; color: var(--orange); letter-spacing: 1px; text-transform: uppercase; margin-bottom: 8px; }
+  .q-text { font-family: 'Kalam', cursive; font-size: 1.1rem; font-weight: 700; color: var(--ink); line-height: 1.6; margin-bottom: 18px; }
+  .q-options { display: flex; flex-direction: column; gap: 10px; margin-bottom: 18px; }
+  .q-option { display: flex; align-items: flex-start; gap: 12px; padding: 12px 16px; border-radius: 10px; border: 2px solid var(--lines); cursor: pointer; transition: all .2s; font-family: 'Patrick Hand', cursive; font-size: .95rem; color: var(--ink-light); background: var(--paper2); user-select: none; }
+  .q-option:hover:not(.answered) { border-color: var(--orange); background: var(--orange-light); color: var(--orange); transform: translateX(4px); }
+  .q-option .opt-label { font-family: 'Kalam', cursive; font-weight: 700; font-size: 1rem; color: var(--orange); min-width: 22px; flex-shrink: 0; }
+  .q-option.correct { background: var(--green-light); border-color: var(--green); color: var(--green); }
+  .q-option.correct .opt-label { color: var(--green); }
+  .q-option.wrong { background: var(--rose-light); border-color: var(--rose); color: var(--rose); }
+  .q-option.wrong .opt-label { color: var(--rose); }
+  .q-option.reveal-correct { background: var(--green-light); border-color: var(--green); color: var(--green); }
+
+  .q-explanation { display: none; padding: 14px 16px; background: var(--amber-light); border-left: 4px solid var(--amber); border-radius: 8px; margin-bottom: 18px; font-family: 'Patrick Hand', cursive; font-size: .9rem; color: var(--ink); line-height: 1.7; animation: slideDown .3s ease; }
+  .q-explanation.show { display: block; }
+  .q-explanation .exp-title { font-family: 'Kalam', cursive; font-weight: 700; font-size: .9rem; color: var(--amber); margin-bottom: 4px; display: flex; align-items: center; gap: 5px; }
+
+  .mcq-nav { display: flex; justify-content: space-between; align-items: center; padding-top: 14px; border-top: 1.5px dashed var(--lines); }
+  .mcq-btn { padding: 10px 22px; border: none; border-radius: 8px; font-family: 'Kalam', cursive; font-size: .95rem; font-weight: 700; cursor: pointer; transition: all .2s; }
+  .mcq-btn.prev { background: var(--paper2); color: var(--ink-light); border: 2px solid var(--lines); }
+  .mcq-btn.prev:hover { background: var(--orange-light); color: var(--orange); }
+  .mcq-btn.next { background: var(--orange); color: #fff; }
+  .mcq-btn.next:hover { background: #c2410c; }
+  .mcq-btn:disabled { opacity: .4; cursor: not-allowed; }
+  .q-counter { font-family: 'Kalam', cursive; font-size: .9rem; color: var(--ink-light); }
+  .q-counter strong { color: var(--orange); }
+
+  .score-panel { display: none; text-align: center; padding: 40px 20px; animation: fadeIn .5s ease; }
+  .score-panel.show { display: block; }
+  .score-emoji { font-size: 4rem; margin-bottom: 14px; }
+  .score-title { font-family: 'Caveat', cursive; font-size: 2rem; font-weight: 700; color: var(--ink); margin-bottom: 8px; }
+  .score-value { font-family: 'Kalam', cursive; font-size: 1.4rem; color: var(--orange); margin-bottom: 16px; }
+  .score-restart { padding: 12px 28px; background: var(--orange); color: #fff; border: none; border-radius: 10px; font-family: 'Kalam', cursive; font-size: 1rem; font-weight: 700; cursor: pointer; transition: all .2s; }
+  .score-restart:hover { background: #c2410c; transform: scale(1.03); }
+
+  .reveal { opacity: 0; transform: translateY(28px); transition: opacity .6s ease, transform .6s ease; }
+  .reveal.visible { opacity: 1; transform: translateY(0); }
+
+  .hl { background: #fef08a; padding: 0 2px; border-radius: 3px; }
+  .hl-blue { background: var(--blue-light); padding: 0 2px; border-radius: 3px; color: var(--blue); font-weight: 700; }
+  .hl-green { background: var(--green-light); padding: 0 2px; border-radius: 3px; color: var(--green); font-weight: 700; }
+  .hl-rose { background: var(--rose-light); padding: 0 2px; border-radius: 3px; color: var(--rose); font-weight: 700; }
+
+  @media (max-width: 768px) {
+    #sidebar { transform: translateX(-100%); }
+    #sidebar.open { transform: translateX(0); }
+    #main { margin-left: 0; padding: 20px 14px 50px; }
+    #menu-toggle { display: flex; }
+    .lifecycle { flex-direction: column; }
+    .lc-step { clip-path: none; margin: 2px 0; border-radius: 6px; }
+    .mcq-body { padding: 20px 16px; }
+    .cover-title { font-size: 2rem; }
+  }
+  @media (max-width: 500px) {
+    .cards { grid-template-columns: 1fr; }
+    .tool-grid { grid-template-columns: 1fr; }
+    .revision-grid { grid-template-columns: 1fr; }
+    .nav-links { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<div id="progress-bar"></div>
+
+<nav id="top-nav">
+  <div class="brand">CSE121 <span>Notes</span></div>
+  <button id="menu-toggle" aria-label="Menu"><span></span><span></span><span></span></button>
+  <div class="nav-links">
+    <a href="#cover">Home</a>
+    <a href="#sec-devops">DevOps</a>
+    <a href="#sec-tools">Tools</a>
+    <a href="#sec-lifecycle">Lifecycle</a>
+    <a href="#sec-cicd">CI/CD</a>
+    <a href="#sec-testing">Testing</a>
+    <a href="#sec-defect">Defect Cycle</a>
+    <a href="#mcq-section">MCQs</a>
+  </div>
+</nav>
+
+<div id="sidebar-overlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.3);z-index:799;"></div>
+
+<div class="layout">
+  <aside id="sidebar">
+    <div class="sidebar-title">⚙️ Unit IV Contents</div>
+    <a class="toc-item" href="#cover">🏠 Cover</a>
+    <a class="toc-item" href="#sec-devops">🔄 Introduction to DevOps</a>
+    <a class="toc-item sub" href="#devops-def">→ Definition</a>
+    <a class="toc-item sub" href="#devops-vs">→ DevOps vs Traditional</a>
+    <a class="toc-item sub" href="#devops-apps">→ Real-life Applications</a>
+    <a class="toc-item" href="#sec-tools">🔧 DevOps Tools</a>
+    <a class="toc-item sub" href="#tool-git">→ Git</a>
+    <a class="toc-item sub" href="#tool-docker">→ Docker</a>
+    <a class="toc-item sub" href="#tool-selenium">→ Selenium</a>
+    <a class="toc-item sub" href="#tool-maven">→ Maven</a>
+    <a class="toc-item sub" href="#tool-ansible">→ Puppet & Ansible</a>
+    <a class="toc-item sub" href="#tool-k8s">→ Kubernetes</a>
+    <a class="toc-item sub" href="#tool-nagios">→ Nagios</a>
+    <a class="toc-item" href="#sec-lifecycle">♻️ DevOps Lifecycle</a>
+    <a class="toc-item sub" href="#lc-automation">→ Role of Automation</a>
+    <a class="toc-item" href="#sec-cicd">🚀 CI/CD</a>
+    <a class="toc-item sub" href="#cicd-ci">→ Continuous Integration</a>
+    <a class="toc-item sub" href="#cicd-cd">→ Continuous Delivery/Deployment</a>
+    <a class="toc-item" href="#sec-testing">🧪 Software Testing</a>
+    <a class="toc-item sub" href="#test-types">→ Types of Testing</a>
+    <a class="toc-item sub" href="#test-levels">→ Levels of Testing</a>
+    <a class="toc-item sub" href="#test-manual-auto">→ Manual vs Automation</a>
+    <a class="toc-item sub" href="#test-case">→ Test Case Design</a>
+    <a class="toc-item" href="#sec-defect">🐛 Defect Life Cycle</a>
+    <a class="toc-item" href="#sec-careers">💼 Career Opportunities</a>
+    <a class="toc-item" href="#sec-revision">✏️ Quick Revision</a>
+    <a class="toc-item mcq-link" href="#mcq-section">🧠 MCQ Practice (50 Qs)</a>
+  </aside>
+
+  <main id="main">
+
+    <!-- COVER -->
+    <div id="cover" class="notebook-page reveal">
+      <div class="spiral-holes"></div>
+      <div class="page-content cover-page">
+        <div class="cover-subject">Orientation to Computing – II &nbsp;|&nbsp; CSE121</div>
+        <div class="cover-title">Unit IV: DevOps &amp; Software Testing</div>
+        <div class="cover-subtitle">LPU School of Computer Science &amp; Engineering</div>
+        <div class="cover-divider"></div>
+        <div class="cover-meta">
+          <span class="cover-tag">🔄 DevOps Basics</span>
+          <span class="cover-tag">🔧 Git · Docker · K8s</span>
+          <span class="cover-tag">♻️ DevOps Lifecycle</span>
+          <span class="cover-tag">🚀 CI/CD Pipeline</span>
+          <span class="cover-tag">🧪 Testing Types</span>
+          <span class="cover-tag">🐛 Defect Cycle</span>
+          <span class="cover-tag">💼 Careers</span>
+          <span class="cover-tag">🧠 50 MCQs</span>
+        </div>
+        <div style="margin-top:24px;">
+          <div class="box def" style="text-align:left;max-width:500px;margin:0 auto;">
+            <div class="box-title">🎯 Course Outcome (CO4)</div>
+            Recognize various DevOps, Software testing tools with their applications, along with their job roles and skill sets.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SECTION 1: INTRODUCTION TO DEVOPS -->
+    <div id="sec-devops" class="notebook-page reveal">
+      <div class="spiral-holes"></div>
+      <div class="page-content">
+        <div class="section-heading"><span class="icon">🔄</span> Introduction to DevOps <span class="badge">Section 1</span></div>
+
+        <div id="devops-def">
+          <div class="sub-heading">What is DevOps?</div>
+          <div class="box def">
+            <div class="box-title">📌 Definition</div>
+            <strong>DevOps</strong> = <span class="hl">Development (Dev) + Operations (Ops)</span>. It is a software development approach that emphasizes collaboration and communication between development and operations teams. DevOps is a set of practices and tools designed to shorten the life cycle of a software development process while delivering high-quality software.
+          </div>
+          <ul class="notes-list">
+            <li>Allows a single team to handle the <strong>entire application lifecycle</strong> — from development to testing, deployment, and operations</li>
+            <li>Reduces the disconnection between <strong>software developers, quality assurance engineers, and system administrators</strong></li>
+            <li><strong>Automates workflows</strong> for faster delivery</li>
+            <li>Enables <strong>continuous integration and continuous deployment (CI/CD)</strong></li>
+            <li>Boosts <strong>software quality, speed, and security</strong></li>
+            <li>Encourages <strong>iterative feedback and constant improvement</strong></li>
+          </ul>
+        </div>
+
+        <div id="devops-vs">
+          <div class="sub-heading">DevOps vs Traditional Software Development</div>
+          <div class="sub-heading2">Traditional Software Models</div>
+          <ul class="notes-list">
+            <li><strong>Waterfall:</strong> Sequential, rigid, phase-by-phase approach — each phase must complete before the next begins</li>
+            <li><strong>Iterative:</strong> Incremental, repetitive cycles with feedback loops</li>
+            <li><strong>Agile:</strong> Flexible, customer-centric approach with short sprints</li>
+            <li><strong>V-Model:</strong> Verification and validation at each stage</li>
+          </ul>
+
+          <table class="notes-table">
+            <thead><tr><th>Aspect</th><th>Traditional</th><th>DevOps</th></tr></thead>
+            <tbody>
+              <tr><td><strong>Team Structure</strong></td><td>Separate Dev and Ops teams</td><td>Unified, cross-functional team</td></tr>
+              <tr><td><strong>Deployment</strong></td><td>Manual, infrequent releases</td><td>Automated, continuous deployment</td></tr>
+              <tr><td><strong>Feedback</strong></td><td>Slow feedback loops</td><td>Continuous, real-time feedback</td></tr>
+              <tr><td><strong>Testing</strong></td><td>End-of-cycle testing</td><td>Continuous testing throughout</td></tr>
+              <tr><td><strong>Speed</strong></td><td>Slower delivery</td><td>Faster, iterative delivery</td></tr>
+              <tr><td><strong>Risk</strong></td><td>Higher risk at deployment</td><td>Lower risk, incremental changes</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div id="devops-apps">
+          <div class="sub-heading">Real-Life Applications of DevOps</div>
+          <ul class="notes-list">
+            <li><strong>Online Financial Trading:</strong> Automated testing, building & development — deployment in 45 seconds instead of long nights</li>
+            <li><strong>Network Cycling:</strong> Deployment and testing became 10x faster; security patches daily instead of quarterly</li>
+            <li><strong>Car Manufacturing:</strong> DevOps helped catch errors while scaling production</li>
+            <li><strong>Airline Industry:</strong> United Airlines saved $500,000 by switching to continuous testing; code coverage increased by 85%</li>
+            <li><strong>GM Financial:</strong> Regression testing time reduced by 93%; loan funding period reduced 5x</li>
+            <li><strong>Key Bank:</strong> Integration of security and compliance reduced from 3 months to 1 week</li>
+          </ul>
+        </div>
+
+        <div class="box tip">
+          <div class="box-title">💡 Exam Tip</div>
+          DevOps = Dev + Ops = <strong>Collaboration + Automation + CI/CD + Continuous Improvement</strong>. It's NOT just a tool — it's a <strong>culture and practice</strong>.
+        </div>
+      </div>
+    </div>
+
+    <!-- SECTION 2: DEVOPS TOOLS -->
+    <div id="sec-tools" class="notebook-page reveal">
+      <div class="spiral-holes"></div>
+      <div class="page-content">
+        <div class="section-heading"><span class="icon">🔧</span> DevOps Tools <span class="badge">Section 2</span></div>
+
+        <div class="tool-grid" id="tool-git">
+          <div class="tool-card" style="border-color: var(--orange);">
+            <div class="tool-name" style="color: var(--orange);">📦 Git — Version Control</div>
+            <div class="tool-desc">
+              <strong>Type:</strong> Distributed version control system<br>
+              <strong>Purpose:</strong> Track code changes, enable collaboration<br>
+              <strong>Key Features:</strong> Branching, merging, rollback, commit history<br>
+              <strong>Platforms:</strong> GitHub, GitLab, Bitbucket<br>
+              <strong>Stat:</strong> 90%+ developers use Git (Stack Overflow Survey)<br>
+              <strong>Benefits:</strong> Parallel development, code review, efficient history management
+            </div>
+          </div>
+          <div class="tool-card" style="border-color: var(--blue);" id="tool-docker">
+            <div class="tool-name" style="color: var(--blue);">🐳 Docker — Containerization</div>
+            <div class="tool-desc">
+              <strong>Type:</strong> Containerization platform<br>
+              <strong>Purpose:</strong> Develop, ship, run apps in containers<br>
+              <strong>Architecture:</strong> Dockerfile → Image → Container → Docker Hub<br>
+              <strong>Benefits:</strong> Isolation, portability, scalability, consistency<br>
+              <strong>Key:</strong> Apps work the same in dev, test, and production environments
+            </div>
+          </div>
+        </div>
+
+        <div class="tool-grid" id="tool-selenium">
+          <div class="tool-card" style="border-color: var(--green);">
+            <div class="tool-name" style="color: var(--green);">🧪 Selenium — Automated Testing</div>
+            <div class="tool-desc">
+              <strong>Type:</strong> Portable framework for web application testing<br>
+              <strong>Features:</strong> Cross-browser compatibility, multi-language support, record/playback<br>
+              <strong>Benefits:</strong> Automates web testing, ensures reliability, reduces manual regression effort
+            </div>
+          </div>
+          <div class="tool-card" style="border-color: var(--amber);" id="tool-maven">
+            <div class="tool-name" style="color: var(--amber);">🏗️ Maven — Build Automation</div>
+            <div class="tool-desc">
+              <strong>Type:</strong> Build automation tool for Java projects<br>
+              <strong>Features:</strong> Dependency management, project build lifecycle, plugin support<br>
+              <strong>Uses POM files</strong> to manage project structure<br>
+              <strong>Automates:</strong> Compiling, testing, packaging software
+            </div>
+          </div>
+        </div>
+
+        <div class="tool-grid" id="tool-ansible">
+          <div class="tool-card" style="border-color: var(--purple);">
+            <div class="tool-name" style="color: var(--purple);">🤖 Puppet & Ansible — Config Management</div>
+            <div class="tool-desc">
+              <strong>Puppet:</strong> Agent-based, declarative language for configuration<br>
+              <strong>Ansible:</strong> Agentless, YAML-based — simpler setup<br>
+              <strong>Use Cases:</strong> Infrastructure as Code (IaC), automated deployments, compliance management<br>
+              <strong>Ansible Benefits:</strong> Automates IT tasks, manages complex workflows, no agent installation needed
+            </div>
+          </div>
+          <div class="tool-card" style="border-color: var(--teal);" id="tool-k8s">
+            <div class="tool-name" style="color: var(--teal);">☸️ Kubernetes — Container Orchestration</div>
+            <div class="tool-desc">
+              <strong>Type:</strong> Open-source container orchestration system<br>
+              <strong>Purpose:</strong> Automate deployment, scaling, management of containerized apps<br>
+              <strong>Components:</strong> Pods, Deployments, Services, Nodes<br>
+              <strong>Enables:</strong> High availability, scalability, resilience, self-healing
+            </div>
+          </div>
+        </div>
+
+        <div id="tool-nagios">
+          <div class="box teal">
+            <div class="box-title">📊 Nagios — Proactive Monitoring</div>
+            <strong>Nagios</strong> is a comprehensive IT infrastructure monitoring tool. It monitors servers, services, and networks. It receives alerts and generates reports to identify and resolve issues proactively. Functionality can be extended with Nagios plugins. Monitors: Server health, Service availability, Network performance.
+          </div>
+        </div>
+
+        <div class="box sum">
+          <div class="box-title">📝 Summary — DevOps Tools</div>
+          <ul class="notes-list">
+            <li><strong>Git</strong> = Version Control | <strong>Docker</strong> = Containerization</li>
+            <li><strong>Selenium</strong> = Automated Testing | <strong>Maven</strong> = Build Automation</li>
+            <li><strong>Puppet/Ansible</strong> = Configuration Management | <strong>Kubernetes</strong> = Container Orchestration</li>
+            <li><strong>Nagios</strong> = Infrastructure Monitoring</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- SECTION 3: DEVOPS LIFECYCLE -->
+    <div id="sec-lifecycle" class="notebook-page reveal">
+      <div class="spiral-holes"></div>
+      <div class="page-content">
+        <div class="section-heading"><span class="icon">♻️</span> DevOps Lifecycle <span class="badge">Section 3</span></div>
+
+        <p>The DevOps lifecycle is a <strong>continuous cycle</strong> of 8 phases that ensure rapid, reliable software delivery:</p>
+
+        <div class="lifecycle">
+          <div class="lc-step">1. Plan</div>
+          <div class="lc-step">2. Develop</div>
+          <div class="lc-step">3. Build</div>
+          <div class="lc-step">4. Test</div>
+          <div class="lc-step">5. Release</div>
+          <div class="lc-step">6. Deploy</div>
+          <div class="lc-step">7. Operate</div>
+          <div class="lc-step">8. Monitor</div>
+        </div>
+
+        <div class="sub-heading">Phase Details</div>
+
+        <button class="collapsible-btn" onclick="this.classList.toggle('open');this.nextElementSibling.classList.toggle('open')">1. Planning & Coding Phase <span class="arrow">▶</span></button>
+        <div class="collapsible-body">
+          <strong>Planning:</strong> Define project goals, scope, requirements, milestones. Task allocation using Jira, Trello, Asana. Align dev and ops teams.<br>
+          <strong>Coding:</strong> Developers write clean, maintainable code. Version control using Git, GitLab, Bitbucket. Ensures collaboration and conflict management.
+        </div>
+
+        <button class="collapsible-btn" onclick="this.classList.toggle('open');this.nextElementSibling.classList.toggle('open')">2. Build & Testing Phase <span class="arrow">▶</span></button>
+        <div class="collapsible-body">
+          <strong>Build:</strong> Source code compiled into executable/deployable artifacts. Tools: Maven, Gradle, Jenkins. Automation reduces errors.<br>
+          <strong>Testing:</strong> Automated testing using Selenium, JUnit, TestNG. Detects bugs early. Ensures code quality and reliability.
+        </div>
+
+        <button class="collapsible-btn" onclick="this.classList.toggle('open');this.nextElementSibling.classList.toggle('open')">3. Release & Deployment Phase <span class="arrow">▶</span></button>
+        <div class="collapsible-body">
+          <strong>Release:</strong> Package and prepare application for production. Version control and automation using Jenkins, Ansible, Docker.<br>
+          <strong>Deployment:</strong> Application deployed to production. Automation ensures minimal downtime. Containerization with Docker & orchestration via Kubernetes.
+        </div>
+
+        <button class="collapsible-btn" onclick="this.classList.toggle('open');this.nextElementSibling.classList.toggle('open')">4. Operate & Monitoring Phase <span class="arrow">▶</span></button>
+        <div class="collapsible-body">
+          <strong>Operate:</strong> Manage servers, networks, uptime, infrastructure. Tools: Nagios, Splunk, New Relic. Ensures system stability.<br>
+          <strong>Monitoring:</strong> Continuous monitoring of logs, metrics, user behavior. Tools: Prometheus, Grafana, ELK Stack. Provides feedback for improvement.
+        </div>
+
+        <div id="lc-automation">
+          <div class="sub-heading">Role of Automation in DevOps</div>
+          <ul class="notes-list">
+            <li><strong>CI (Continuous Integration):</strong> Automated build & testing — Jenkins, GitLab</li>
+            <li><strong>CD (Continuous Deployment):</strong> Automated release & deployment — Docker, Kubernetes</li>
+            <li><strong>IaC (Infrastructure as Code):</strong> Automated provisioning — Terraform, CloudFormation</li>
+            <li><strong>Automated Testing:</strong> Selenium, JUnit for early bug detection</li>
+            <li><strong>Monitoring & Alerts:</strong> Prometheus, Grafana for real-time insights</li>
+          </ul>
+
+          <div class="sub-heading2">Benefits of Automation</div>
+          <ul class="notes-list">
+            <li>Faster software delivery and shorter release cycles</li>
+            <li>Reduced human errors and improved reliability</li>
+            <li>Continuous feedback and performance monitoring</li>
+            <li>Improved collaboration between Dev & Ops teams</li>
+            <li>Scalable, consistent, and repeatable infrastructure setup</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- SECTION 4: CI/CD -->
+    <div id="sec-cicd" class="notebook-page reveal">
+      <div class="spiral-holes"></div>
+      <div class="page-content">
+        <div class="section-heading"><span class="icon">🚀</span> CI/CD Pipeline <span class="badge">Section 4</span></div>
+
+        <div class="box def">
+          <div class="box-title">📌 Definition</div>
+          <strong>CI/CD</strong> stands for <span class="hl">Continuous Integration and Continuous Delivery/Deployment</span>. It aims to streamline and accelerate the software development lifecycle through automation.
+        </div>
+
+        <div id="cicd-ci">
+          <div class="sub-heading">Continuous Integration (CI)</div>
+          <p><strong>CI</strong> is the practice of automatically integrating code changes into a shared repository frequently — daily or multiple times per day.</p>
+          <div class="sub-heading2">Key Activities</div>
+          <ul class="notes-list">
+            <li>Developers commit code to a shared repository (e.g., Git)</li>
+            <li>Automated build process runs automatically</li>
+            <li>Automated unit and integration tests execute</li>
+            <li>Immediate feedback is provided to developers</li>
+          </ul>
+          <div class="sub-heading2">Benefits of CI</div>
+          <ul class="notes-list">
+            <li>Early bug detection</li>
+            <li>Reduced integration problems</li>
+            <li>Improved collaboration</li>
+            <li>Higher code quality</li>
+          </ul>
+        </div>
+
+        <div id="cicd-cd">
+          <div class="sub-heading">Continuous Delivery vs Continuous Deployment</div>
+          <table class="notes-table">
+            <thead><tr><th>Aspect</th><th>Continuous Delivery</th><th>Continuous Deployment</th></tr></thead>
+            <tbody>
+              <tr><td><strong>Definition</strong></td><td>Code is always in a deployable state; release requires <strong>manual approval</strong></td><td>Every validated change is <strong>automatically released</strong> to production</td></tr>
+              <tr><td><strong>Human Intervention</strong></td><td>Manual approval before production</td><td>No manual approval — fully automated</td></tr>
+              <tr><td><strong>Benefit</strong></td><td>Faster and safer releases</td><td>Rapid innovation, faster time-to-market</td></tr>
+              <tr><td><strong>Risk Level</strong></td><td>Lower (human checkpoint)</td><td>Requires robust automated testing</td></tr>
+            </tbody>
+          </table>
+
+          <div class="sub-heading2">CI/CD Tools</div>
+          <div class="cards">
+            <div class="card"><div class="card-icon">🔧</div><div class="card-title">Jenkins</div><div class="card-body">Open-source automation server for CI/CD pipelines</div></div>
+            <div class="card"><div class="card-icon">🦊</div><div class="card-title">GitLab CI</div><div class="card-body">Built-in CI/CD integrated with GitLab</div></div>
+            <div class="card"><div class="card-icon">🐳</div><div class="card-title">Docker</div><div class="card-body">Containerization for consistent deployments</div></div>
+            <div class="card"><div class="card-icon">☸️</div><div class="card-title">Kubernetes</div><div class="card-body">Container orchestration and scaling</div></div>
+          </div>
+        </div>
+
+        <div class="box imp">
+          <div class="box-title">🚨 Important for Exams</div>
+          <strong>CI</strong> = Automatic integration + testing (developers push code frequently). <strong>Continuous Delivery</strong> = Ready to deploy but needs manual approval. <strong>Continuous Deployment</strong> = Fully automatic deployment — no human needed!
+        </div>
+      </div>
+    </div>
+
+    <!-- SECTION 5: SOFTWARE TESTING -->
+    <div id="sec-testing" class="notebook-page reveal">
+      <div class="spiral-holes"></div>
+      <div class="page-content">
+        <div class="section-heading"><span class="icon">🧪</span> Fundamentals of Software Testing <span class="badge">Section 5</span></div>
+
+        <div class="box def">
+          <div class="box-title">📌 Definition</div>
+          <strong>Software Testing</strong> is the process of verifying and validating that a software application is <span class="hl">free of bugs, meets technical requirements, and satisfies user requirements</span> efficiently and effectively. The cost of software bugs reached <strong>$1.7 trillion in 2022</strong>.
+        </div>
+
+        <div class="sub-heading2">Objectives of Testing</div>
+        <ol class="notes-list">
+          <li>Ensures software meets user requirements</li>
+          <li>Identifies bugs early in the development process</li>
+          <li>Improves product quality and overall reliability</li>
+          <li>Reduces risk of software failure</li>
+          <li>Validates functionality, performance, and security</li>
+          <li>Supports continuous integration and delivery pipelines</li>
+        </ol>
+
+        <div id="test-types">
+          <div class="sub-heading">Types of Software Testing</div>
+          <div class="cards">
+            <div class="card">
+              <div class="card-icon">⬛</div>
+              <div class="card-title">Black Box Testing</div>
+              <div class="card-body">Test without knowing internal code. Focus on inputs and outputs. Examples: Functional & UI testing. Tester doesn't need programming knowledge.</div>
+            </div>
+            <div class="card">
+              <div class="card-icon">⬜</div>
+              <div class="card-title">White Box Testing</div>
+              <div class="card-body">Test WITH knowledge of code. Focus on code structure and logic. Examples: Unit Testing & Code Coverage. Requires programming skills.</div>
+            </div>
+            <div class="card">
+              <div class="card-icon">🔲</div>
+              <div class="card-title">Gray Box Testing</div>
+              <div class="card-body">Hybrid approach — combines Black Box and White Box techniques. Tester has partial knowledge of internal workings.</div>
+            </div>
+          </div>
+          <div class="box note">
+            <div class="box-title">📝 Other Testing Types</div>
+            <strong>Smoke Testing:</strong> Quick check if basic features work. <strong>Sanity Testing:</strong> Verify specific bug fixes. <strong>Regression Testing:</strong> Ensure new changes don't break existing features. <strong>Performance Testing:</strong> Test speed & scalability. <strong>Security Testing:</strong> Find security vulnerabilities.
+          </div>
+        </div>
+
+        <div id="test-levels">
+          <div class="sub-heading">Levels of Software Testing</div>
+          <div class="lifecycle">
+            <div class="lc-step">Unit Testing</div>
+            <div class="lc-step">Integration Testing</div>
+            <div class="lc-step">System Testing</div>
+            <div class="lc-step">Acceptance Testing</div>
+          </div>
+          <ul class="notes-list">
+            <li><strong>Unit Testing:</strong> Test individual components/functions in isolation</li>
+            <li><strong>Integration Testing:</strong> Test interaction between integrated units/modules</li>
+            <li><strong>System Testing:</strong> Test the entire system as a whole</li>
+            <li><strong>Acceptance Testing:</strong> End-users test for acceptability — the final checkpoint before release</li>
+          </ul>
+        </div>
+
+        <div class="sub-heading">Applications of Software Testing</div>
+        <ul class="notes-list">
+          <li><strong>Software Development:</strong> Ensure quality for web, mobile, desktop apps</li>
+          <li><strong>Embedded Systems:</strong> Test software in cars, appliances, IoT devices</li>
+          <li><strong>Gaming Industry:</strong> Test game functionality and performance</li>
+          <li><strong>Healthcare:</strong> Test medical devices for accuracy and safety</li>
+          <li><strong>Finance:</strong> Guarantee security for financial software and transactions</li>
+        </ul>
+
+        <div id="test-manual-auto">
+          <div class="sub-heading">Manual vs Automation Testing</div>
+          <table class="notes-table">
+            <thead><tr><th>Aspect</th><th>Manual Testing</th><th>Automation Testing</th></tr></thead>
+            <tbody>
+              <tr><td><strong>Definition</strong></td><td>Testing performed manually by humans</td><td>Testing using scripts and automation tools</td></tr>
+              <tr><td><strong>Tools Required</strong></td><td>No automation tools needed</td><td>Selenium, JUnit, TestNG, etc.</td></tr>
+              <tr><td><strong>Speed</strong></td><td>Slower — step-by-step execution</td><td>Faster — automated execution</td></tr>
+              <tr><td><strong>Accuracy</strong></td><td>Prone to human errors</td><td>High accuracy — consistent results</td></tr>
+              <tr><td><strong>Best For</strong></td><td>Exploratory, usability, UI/UX testing</td><td>Regression, repetitive, load testing</td></tr>
+              <tr><td><strong>Cost</strong></td><td>Lower initial cost</td><td>Higher initial setup cost</td></tr>
+              <tr><td><strong>Skills Needed</strong></td><td>No programming knowledge required</td><td>Requires programming knowledge</td></tr>
+              <tr><td><strong>Reusability</strong></td><td>Test cases cannot be reused</td><td>Test scripts are reusable</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div id="test-case">
+          <div class="sub-heading">Introduction to Test Case Design</div>
+          <div class="box def">
+            <div class="box-title">📌 What is a Test Case?</div>
+            A <strong>test case</strong> is a documented set of conditions, inputs, actions, and expected results that verifies whether a software application works as expected.
+          </div>
+
+          <div class="sub-heading2">Components of a Test Case</div>
+          <ul class="notes-list">
+            <li><strong>Test Case ID:</strong> Unique identifier (e.g., TC_LOGIN_001)</li>
+            <li><strong>Description:</strong> Brief summary of what's being tested</li>
+            <li><strong>Preconditions:</strong> Required system state before testing</li>
+            <li><strong>Test Steps:</strong> Detailed, sequential actions to perform</li>
+            <li><strong>Test Data:</strong> Specific inputs (e.g., username, password)</li>
+            <li><strong>Expected Result:</strong> What should happen if software works correctly</li>
+            <li><strong>Actual Result:</strong> Observed outcome (filled during execution)</li>
+            <li><strong>Status:</strong> Pass or Fail</li>
+          </ul>
+
+          <div class="sub-heading2">Example: Login Test Case</div>
+          <table class="notes-table">
+            <thead><tr><th>Field</th><th>Details</th></tr></thead>
+            <tbody>
+              <tr><td><strong>Test Case ID</strong></td><td>TC_LOGIN_001</td></tr>
+              <tr><td><strong>Description</strong></td><td>Verify successful login with valid credentials</td></tr>
+              <tr><td><strong>Preconditions</strong></td><td>User has registered account, is on login page</td></tr>
+              <tr><td><strong>Test Steps</strong></td><td>1. Enter valid email 2. Enter valid password 3. Click "Login"</td></tr>
+              <tr><td><strong>Expected Result</strong></td><td>User redirected to dashboard with "Welcome" message</td></tr>
+              <tr><td><strong>Status</strong></td><td>Pass/Fail</td></tr>
+            </tbody>
+          </table>
+
+          <div class="sub-heading2">Test Case Design Techniques</div>
+          <ul class="notes-list">
+            <li><strong>Boundary Value Analysis (BVA):</strong> Test edges of input ranges (if field accepts 1–100, test 0, 1, 100, 101)</li>
+            <li><strong>Equivalence Partitioning:</strong> Divide inputs into groups with similar behavior, test one from each</li>
+            <li><strong>Decision Table Testing:</strong> Map input combinations to expected outputs for complex logic</li>
+            <li><strong>Error Guessing:</strong> Predict bugs based on experience and common pitfalls</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- SECTION 6: DEFECT LIFE CYCLE -->
+    <div id="sec-defect" class="notebook-page reveal">
+      <div class="spiral-holes"></div>
+      <div class="page-content">
+        <div class="section-heading"><span class="icon">🐛</span> Defect Life Cycle <span class="badge">Section 6</span></div>
+
+        <div class="box def">
+          <div class="box-title">📌 Definition</div>
+          The <strong>Defect Life Cycle</strong> (also called <span class="hl">Bug Life Cycle</span>) describes the journey of a defect from identification to closure. It ensures proper tracking of bugs, clear communication between testers and developers, and improved software quality.
+        </div>
+
+        <div class="sub-heading">Stages of the Defect Life Cycle</div>
+        <div class="lifecycle">
+          <div class="lc-step">1. New</div>
+          <div class="lc-step">2. Assigned</div>
+          <div class="lc-step">3. Open</div>
+          <div class="lc-step">4. Fixed</div>
+          <div class="lc-step">5. Retest</div>
+          <div class="lc-step">6. Verified</div>
+          <div class="lc-step">7. Closed</div>
+        </div>
+
+        <ol class="notes-list">
+          <li><strong>New:</strong> Tester identifies a defect and logs it in a tracking tool (e.g., Jira)</li>
+          <li><strong>Assigned:</strong> The defect is assigned to a developer for fixing</li>
+          <li><strong>Open:</strong> Developer starts analyzing and working on the defect</li>
+          <li><strong>Fixed:</strong> Developer fixes the defect and updates the status</li>
+          <li><strong>Retest:</strong> Tester retests the defect to verify the fix</li>
+          <li><strong>Verified:</strong> Tester confirms the defect is resolved correctly</li>
+          <li><strong>Closed:</strong> If working correctly, the defect is marked as closed</li>
+        </ol>
+
+        <div class="sub-heading2">Other Possible States</div>
+        <table class="notes-table">
+          <thead><tr><th>Status</th><th>Meaning</th></tr></thead>
+          <tbody>
+            <tr><td><strong>Reopened</strong></td><td>Defect still exists after attempted fix</td></tr>
+            <tr><td><strong>Rejected</strong></td><td>Not a valid defect — works as per requirement</td></tr>
+            <tr><td><strong>Duplicate</strong></td><td>Same defect already reported by someone else</td></tr>
+            <tr><td><strong>Deferred</strong></td><td>Fix postponed to a future release (low priority)</td></tr>
+            <tr><td><strong>Not a Bug</strong></td><td>Behavior is as per requirement — not a defect</td></tr>
+          </tbody>
+        </table>
+
+        <div class="sub-heading2">Example — Login System Defect</div>
+        <div class="box teal">
+          <div class="box-title">🔧 Scenario</div>
+          <strong>Problem:</strong> Username field accepts 5–10 characters, but system allows 3-character usernames.<br>
+          <strong>Flow:</strong> Tester logs defect → <strong>New</strong> → Assigned to developer → <strong>Assigned</strong> → Developer fixes validation → <strong>Fixed</strong> → Tester retests → <strong>Verified</strong> → Defect marked → <strong>Closed</strong>
+        </div>
+
+        <div class="sub-heading2">Why is the Defect Life Cycle Important?</div>
+        <ul class="notes-list">
+          <li>Ensures <strong>accountability</strong> — every defect has an owner</li>
+          <li>Improves <strong>communication</strong> between testers and developers</li>
+          <li>Maintains <strong>defect history</strong> for future reference</li>
+          <li>Supports <strong>quality assurance process</strong></li>
+          <li>Helps in <strong>project tracking</strong> and timeline management</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- SECTION 7: CAREERS -->
+    <div id="sec-careers" class="notebook-page reveal">
+      <div class="spiral-holes"></div>
+      <div class="page-content">
+        <div class="section-heading"><span class="icon">💼</span> Career Opportunities <span class="badge">Section 7</span></div>
+
+        <div class="sub-heading">DevOps Career Roles</div>
+        <div class="cards">
+          <div class="card"><div class="card-icon">⚙️</div><div class="card-title">DevOps Engineer</div><div class="card-body">Manage CI/CD pipelines, automate infrastructure. Skills: Cloud platforms, scripting, config management. Salary: $120K–$150K/year.</div></div>
+          <div class="card"><div class="card-icon">🔧</div><div class="card-title">Site Reliability Engineer (SRE)</div><div class="card-body">Ensure system reliability, respond to incidents. Skills: System admin, networking, coding. Salary: $130K–$160K/year.</div></div>
+          <div class="card"><div class="card-icon">🛡️</div><div class="card-title">Security Engineer (DevSecOps)</div><div class="card-body">Integrate security into DevOps pipeline. Tools: SonarQube, Snyk. Early security reduces costs by 75%.</div></div>
+          <div class="card"><div class="card-icon">🚀</div><div class="card-title">CI/CD Specialist</div><div class="card-body">Specialize in building and maintaining continuous integration and deployment pipelines.</div></div>
+          <div class="card"><div class="card-icon">💬</div><div class="card-title">DevOps Consultant</div><div class="card-body">Advise organizations on DevOps adoption, best practices, tool selection, and process improvement.</div></div>
+        </div>
+
+        <div class="sub-heading">Software Testing Career Roles</div>
+        <div class="cards">
+          <div class="card"><div class="card-icon">🧪</div><div class="card-title">Software Tester</div><div class="card-body">Manual and automated testing of software applications.</div></div>
+          <div class="card"><div class="card-icon">🤖</div><div class="card-title">Test Automation Engineer</div><div class="card-body">Build and maintain automated test frameworks and scripts.</div></div>
+          <div class="card"><div class="card-icon">📊</div><div class="card-title">Performance Tester</div><div class="card-body">Test application performance, load, and scalability.</div></div>
+          <div class="card"><div class="card-icon">🔒</div><div class="card-title">Security Tester</div><div class="card-body">Identify security vulnerabilities through testing.</div></div>
+        </div>
+
+        <div class="sub-heading">Current Trends</div>
+        <ul class="notes-list">
+          <li><strong>Cloud-Native DevOps:</strong> CI/CD on Kubernetes with AWS, Azure, GCP</li>
+          <li><strong>DevOps Automation:</strong> Ansible, Terraform, Jenkins — Netflix uses Spinnaker</li>
+          <li><strong>DevSecOps:</strong> Security integrated into every pipeline stage</li>
+          <li><strong>AIOps:</strong> AI/ML for monitoring and incident management — reduces alert noise by 90%</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- REVISION -->
+    <div id="sec-revision" class="notebook-page reveal">
+      <div class="spiral-holes"></div>
+      <div class="page-content">
+        <div class="section-heading"><span class="icon">✏️</span> Quick Revision <span class="badge">Revision</span></div>
+        <div class="revision-grid">
+          <div class="rev-card"><div class="rev-q">Q: What is DevOps?</div><div class="rev-a">Dev + Ops = Collaboration between development and operations teams with automation and CI/CD for faster, reliable software delivery.</div></div>
+          <div class="rev-card"><div class="rev-q">Q: Name the 8 DevOps lifecycle phases.</div><div class="rev-a">Plan → Develop → Build → Test → Release → Deploy → Operate → Monitor (continuous cycle).</div></div>
+          <div class="rev-card"><div class="rev-q">Q: What is CI/CD?</div><div class="rev-a">CI = Automatic code integration + testing. CD = Automatic deployment (Delivery needs approval, Deployment is fully automatic).</div></div>
+          <div class="rev-card"><div class="rev-q">Q: What does Docker do?</div><div class="rev-a">Containerization — packages apps with dependencies so they run consistently in any environment.</div></div>
+          <div class="rev-card"><div class="rev-q">Q: What does Kubernetes do?</div><div class="rev-a">Container orchestration — automates deployment, scaling, and management of containerized apps.</div></div>
+          <div class="rev-card"><div class="rev-q">Q: Difference between Black & White Box?</div><div class="rev-a">Black Box = test without code knowledge. White Box = test with code knowledge. Gray Box = partial knowledge.</div></div>
+          <div class="rev-card"><div class="rev-q">Q: Levels of testing?</div><div class="rev-a">Unit → Integration → System → Acceptance Testing (smallest to largest scope).</div></div>
+          <div class="rev-card"><div class="rev-q">Q: Defect life cycle stages?</div><div class="rev-a">New → Assigned → Open → Fixed → Retest → Verified → Closed. Others: Reopened, Rejected, Deferred.</div></div>
+          <div class="rev-card"><div class="rev-q">Q: Manual vs Automation testing?</div><div class="rev-a">Manual = human, slower, good for UI. Automation = scripts, faster, good for regression. Both are needed.</div></div>
+          <div class="rev-card"><div class="rev-q">Q: What is BVA?</div><div class="rev-a">Boundary Value Analysis — test edges of input ranges (if 1-100, test 0, 1, 100, 101).</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- MCQ SECTION -->
+    <div id="mcq-section">
+      <div class="mcq-header">
+        <h2>⚙️ Unit IV — MCQ Practice</h2>
+        <p>50 Multiple Choice Questions on DevOps & Software Testing</p>
+        <div class="mcq-progress-bar-wrap"><div class="mcq-progress-fill" id="mcq-progress-fill"></div></div>
+        <div class="mcq-progress-text" id="mcq-progress-text">0 of 50 attempted</div>
+      </div>
+      <div class="mcq-body">
+        <div id="mcq-container"></div>
+        <div class="mcq-nav">
+          <button class="mcq-btn prev" id="btn-prev" onclick="changeMCQ(-1)">← Previous</button>
+          <span class="q-counter">Question <strong id="q-current">1</strong> / <strong>50</strong></span>
+          <button class="mcq-btn next" id="btn-next" onclick="changeMCQ(1)">Next →</button>
+        </div>
+        <div class="score-panel" id="score-panel">
+          <div class="score-emoji" id="score-emoji">🏆</div>
+          <div class="score-title">Results</div>
+          <div class="score-value" id="score-value"></div>
+          <button class="score-restart" onclick="restartMCQ()">🔄 Restart Quiz</button>
+        </div>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<script>
+document.querySelectorAll('.spiral-holes').forEach(sh => {
+  const page = sh.parentElement;
+  const h = page.offsetHeight;
+  const count = Math.max(3, Math.floor(h / 60));
+  sh.innerHTML = Array.from({length: count}, () => '<div class="spiral-hole"></div>').join('');
+});
+
+window.addEventListener('scroll', () => {
+  const h = document.documentElement;
+  const pct = (h.scrollTop / (h.scrollHeight - h.clientHeight)) * 100;
+  document.getElementById('progress-bar').style.width = pct + '%';
+});
+
+const sidebar = document.getElementById('sidebar');
+const overlay = document.getElementById('sidebar-overlay');
+document.getElementById('menu-toggle').addEventListener('click', () => {
+  sidebar.classList.toggle('open');
+  overlay.style.display = sidebar.classList.contains('open') ? 'block' : 'none';
+});
+overlay.addEventListener('click', () => { sidebar.classList.remove('open'); overlay.style.display = 'none'; });
+document.querySelectorAll('.toc-item').forEach(a => {
+  a.addEventListener('click', () => { if (window.innerWidth <= 768) { sidebar.classList.remove('open'); overlay.style.display = 'none'; } });
+});
+
+const revealEls = document.querySelectorAll('.reveal');
+const revealObs = new IntersectionObserver((entries) => {
+  entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); revealObs.unobserve(e.target); } });
+}, { threshold: 0.08 });
+revealEls.forEach(el => revealObs.observe(el));
+
+const sections = document.querySelectorAll('[id]');
+const tocLinks = document.querySelectorAll('.toc-item');
+window.addEventListener('scroll', () => {
+  let current = '';
+  sections.forEach(s => { if (window.scrollY >= s.offsetTop - 120) current = s.id; });
+  tocLinks.forEach(l => { l.classList.remove('active'); if (l.getAttribute('href') === '#' + current) l.classList.add('active'); });
+});
+
+const mcqs = [
+  // DevOps Basics (Q1-8)
+  {q:"DevOps is a combination of:",opts:["Development and Operations","Design and Optimization","Data and Operations","Development and Output"],ans:0,exp:"DevOps = Development (Dev) + Operations (Ops). It bridges the gap between development teams who write code and operations teams who deploy and maintain it."},
+  {q:"The primary goal of DevOps is to:",opts:["Replace programmers with automation","Deliver high-quality software quickly and reliably","Eliminate the need for testing","Focus only on development"],ans:1,exp:"DevOps aims to deliver high-quality software quickly and reliably by fostering collaboration, automation, continuous integration, and continuous improvement."},
+  {q:"Which is NOT a traditional software development model?",opts:["Waterfall","Agile","V-Model","DevOps"],ans:3,exp:"DevOps is not a traditional model — it's a modern approach. Traditional models include Waterfall (sequential), Agile (iterative), V-Model (verification-focused), and Iterative."},
+  {q:"In DevOps, teams are structured as:",opts:["Separate development and operations teams","Unified, cross-functional teams","Only development teams","Only operations teams"],ans:1,exp:"DevOps breaks down silos — development and operations work as unified, cross-functional teams sharing responsibility for the entire application lifecycle."},
+  {q:"United Airlines saved how much by adopting DevOps continuous testing?",opts:["$50,000","$100,000","$500,000","$1 million"],ans:2,exp:"United Airlines saved $500,000 by switching to continuous testing standards. Their code coverage also increased by 85% through DevOps practices."},
+  {q:"DevOps emphasizes:",opts:["Manual processes and slow releases","Automation, CI/CD, and continuous improvement","Working in isolation","Infrequent deployments"],ans:1,exp:"DevOps emphasizes automation of workflows, CI/CD pipelines, continuous feedback, and iterative improvement — all aimed at faster, more reliable software delivery."},
+  {q:"Which traditional model follows a sequential, phase-by-phase approach?",opts:["Agile","Waterfall","DevOps","Scrum"],ans:1,exp:"Waterfall is a sequential model where each phase (requirements → design → implementation → testing → deployment) must complete before the next begins. No going back."},
+  {q:"In GM Financial, DevOps reduced regression testing time by:",opts:["50%","75%","93%","100%"],ans:2,exp:"GM Financial used DevOps to reduce regression testing time by 93%, which also reduced the loan funding period by 5 times — demonstrating massive efficiency gains."},
+
+  // DevOps Tools (Q9-20)
+  {q:"Git is primarily used for:",opts:["Container orchestration","Version control and code management","Automated testing","Server monitoring"],ans:1,exp:"Git is a distributed version control system that tracks code changes, enables branching/merging, and facilitates team collaboration. 90%+ developers use it."},
+  {q:"Which platforms use Git for hosting repositories?",opts:["GitHub, GitLab, Bitbucket","Docker Hub, AWS","Jira, Trello","Nagios, Prometheus"],ans:0,exp:"GitHub, GitLab, and Bitbucket are the major platforms built on Git for hosting code repositories, enabling collaboration, code review, and CI/CD integration."},
+  {q:"Docker is best described as a:",opts:["Version control system","Containerization platform","Testing framework","Monitoring tool"],ans:1,exp:"Docker is a containerization platform that packages applications with all dependencies into containers, ensuring they run consistently across any environment."},
+  {q:"The correct Docker workflow order is:",opts:["Container → Image → Dockerfile","Dockerfile → Image → Container","Docker Hub → Dockerfile → Container","Image → Dockerfile → Container"],ans:1,exp:"Docker workflow: Write a Dockerfile (instructions) → Build an Image (template) → Run a Container (running instance). Images can be shared via Docker Hub."},
+  {q:"Key benefits of Docker include:",opts:["Isolation, portability, scalability","Only works on Linux","Replaces Git","Eliminates need for testing"],ans:0,exp:"Docker provides isolation (apps run independently), portability (same on any platform), scalability (easy to scale), and consistency (same in dev/test/prod environments)."},
+  {q:"Selenium is used for:",opts:["Building Docker containers","Automated testing of web applications","Version control","Database management"],ans:1,exp:"Selenium is a portable framework for automated testing of web applications with cross-browser compatibility and multi-language support."},
+  {q:"Maven is a build automation tool primarily for:",opts:["Python projects","JavaScript projects","Java projects","Ruby projects"],ans:2,exp:"Maven is a powerful build automation tool specifically designed for Java projects. It manages dependencies, project lifecycle, and uses POM files for configuration."},
+  {q:"What is the key difference between Puppet and Ansible?",opts:["Puppet is free, Ansible is paid","Puppet is agent-based, Ansible is agentless","Puppet is for testing, Ansible is for deployment","They are the same tool"],ans:1,exp:"Puppet requires agents installed on managed nodes (agent-based), while Ansible is agentless (uses SSH) and YAML-based — making Ansible simpler to set up."},
+  {q:"Kubernetes is used for:",opts:["Version control","Container orchestration — automated deployment and scaling","Code compilation","Email management"],ans:1,exp:"Kubernetes is an open-source container orchestration system that automates deployment, scaling, and management of containerized applications across clusters."},
+  {q:"Kubernetes components include:",opts:["Pods, Deployments, Services, Nodes","Files, Folders, Drives","HTML, CSS, JavaScript","Firewalls, Routers, Switches"],ans:0,exp:"Kubernetes uses Pods (smallest deployable units), Deployments (desired state management), Services (networking), and Nodes (worker machines) to orchestrate containers."},
+  {q:"Nagios is primarily used for:",opts:["Code compilation","IT infrastructure monitoring","Automated testing","Container creation"],ans:1,exp:"Nagios is a comprehensive IT infrastructure monitoring tool that monitors servers, services, and networks, providing alerts and reports for proactive issue resolution."},
+  {q:"Infrastructure as Code (IaC) is associated with which tools?",opts:["Selenium and JUnit","Terraform and Ansible","Tableau and Excel","Git and Docker"],ans:1,exp:"IaC uses tools like Terraform and Ansible to define and manage infrastructure through code, enabling automated, repeatable, and consistent provisioning."},
+
+  // DevOps Lifecycle & Automation (Q21-26)
+  {q:"How many phases are in the DevOps lifecycle?",opts:["4","6","8","10"],ans:2,exp:"The DevOps lifecycle has 8 phases: Plan → Develop → Build → Test → Release → Deploy → Operate → Monitor. It's a continuous, never-ending cycle."},
+  {q:"Which tools are used in the Build phase?",opts:["Git, Bitbucket","Maven, Gradle, Jenkins","Nagios, Prometheus","Selenium, JUnit"],ans:1,exp:"The Build phase compiles source code into deployable artifacts using tools like Maven, Gradle, and Jenkins (for CI automation)."},
+  {q:"Prometheus and Grafana are used in which DevOps phase?",opts:["Planning","Building","Testing","Monitoring"],ans:3,exp:"Prometheus (metrics collection) and Grafana (visualization/dashboards) are monitoring tools used in the Monitor phase to track system health and performance."},
+  {q:"The DevOps lifecycle is described as a:",opts:["Linear process","One-time activity","Continuous cycle","Sequential waterfall"],ans:2,exp:"The DevOps lifecycle is a continuous, iterative cycle — after monitoring, feedback flows back to planning, starting the cycle again for continuous improvement."},
+  {q:"Which is NOT a benefit of automation in DevOps?",opts:["Faster delivery","Reduced human errors","Increased manual work","Improved reliability"],ans:2,exp:"Automation REDUCES manual work, not increases it. Benefits include faster delivery, fewer errors, improved reliability, and consistent, repeatable processes."},
+  {q:"IaC stands for:",opts:["Internet as Computing","Infrastructure as Code","Integration and Collaboration","Information and Communication"],ans:1,exp:"IaC (Infrastructure as Code) means defining and managing infrastructure through machine-readable code files instead of manual processes, using tools like Terraform."},
+
+  // CI/CD (Q27-33)
+  {q:"CI stands for:",opts:["Continuous Improvement","Continuous Integration","Code Integration","Complete Installation"],ans:1,exp:"CI = Continuous Integration — the practice of automatically and frequently integrating code changes into a shared repository, with automated builds and tests."},
+  {q:"In CI, code is committed to a shared repository:",opts:["Once a month","Once a week","Frequently — daily or multiple times per day","Only at project end"],ans:2,exp:"CI requires developers to commit code frequently — daily or multiple times per day — to detect integration issues early and maintain a healthy codebase."},
+  {q:"The key difference between Continuous Delivery and Continuous Deployment is:",opts:["Delivery is faster","Delivery requires manual approval; Deployment is fully automated","They are the same","Deployment requires manual approval"],ans:1,exp:"Continuous Delivery prepares code for release but needs manual approval. Continuous Deployment automatically releases every validated change — no human intervention."},
+  {q:"Which is a primary benefit of CI?",opts:["Later bug detection","Fewer tests needed","Early bug detection and reduced integration problems","Slower development"],ans:2,exp:"CI detects bugs early (when they're cheaper to fix) and reduces integration problems by continuously merging and testing code changes."},
+  {q:"Jenkins is an example of a:",opts:["Programming language","CI/CD automation server","Database","Design tool"],ans:1,exp:"Jenkins is an open-source automation server widely used for building CI/CD pipelines — automating the build, test, and deployment processes."},
+  {q:"In Continuous Deployment, changes go to production:",opts:["After weekly meetings","Automatically without manual approval","Only after CEO approval","Once per quarter"],ans:1,exp:"In Continuous Deployment, every change that passes automated tests is automatically released to production — fully automated with no manual approval gates."},
+  {q:"Which tool is NOT typically part of a CI/CD pipeline?",opts:["Jenkins","GitLab CI","Docker","Microsoft Paint"],ans:3,exp:"Microsoft Paint is a drawing tool, not a DevOps tool. Jenkins, GitLab CI, Docker, and Kubernetes are all commonly used in CI/CD pipelines."},
+
+  // Testing (Q34-44)
+  {q:"The cost of software bugs reached how much in 2022?",opts:["$1.7 million","$1.7 billion","$1.7 trillion","$17 billion"],ans:2,exp:"Software bugs cost an estimated $1.7 trillion in 2022, highlighting why software testing is critical for preventing costly failures."},
+  {q:"Black Box Testing means:",opts:["Testing with knowledge of internal code","Testing without knowing internal code — focus on inputs/outputs","Testing in a dark room","Testing only the UI color scheme"],ans:1,exp:"Black Box Testing examines functionality without knowledge of internal code structure. Testers focus on inputs and expected outputs, like a 'black box' — can't see inside."},
+  {q:"White Box Testing requires:",opts:["No technical skills","Knowledge of the internal code structure","Only business knowledge","A specific hardware setup"],ans:1,exp:"White Box Testing requires knowledge of the source code. Testers examine code paths, branches, and logic — examples include unit testing and code coverage analysis."},
+  {q:"Gray Box Testing is:",opts:["Only for gray-colored interfaces","A hybrid of Black Box and White Box","A type of performance testing","Testing without any knowledge"],ans:1,exp:"Gray Box Testing combines elements of both — the tester has partial knowledge of internal workings, enabling more targeted testing while maintaining external perspective."},
+  {q:"The correct order of testing levels is:",opts:["Acceptance → System → Integration → Unit","Unit → Integration → System → Acceptance","System → Unit → Acceptance → Integration","Random order"],ans:1,exp:"Testing levels go from smallest to largest scope: Unit (individual components) → Integration (modules together) → System (entire system) → Acceptance (user validation)."},
+  {q:"Acceptance Testing is performed by:",opts:["Developers only","End-users","The operating system","Automated scripts only"],ans:1,exp:"Acceptance Testing (UAT - User Acceptance Testing) is performed by end-users to verify the software meets their requirements before production release."},
+  {q:"Manual testing is best suited for:",opts:["Regression testing","Exploratory and usability testing","Load testing","Stress testing"],ans:1,exp:"Manual testing excels at exploratory testing (discovering unexpected bugs) and usability/UI/UX testing where human judgment about user experience is essential."},
+  {q:"Automation testing is best suited for:",opts:["First-time testing of new features","Regression and repetitive testing","Design review","Requirement gathering"],ans:1,exp:"Automation testing shines for regression testing (re-running tests after changes), repetitive tests, and load testing — where speed and consistency are critical."},
+  {q:"Which is a component of a test case?",opts:["Deployment pipeline","Test Case ID, Steps, Expected Result, Status","Marketing plan","Budget allocation"],ans:1,exp:"A test case includes: Test Case ID, Description, Preconditions, Test Steps, Test Data, Expected Result, Actual Result, and Status (Pass/Fail)."},
+  {q:"Boundary Value Analysis (BVA) tests:",opts:["The middle values of input ranges","The edge values of input ranges","Only negative numbers","Only strings"],ans:1,exp:"BVA tests the boundaries/edges of valid input ranges. If a field accepts 1–100, you test 0 (invalid), 1 (boundary), 100 (boundary), and 101 (invalid)."},
+  {q:"Equivalence Partitioning divides inputs into:",opts:["Random categories","Groups with similar expected behavior","Alphabetical order","Chronological order"],ans:1,exp:"Equivalence Partitioning divides input data into groups (partitions) where the system behaves similarly. You test one value from each group to reduce test cases."},
+
+  // Defect Life Cycle (Q45-50)
+  {q:"The normal defect flow sequence is:",opts:["New → Open → Assigned → Fixed → Closed","New → Assigned → Open → Fixed → Retest → Verified → Closed","Assigned → New → Fixed → Closed","New → Fixed → Open → Closed"],ans:1,exp:"The correct flow: New (logged) → Assigned (to developer) → Open (dev starts work) → Fixed (dev fixes) → Retest (tester verifies) → Verified (confirmed) → Closed."},
+  {q:"A defect that is postponed to the next release gets the status:",opts:["Rejected","Duplicate","Deferred","Closed"],ans:2,exp:"Deferred means the fix is postponed to a future release — usually because the defect is low priority or the current release deadline is near."},
+  {q:"If a developer claims the software works as per requirement, the defect status becomes:",opts:["Reopened","Rejected","Fixed","Deferred"],ans:1,exp:"'Rejected' (or 'Not a Bug') means the developer determines the behavior is as per requirement — it's not actually a defect, it's working as designed."},
+  {q:"Who primarily changes the defect status to 'Fixed'?",opts:["Tester","Developer","Client","Project Manager"],ans:1,exp:"The Developer is responsible for fixing the defect and updating the status to 'Fixed.' The Tester then retests to verify the fix before marking it Verified/Closed."},
+  {q:"If a defect still exists after a fix attempt, the status becomes:",opts:["Closed","Deferred","Reopened","Duplicate"],ans:2,exp:"'Reopened' means the defect was supposedly fixed but the tester found it still exists during retesting. It goes back to the developer for another fix attempt."},
+  {q:"The Defect Life Cycle is also called:",opts:["Software Development Cycle","Bug Life Cycle","Testing Framework","Release Pipeline"],ans:1,exp:"The Defect Life Cycle is also called the Bug Life Cycle — it tracks the journey of a bug/defect from initial identification to final closure."}
+];
+
+let currentQ = 0;
+const answered = new Array(mcqs.length).fill(false);
+const scores = new Array(mcqs.length).fill(null);
+
+function renderMCQ(idx) {
+  const container = document.getElementById('mcq-container');
+  container.innerHTML = '';
+  const data = mcqs[idx];
+  const div = document.createElement('div');
+  div.className = 'mcq-question-block active';
+  const optLetters = ['A','B','C','D'];
+  let optHtml = data.opts.map((o, i) =>
+    `<div class="q-option ${answered[idx] ? (i === data.ans ? 'reveal-correct' : (scores[idx] === i ? 'wrong' : '')) : ''}" onclick="selectOpt(${idx}, ${i}, this)" data-idx="${i}"><span class="opt-label">${optLetters[i]}.</span><span>${o}</span></div>`
+  ).join('');
+  div.innerHTML = `<div class="q-number">Question ${idx + 1} of ${mcqs.length}</div><div class="q-text">${data.q}</div><div class="q-options">${optHtml}</div><div class="q-explanation ${answered[idx] ? 'show' : ''}" id="exp-${idx}"><div class="exp-title">💡 Explanation</div>${data.exp}</div>`;
+  container.appendChild(div);
+  if (answered[idx]) div.querySelectorAll('.q-option').forEach(o => o.style.pointerEvents = 'none');
+  document.getElementById('q-current').textContent = idx + 1;
+  document.getElementById('btn-prev').disabled = idx === 0;
+  document.getElementById('btn-next').textContent = idx === mcqs.length - 1 ? 'Finish Quiz' : 'Next →';
+  updateMCQProgress();
+}
+
+function selectOpt(qIdx, optIdx, el) {
+  if (answered[qIdx]) return;
+  answered[qIdx] = true; scores[qIdx] = optIdx;
+  const data = mcqs[qIdx];
+  el.parentElement.querySelectorAll('.q-option').forEach(o => {
+    o.style.pointerEvents = 'none';
+    const i = parseInt(o.dataset.idx);
+    if (i === data.ans) o.classList.add('reveal-correct');
+    if (i === optIdx && optIdx !== data.ans) o.classList.add('wrong');
+  });
+  const exp = document.getElementById(`exp-${qIdx}`);
+  if (exp) exp.classList.add('show');
+  updateMCQProgress();
+}
+
+function changeMCQ(dir) {
+  const newIdx = currentQ + dir;
+  if (newIdx >= mcqs.length) { showScore(); return; }
+  if (newIdx < 0) return;
+  currentQ = newIdx; renderMCQ(currentQ);
+}
+
+function updateMCQProgress() {
+  const attempted = answered.filter(Boolean).length;
+  document.getElementById('mcq-progress-fill').style.width = (attempted / mcqs.length * 100) + '%';
+  document.getElementById('mcq-progress-text').textContent = `${attempted} of ${mcqs.length} attempted`;
+}
+
+function showScore() {
+  document.getElementById('mcq-container').style.display = 'none';
+  document.querySelector('.mcq-nav').style.display = 'none';
+  const correct = scores.reduce((acc, s, i) => acc + (s === mcqs[i].ans ? 1 : 0), 0);
+  const pct = Math.round((correct / mcqs.length) * 100);
+  const panel = document.getElementById('score-panel');
+  panel.classList.add('show');
+  document.getElementById('score-value').textContent = `${correct} / ${mcqs.length} correct (${pct}%)`;
+  let emoji = '😅', msg = 'Keep practicing!';
+  if (pct >= 90) { emoji = '🏆'; msg = 'Outstanding! Exam-ready!'; }
+  else if (pct >= 75) { emoji = '🎉'; msg = 'Great job! Almost there!'; }
+  else if (pct >= 60) { emoji = '👍'; msg = 'Good effort! Review weak areas.'; }
+  document.getElementById('score-emoji').textContent = emoji;
+  document.querySelector('.score-title').textContent = msg;
+  document.getElementById('mcq-progress-fill').style.width = '100%';
+  document.getElementById('mcq-progress-text').textContent = `Quiz Complete — ${correct}/${mcqs.length} correct`;
+}
+
+function restartMCQ() {
+  answered.fill(false); scores.fill(null); currentQ = 0;
+  document.getElementById('mcq-container').style.display = 'block';
+  document.querySelector('.mcq-nav').style.display = 'flex';
+  document.getElementById('score-panel').classList.remove('show');
+  renderMCQ(0);
+}
+
+renderMCQ(0);
+</script>
+</body>
+</html>

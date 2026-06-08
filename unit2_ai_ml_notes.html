@@ -1,0 +1,1728 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Unit 2 – AI & Machine Learning | CSE121 Notes</title>
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;600;700&family=Kalam:wght@300;400;700&family=Patrick+Hand&family=Source+Serif+4:ital,wght@0,300;0,400;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --paper: #fefefe;
+    --line: #c9dff5;
+    --ink: #1a1a2e;
+    --ink-soft: #2d3561;
+    --blue: #3a7bd5;
+    --blue-light: #e8f1fc;
+    --accent: #f7b731;
+    --accent-soft: #fff8e8;
+    --red: #e05252;
+    --green: #27ae60;
+    --green-soft: #eafaf1;
+    --margin: #f0a7a7;
+    --sidebar-w: 270px;
+    --shadow: 0 2px 20px rgba(58,123,213,0.10);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'Source Serif 4', Georgia, serif;
+    background: #d6e4f0;
+    color: var(--ink);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* ── PROGRESS BAR ── */
+  #progress-bar {
+    position: fixed; top: 0; left: 0; height: 4px;
+    background: linear-gradient(90deg, var(--blue), var(--accent));
+    width: 0%; z-index: 9999;
+    transition: width 0.2s ease;
+    border-radius: 0 2px 2px 0;
+  }
+
+  /* ── SIDEBAR ── */
+  #sidebar {
+    position: fixed; left: 0; top: 0; bottom: 0;
+    width: var(--sidebar-w);
+    background: #fff;
+    border-right: 2px solid var(--line);
+    overflow-y: auto;
+    z-index: 100;
+    padding: 0 0 40px;
+    box-shadow: 4px 0 24px rgba(58,123,213,0.08);
+    transform: translateX(0);
+    transition: transform 0.35s cubic-bezier(.77,0,.175,1);
+  }
+  #sidebar.hidden { transform: translateX(calc(-1 * var(--sidebar-w))); }
+
+  #sidebar-header {
+    background: linear-gradient(135deg, var(--blue), #1e5fa8);
+    color: #fff;
+    padding: 20px 18px 16px;
+    font-family: 'Caveat', cursive;
+    font-size: 1.3rem;
+    font-weight: 700;
+    line-height: 1.3;
+    position: sticky; top: 0; z-index: 2;
+  }
+  #sidebar-header small {
+    display: block; font-size: 0.78rem; opacity: .75;
+    font-family: 'Patrick Hand', cursive; margin-top: 4px;
+  }
+
+  .toc-section { padding: 10px 0 4px 16px; }
+  .toc-section-title {
+    font-family: 'Caveat', cursive; font-size: 0.72rem;
+    text-transform: uppercase; letter-spacing: 1.5px;
+    color: #aaa; font-weight: 700; padding: 6px 0 2px;
+  }
+  .toc-link {
+    display: block; padding: 6px 14px 6px 8px;
+    font-family: 'Patrick Hand', cursive; font-size: 0.88rem;
+    color: var(--ink-soft); text-decoration: none;
+    border-left: 3px solid transparent;
+    border-radius: 0 6px 6px 0;
+    transition: all .2s; line-height: 1.3;
+  }
+  .toc-link:hover, .toc-link.active {
+    color: var(--blue); border-left-color: var(--blue);
+    background: var(--blue-light);
+  }
+
+  /* ── TOGGLE SIDEBAR BUTTON ── */
+  #sidebar-toggle {
+    position: fixed; left: 270px; top: 50%;
+    transform: translateY(-50%);
+    z-index: 200; background: var(--blue);
+    color: #fff; border: none; cursor: pointer;
+    width: 28px; height: 60px; border-radius: 0 8px 8px 0;
+    font-size: 1rem; transition: left .35s cubic-bezier(.77,0,.175,1);
+    box-shadow: 2px 0 12px rgba(58,123,213,0.25);
+  }
+  #sidebar-toggle.hidden { left: 0; }
+
+  /* ── MAIN CONTENT ── */
+  #main {
+    margin-left: var(--sidebar-w);
+    padding: 40px 32px 80px;
+    max-width: 900px;
+    transition: margin-left .35s cubic-bezier(.77,0,.175,1);
+  }
+  #main.full { margin-left: 0; }
+
+  /* ── NOTEBOOK PAPER CARDS ── */
+  .page-card {
+    background: var(--paper);
+    border-radius: 4px 12px 12px 4px;
+    box-shadow: var(--shadow), inset -4px 0 0 var(--margin);
+    margin-bottom: 36px;
+    padding: 36px 40px 36px 52px;
+    position: relative;
+    overflow: hidden;
+    opacity: 0; transform: translateY(28px);
+    transition: opacity .6s ease, transform .6s ease;
+  }
+  .page-card.visible { opacity: 1; transform: translateY(0); }
+  .page-card::before {
+    content: '';
+    position: absolute; left: 44px; top: 0; bottom: 0; width: 1px;
+    background: repeating-linear-gradient(to bottom, transparent 0px, transparent 27px, var(--line) 27px, var(--line) 28px);
+    pointer-events: none;
+  }
+  .page-card::after {
+    content: '';
+    position: absolute; left: 44px; top: 0; bottom: 0;
+    width: calc(100% - 44px);
+    background: repeating-linear-gradient(to bottom, transparent 0px, transparent 27px, var(--line) 27px, var(--line) 28px);
+    pointer-events: none; opacity: 0.35;
+  }
+
+  /* ── HEADINGS ── */
+  .unit-title {
+    font-family: 'Caveat', cursive; font-size: 2.8rem;
+    font-weight: 700; color: var(--blue);
+    text-align: center; margin-bottom: 6px;
+    position: relative; z-index: 1;
+  }
+  .unit-subtitle {
+    font-family: 'Patrick Hand', cursive;
+    text-align: center; color: #888; font-size: 1rem;
+    margin-bottom: 24px; position: relative; z-index: 1;
+  }
+
+  h2 {
+    font-family: 'Caveat', cursive; font-size: 2rem;
+    color: var(--blue); margin: 0 0 16px;
+    border-bottom: 2px dashed var(--line);
+    padding-bottom: 8px; position: relative; z-index: 1;
+  }
+  h2 .emoji { font-style: normal; margin-right: 6px; }
+
+  h3 {
+    font-family: 'Kalam', cursive; font-size: 1.35rem;
+    color: var(--ink-soft); margin: 22px 0 10px;
+    position: relative; z-index: 1;
+  }
+  h3::before { content: '✏️ '; font-size: 1rem; }
+
+  h4 {
+    font-family: 'Patrick Hand', cursive; font-size: 1.05rem;
+    color: var(--blue); margin: 16px 0 6px;
+    position: relative; z-index: 1;
+  }
+
+  p {
+    font-size: 0.97rem; line-height: 1.85;
+    margin-bottom: 12px; position: relative; z-index: 1;
+  }
+
+  ul, ol {
+    padding-left: 24px; margin-bottom: 12px;
+    position: relative; z-index: 1;
+  }
+  li { margin-bottom: 6px; font-size: 0.95rem; line-height: 1.7; }
+
+  /* ── SPECIAL BOXES ── */
+  .def-box {
+    background: var(--blue-light);
+    border-left: 4px solid var(--blue);
+    border-radius: 0 8px 8px 0;
+    padding: 14px 18px; margin: 16px 0;
+    font-family: 'Patrick Hand', cursive;
+    font-size: 0.97rem; position: relative; z-index: 1;
+  }
+  .def-box strong { color: var(--blue); display: block; margin-bottom: 4px; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1px; }
+
+  .exam-tip {
+    background: var(--accent-soft);
+    border: 2px dashed var(--accent);
+    border-radius: 10px; padding: 14px 18px;
+    margin: 16px 0; position: relative; z-index: 1;
+    font-family: 'Patrick Hand', cursive; font-size: 0.95rem;
+  }
+  .exam-tip::before { content: '⭐ EXAM TIP: '; font-weight: 700; color: #c0860a; }
+
+  .important-box {
+    background: #fff0f0;
+    border-left: 4px solid var(--red);
+    border-radius: 0 8px 8px 0;
+    padding: 14px 18px; margin: 16px 0;
+    font-family: 'Patrick Hand', cursive; font-size: 0.95rem;
+    position: relative; z-index: 1;
+  }
+  .important-box::before { content: '🔴 IMPORTANT: '; font-weight: 700; color: var(--red); }
+
+  .summary-box {
+    background: var(--green-soft);
+    border: 2px solid #a9dbbe;
+    border-radius: 10px; padding: 16px 20px;
+    margin: 20px 0; position: relative; z-index: 1;
+  }
+  .summary-box h4 { color: var(--green); margin-top: 0; }
+  .summary-box h4::before { content: '📋 '; }
+
+  .comparison-table {
+    width: 100%; border-collapse: collapse;
+    margin: 16px 0; font-family: 'Patrick Hand', cursive;
+    font-size: 0.9rem; position: relative; z-index: 1;
+    border-radius: 8px; overflow: hidden;
+  }
+  .comparison-table th {
+    background: var(--blue); color: #fff;
+    padding: 10px 14px; text-align: left;
+  }
+  .comparison-table td {
+    padding: 9px 14px;
+    border-bottom: 1px solid var(--line);
+    vertical-align: top;
+  }
+  .comparison-table tr:nth-child(even) td { background: var(--blue-light); }
+
+  /* ── EXPAND/COLLAPSE ── */
+  .expand-btn {
+    background: none; border: 2px dashed var(--blue);
+    color: var(--blue); font-family: 'Patrick Hand', cursive;
+    font-size: 0.9rem; padding: 6px 18px;
+    border-radius: 20px; cursor: pointer;
+    margin: 8px 0; transition: all .2s;
+    position: relative; z-index: 1;
+  }
+  .expand-btn:hover { background: var(--blue); color: #fff; }
+  .expandable { display: none; overflow: hidden; }
+  .expandable.open { display: block; animation: slideDown .3s ease; }
+
+  @keyframes slideDown {
+    from { opacity: 0; transform: translateY(-10px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ── DIAGRAM BOXES ── */
+  .diagram-box {
+    background: #f8fbff;
+    border: 2px solid var(--line);
+    border-radius: 12px; padding: 20px;
+    margin: 16px 0; text-align: center;
+    font-family: 'Caveat', cursive; font-size: 1rem;
+    position: relative; z-index: 1;
+  }
+  .diagram-box .diagram-title {
+    font-size: 0.8rem; text-transform: uppercase;
+    letter-spacing: 1px; color: #aaa;
+    font-family: 'Patrick Hand', cursive;
+    margin-bottom: 12px;
+  }
+  .flow {
+    display: flex; align-items: center;
+    justify-content: center; flex-wrap: wrap; gap: 8px;
+  }
+  .flow-box {
+    background: var(--blue); color: #fff;
+    border-radius: 8px; padding: 8px 16px;
+    font-size: 0.9rem; font-family: 'Patrick Hand', cursive;
+  }
+  .flow-box.out { background: var(--green); }
+  .flow-box.mid { background: var(--ink-soft); }
+  .flow-arrow { font-size: 1.4rem; color: var(--blue); }
+
+  /* ── TAG BADGES ── */
+  .tag {
+    display: inline-block; padding: 2px 10px;
+    border-radius: 12px; font-family: 'Patrick Hand', cursive;
+    font-size: 0.78rem; margin: 2px; font-weight: 700;
+  }
+  .tag-blue { background: var(--blue-light); color: var(--blue); }
+  .tag-green { background: var(--green-soft); color: var(--green); }
+  .tag-accent { background: var(--accent-soft); color: #b07a00; }
+  .tag-red { background: #ffe0e0; color: var(--red); }
+
+  /* ── COVER CARD ── */
+  #cover {
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+    border-radius: 12px; padding: 50px 40px;
+    margin-bottom: 36px; text-align: center;
+    color: #fff; position: relative; overflow: hidden;
+    box-shadow: 0 8px 40px rgba(58,123,213,0.3);
+    opacity: 0; animation: fadeInCover 1s ease .2s forwards;
+  }
+  @keyframes fadeInCover { to { opacity: 1; } }
+  #cover::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.04'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+  }
+  #cover h1 {
+    font-family: 'Caveat', cursive; font-size: 3.2rem;
+    font-weight: 700; position: relative;
+    text-shadow: 0 2px 12px rgba(0,0,0,0.4);
+  }
+  #cover p {
+    color: rgba(255,255,255,0.75);
+    font-family: 'Patrick Hand', cursive;
+    font-size: 1rem; margin-top: 10px;
+    position: relative;
+  }
+  .cover-badge {
+    display: inline-block; background: var(--accent);
+    color: #1a1a2e; border-radius: 20px;
+    padding: 4px 18px; font-family: 'Patrick Hand', cursive;
+    font-size: 0.85rem; font-weight: 700; margin: 12px 4px 0;
+    position: relative;
+  }
+
+  /* ── MCQ SECTION ── */
+  #mcq-section {
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: var(--shadow);
+    margin-bottom: 40px; overflow: hidden;
+  }
+  #mcq-header {
+    background: linear-gradient(135deg, #1a1a2e, #0f3460);
+    padding: 30px 36px; color: #fff;
+  }
+  #mcq-header h2 {
+    font-family: 'Caveat', cursive; font-size: 2rem;
+    color: #fff; border: none; padding: 0; margin-bottom: 6px;
+  }
+  #mcq-header p { color: rgba(255,255,255,0.7); font-family: 'Patrick Hand', cursive; font-size: 0.95rem; margin: 0; }
+
+  #mcq-progress-wrap {
+    padding: 16px 36px; background: var(--blue-light);
+    display: flex; align-items: center; gap: 14px;
+    border-bottom: 1px solid var(--line);
+  }
+  #mcq-progress-bar-outer {
+    flex: 1; height: 8px; background: #dce8f8;
+    border-radius: 4px; overflow: hidden;
+  }
+  #mcq-progress-bar-inner {
+    height: 100%; background: linear-gradient(90deg, var(--blue), var(--accent));
+    transition: width .4s ease; border-radius: 4px; width: 2%;
+  }
+  #mcq-progress-text {
+    font-family: 'Patrick Hand', cursive;
+    font-size: 0.88rem; color: var(--blue); white-space: nowrap;
+    min-width: 80px; text-align: right;
+  }
+  #score-display {
+    font-family: 'Caveat', cursive; font-size: 1.1rem; color: var(--green);
+    min-width: 90px; text-align: right;
+  }
+
+  .mcq-card {
+    padding: 28px 36px 22px;
+    border-bottom: 1px solid var(--line);
+    display: none;
+  }
+  .mcq-card.active { display: block; animation: slideDown .3s ease; }
+
+  .mcq-num {
+    font-family: 'Patrick Hand', cursive; font-size: 0.82rem;
+    color: #aaa; margin-bottom: 6px;
+  }
+  .mcq-q {
+    font-family: 'Kalam', cursive; font-size: 1.08rem;
+    color: var(--ink); margin-bottom: 16px; line-height: 1.6;
+  }
+
+  .mcq-options { display: flex; flex-direction: column; gap: 10px; }
+  .mcq-option {
+    display: flex; align-items: flex-start; gap: 12px;
+    padding: 11px 16px; border-radius: 10px;
+    border: 2px solid var(--line);
+    cursor: pointer; transition: all .2s;
+    font-family: 'Patrick Hand', cursive; font-size: 0.96rem;
+    background: #fafcff;
+  }
+  .mcq-option:hover { border-color: var(--blue); background: var(--blue-light); }
+  .mcq-option .opt-letter {
+    font-weight: 700; color: var(--blue);
+    min-width: 22px;
+  }
+  .mcq-option.correct { border-color: var(--green); background: var(--green-soft); }
+  .mcq-option.wrong { border-color: var(--red); background: #fff0f0; }
+  .mcq-option.disabled { cursor: default; pointer-events: none; }
+
+  .mcq-explanation {
+    display: none; margin-top: 14px;
+    background: var(--accent-soft); border-left: 4px solid var(--accent);
+    border-radius: 0 8px 8px 0; padding: 12px 16px;
+    font-family: 'Patrick Hand', cursive; font-size: 0.93rem;
+    animation: slideDown .3s ease;
+  }
+  .mcq-explanation.show { display: block; }
+  .mcq-explanation strong { color: #b07a00; }
+
+  .mcq-nav {
+    padding: 18px 36px; display: flex;
+    justify-content: space-between; align-items: center;
+    background: #fafcff;
+  }
+  .mcq-btn {
+    background: var(--blue); color: #fff;
+    border: none; border-radius: 8px;
+    padding: 9px 24px; font-family: 'Patrick Hand', cursive;
+    font-size: 0.95rem; cursor: pointer;
+    transition: background .2s, transform .1s;
+  }
+  .mcq-btn:hover { background: #1e5fa8; }
+  .mcq-btn:active { transform: scale(.97); }
+  .mcq-btn:disabled { background: #c5d6ec; cursor: default; }
+  .mcq-btn.secondary {
+    background: #fff; color: var(--blue);
+    border: 2px solid var(--blue);
+  }
+  .mcq-btn.secondary:hover { background: var(--blue-light); }
+
+  /* ── MOBILE ── */
+  @media (max-width: 768px) {
+    #sidebar { transform: translateX(calc(-1 * var(--sidebar-w))); }
+    #sidebar.mobile-open { transform: translateX(0); }
+    #sidebar-toggle { left: 0; }
+    #sidebar-toggle.hidden { left: var(--sidebar-w); }
+    #main { margin-left: 0 !important; padding: 24px 16px 60px; }
+    .page-card { padding: 24px 18px 24px 24px; }
+    h2 { font-size: 1.6rem; }
+    .unit-title { font-size: 2rem; }
+    .mcq-card { padding: 20px 18px 16px; }
+    .mcq-nav { padding: 14px 18px; }
+    #mcq-progress-wrap { padding: 12px 18px; }
+    .flow { flex-direction: column; }
+  }
+
+  /* ── SCROLL-TO-TOP ── */
+  #scroll-top {
+    position: fixed; bottom: 24px; right: 24px;
+    width: 44px; height: 44px; border-radius: 50%;
+    background: var(--blue); color: #fff;
+    border: none; cursor: pointer; font-size: 1.2rem;
+    box-shadow: 0 4px 16px rgba(58,123,213,0.35);
+    opacity: 0; pointer-events: none;
+    transition: opacity .3s, transform .3s;
+    z-index: 500;
+  }
+  #scroll-top.show { opacity: 1; pointer-events: auto; }
+  #scroll-top:hover { transform: translateY(-3px); }
+
+  /* highlight */
+  mark { background: #fff3a3; border-radius: 3px; padding: 0 3px; }
+  code {
+    background: #f0f4f8; padding: 2px 6px;
+    border-radius: 4px; font-size: 0.88rem;
+    font-family: 'Courier New', monospace;
+  }
+
+  hr { border: none; border-top: 2px dashed var(--line); margin: 20px 0; }
+</style>
+</head>
+<body>
+
+<div id="progress-bar"></div>
+
+<!-- SIDEBAR -->
+<nav id="sidebar">
+  <div id="sidebar-header">
+    📒 CSE121 – Unit 2
+    <small>AI & Machine Learning Notes</small>
+  </div>
+
+  <div class="toc-section">
+    <div class="toc-section-title">Overview</div>
+    <a class="toc-link" href="#intro">Introduction to AI</a>
+    <a class="toc-link" href="#ml-intro">What is Machine Learning?</a>
+    <a class="toc-link" href="#trad-vs-ml">Traditional vs ML</a>
+    <a class="toc-link" href="#ml-apps">Applications of ML</a>
+    <a class="toc-link" href="#ml-types">Types of ML</a>
+    <a class="toc-link" href="#ml-issues">Issues & Failures</a>
+  </div>
+
+  <div class="toc-section">
+    <div class="toc-section-title">AI Branches</div>
+    <a class="toc-link" href="#branches">Branches of AI</a>
+    <a class="toc-link" href="#ai-tech">AI Techniques</a>
+    <a class="toc-link" href="#deep-learning">Deep Learning</a>
+    <a class="toc-link" href="#nlp">NLP</a>
+    <a class="toc-link" href="#cv">Computer Vision</a>
+    <a class="toc-link" href="#expert">Expert Systems</a>
+    <a class="toc-link" href="#fuzzy">Fuzzy Systems</a>
+    <a class="toc-link" href="#ar">Augmented Reality</a>
+  </div>
+
+  <div class="toc-section">
+    <div class="toc-section-title">Applications & Tools</div>
+    <a class="toc-link" href="#ai-fields">AI in Different Fields</a>
+    <a class="toc-link" href="#ai-products">AI-Powered Products</a>
+    <a class="toc-link" href="#tools">Tools & Techniques</a>
+    <a class="toc-link" href="#trends">Current Trends</a>
+    <a class="toc-link" href="#jobs">Job Roles & Skills</a>
+    <a class="toc-link" href="#revision">Revision Summary</a>
+  </div>
+
+  <div class="toc-section">
+    <div class="toc-section-title">Practice</div>
+    <a class="toc-link" href="#mcq-section">50 MCQs</a>
+  </div>
+</nav>
+
+<button id="sidebar-toggle" onclick="toggleSidebar()">◀</button>
+
+<!-- MAIN -->
+<main id="main">
+
+  <!-- COVER -->
+  <div id="cover">
+    <h1>Unit 2: AI & Machine Learning</h1>
+    <p>CSE121 – Orientation to Computing II &nbsp;|&nbsp; LPU</p>
+    <div class="cover-badge">📚 Complete Study Notes</div>
+    <div class="cover-badge">🎯 50 MCQs Included</div>
+    <div class="cover-badge">⭐ Exam Ready</div>
+  </div>
+
+  <!-- ════════════════════════════════════════ -->
+  <!-- SECTION 1: INTRO TO AI -->
+  <!-- ════════════════════════════════════════ -->
+  <section class="page-card" id="intro">
+    <h2><span class="emoji">🤖</span>Introduction to Artificial Intelligence</h2>
+
+    <div class="def-box">
+      <strong>Definition</strong>
+      Artificial Intelligence (AI) is the simulation of human intelligence processes by computer systems. It enables machines to perform tasks that typically require human intelligence — such as learning, reasoning, problem-solving, understanding language, and perceiving the environment.
+    </div>
+
+    <h3>What Does AI Do?</h3>
+    <p>AI systems can <mark>learn from experience</mark>, learn from data, and follow complex instructions — three fundamentally different capabilities that together make AI extremely powerful.</p>
+    <ul>
+      <li><strong>Learning from Experience:</strong> Just like humans improve with practice, AI systems get better as they process more examples.</li>
+      <li><strong>Learning from Data:</strong> AI can find patterns in huge datasets that humans would miss.</li>
+      <li><strong>Following Instructions:</strong> Traditional rule-based AI strictly executes instructions given by programmers.</li>
+    </ul>
+
+    <h3>Why AI? The Need for AI</h3>
+    <ul>
+      <li>Handles repetitive, tedious, and large-scale tasks better than humans.</li>
+      <li>Works 24/7 without fatigue or errors due to tiredness.</li>
+      <li>Processes massive amounts of data at speeds impossible for humans.</li>
+      <li>Makes predictions and decisions with high accuracy in complex domains.</li>
+      <li>Powers automation in industries to reduce cost and improve efficiency.</li>
+    </ul>
+
+    <div class="exam-tip">
+      AI is NOT a replacement for human intelligence. It is a tool that augments human capabilities. Exam questions often ask you to distinguish AI from human intelligence.
+    </div>
+
+    <div class="summary-box">
+      <h4>Quick Summary – Introduction</h4>
+      <p>AI = making machines smart. It learns, reasons, and acts like humans. It is broad and encompasses ML, Deep Learning, NLP, Computer Vision, and more.</p>
+    </div>
+  </section>
+
+  <!-- ════════════════════════════════════════ -->
+  <!-- SECTION 2: MACHINE LEARNING -->
+  <!-- ════════════════════════════════════════ -->
+  <section class="page-card" id="ml-intro">
+    <h2><span class="emoji">🧠</span>What is Machine Learning?</h2>
+
+    <div class="def-box">
+      <strong>Definition (Arthur Samuel, 1959)</strong>
+      Machine Learning is a field of AI that gives computers the ability to learn without being explicitly programmed. ML algorithms build a model from sample data (training data) to make decisions or predictions.
+    </div>
+
+    <h3>Key Characteristics of ML</h3>
+    <ul>
+      <li>Enables machines to <mark>learn from data</mark> automatically.</li>
+      <li>Improves performance <mark>without explicit programming</mark> for each task.</li>
+      <li>Based on <strong>algorithms</strong> and <strong>statistical models</strong>.</li>
+      <li>Focuses on <strong>pattern recognition</strong> and <strong>predictions</strong>.</li>
+      <li>Used in diverse fields: healthcare, finance, e-commerce, transportation, etc.</li>
+    </ul>
+
+    <h3>Core Idea</h3>
+    <p>Instead of telling a computer <em>exactly</em> what to do in every situation, we show it thousands or millions of examples and let it figure out the patterns on its own.</p>
+    <p><strong>Example:</strong> Instead of programming every rule to detect spam email, we show ML thousands of spam and non-spam emails and it learns to tell them apart automatically.</p>
+
+    <div class="exam-tip">
+      A classic exam definition question: "Machine Learning is a subset of AI that allows systems to automatically learn and improve from experience without being explicitly programmed."
+    </div>
+  </section>
+
+  <!-- ════════════════════════════════════════ -->
+  <!-- TRADITIONAL vs ML -->
+  <!-- ════════════════════════════════════════ -->
+  <section class="page-card" id="trad-vs-ml">
+    <h2><span class="emoji">⚖️</span>Traditional Programming vs Machine Learning</h2>
+
+    <div class="diagram-box">
+      <div class="diagram-title">Traditional Programming</div>
+      <div class="flow">
+        <div class="flow-box">Data</div><div class="flow-arrow">+</div>
+        <div class="flow-box">Program (Rules)</div><div class="flow-arrow">→</div>
+        <div class="flow-box mid">Computer</div><div class="flow-arrow">→</div>
+        <div class="flow-box out">Output</div>
+      </div>
+    </div>
+
+    <div class="diagram-box">
+      <div class="diagram-title">Machine Learning</div>
+      <div class="flow">
+        <div class="flow-box">Data</div><div class="flow-arrow">+</div>
+        <div class="flow-box out">Output (Examples)</div><div class="flow-arrow">→</div>
+        <div class="flow-box mid">Computer</div><div class="flow-arrow">→</div>
+        <div class="flow-box">Program (Learned Rules)</div>
+      </div>
+    </div>
+
+    <h3>Key Difference</h3>
+    <table class="comparison-table">
+      <tr><th>Aspect</th><th>Traditional Programming</th><th>Machine Learning</th></tr>
+      <tr><td>Input</td><td>Data + Rules (by programmer)</td><td>Data + Answers (examples)</td></tr>
+      <tr><td>Output</td><td>Results</td><td>Rules (Model)</td></tr>
+      <tr><td>How it works</td><td>Rule-based logic</td><td>Pattern learning from data</td></tr>
+      <tr><td>Flexibility</td><td>Only works for defined cases</td><td>Generalizes to new cases</td></tr>
+      <tr><td>Example</td><td>If-else spam filter</td><td>ML-trained spam detector</td></tr>
+      <tr><td>Maintenance</td><td>Manual updates needed</td><td>Learns and updates itself</td></tr>
+    </table>
+
+    <div class="important-box">
+      In traditional programming, humans write the rules. In ML, the machine discovers the rules from data. This is the fundamental shift.
+    </div>
+  </section>
+
+  <!-- ════════════════════════════════════════ -->
+  <!-- ML APPLICATIONS -->
+  <!-- ════════════════════════════════════════ -->
+  <section class="page-card" id="ml-apps">
+    <h2><span class="emoji">🌍</span>Applications of Machine Learning</h2>
+
+    <h3>Tasks Best Solved by Learning Algorithms</h3>
+
+    <h4>1. Recognizing Patterns</h4>
+    <ul>
+      <li><strong>Facial identities or facial expressions</strong> – Face unlock on phones, emotion detection.</li>
+      <li><strong>Handwritten or spoken words</strong> – OCR (Optical Character Recognition), speech recognition.</li>
+      <li><strong>Medical images</strong> – Detecting tumors in X-rays and MRI scans.</li>
+    </ul>
+
+    <h4>2. Generating Patterns</h4>
+    <ul>
+      <li>Generating realistic images or videos (GANs).</li>
+      <li>Creating realistic motion sequences for games and movies.</li>
+      <li>AI-generated art and music.</li>
+    </ul>
+
+    <h4>3. Recognizing Anomalies</h4>
+    <ul>
+      <li><strong>Unusual credit card transactions</strong> – Fraud detection systems.</li>
+      <li><strong>Unusual sensor readings</strong> – Monitoring equipment in nuclear power plants, factories.</li>
+      <li>Network intrusion detection systems.</li>
+    </ul>
+
+    <h4>4. Prediction</h4>
+    <ul>
+      <li>Future stock prices or currency exchange rates.</li>
+      <li>Weather forecasting.</li>
+      <li>Customer churn prediction in businesses.</li>
+    </ul>
+
+    <h3>Industry Applications of ML</h3>
+    <table class="comparison-table">
+      <tr><th>Industry</th><th>Application</th></tr>
+      <tr><td>🏥 Healthcare</td><td>Disease diagnosis, drug discovery, personalized medicine</td></tr>
+      <tr><td>🚗 Automobile</td><td>Self-driving cars, predictive maintenance</td></tr>
+      <tr><td>✈️ Transportation</td><td>Route optimization, demand forecasting</td></tr>
+      <tr><td>🏭 Manufacturing</td><td>Quality control, predictive maintenance</td></tr>
+      <tr><td>🛒 E-commerce</td><td>Product recommendation, price optimization</td></tr>
+      <tr><td>🛡️ Insurance</td><td>Risk assessment, fraud detection</td></tr>
+      <tr><td>💰 Finance</td><td>Credit scoring, algorithmic trading</td></tr>
+      <tr><td>🌾 Agriculture</td><td>Crop yield prediction, pest detection</td></tr>
+    </table>
+  </section>
+
+  <!-- ════════════════════════════════════════ -->
+  <!-- TYPES OF ML -->
+  <!-- ════════════════════════════════════════ -->
+  <section class="page-card" id="ml-types">
+    <h2><span class="emoji">📊</span>Types of Machine Learning</h2>
+
+    <p>ML is broadly categorized into <mark>4 main types</mark> based on how the algorithm learns from data:</p>
+
+    <h3>1. Supervised Learning</h3>
+    <div class="def-box">
+      <strong>Definition</strong>
+      The model is trained on <strong>labelled data</strong> — data that already has correct answers (labels). The algorithm learns the mapping from input to output.
+    </div>
+    <p><strong>Analogy:</strong> Like a student learning from a textbook with answers. You give examples AND the correct answers, and the model learns from them.</p>
+    <ul>
+      <li><strong>Classification:</strong> Output is a category. Example: Email = Spam or Not Spam, Image = Cat or Dog.</li>
+      <li><strong>Regression:</strong> Output is a continuous number. Example: Predicting house price, predicting temperature.</li>
+    </ul>
+    <p><strong>Common Algorithms:</strong> Linear Regression, Logistic Regression, Decision Trees, SVM, Random Forest, Neural Networks.</p>
+    <div class="exam-tip">Supervised = Labelled data. Two sub-types: Classification (categories) and Regression (numbers).</div>
+
+    <hr>
+
+    <h3>2. Unsupervised Learning</h3>
+    <div class="def-box">
+      <strong>Definition</strong>
+      The model is trained on <strong>unlabelled data</strong> — data without predefined categories. The algorithm finds hidden patterns or groupings on its own.
+    </div>
+    <p><strong>Analogy:</strong> Like sorting a pile of mixed objects into groups without being told what the groups should be.</p>
+    <ul>
+      <li><strong>Clustering:</strong> Grouping similar data points. Example: Customer segmentation in marketing.</li>
+      <li><strong>Dimensionality Reduction:</strong> Reducing the number of features. Example: PCA.</li>
+      <li><strong>Association:</strong> Finding rules. Example: "People who buy bread also buy butter" (market basket analysis).</li>
+    </ul>
+    <p><strong>Common Algorithms:</strong> K-Means Clustering, DBSCAN, PCA, Apriori.</p>
+    <div class="exam-tip">Unsupervised = Unlabelled data. Main technique = Clustering. No correct answer is provided.</div>
+
+    <hr>
+
+    <h3>3. Reinforcement Learning</h3>
+    <div class="def-box">
+      <strong>Definition</strong>
+      The model (agent) learns by <strong>interacting with an environment</strong>. It takes actions and receives rewards or punishments as feedback, and learns to maximize cumulative reward.
+    </div>
+    <p><strong>Analogy:</strong> Like training a dog with treats (reward) and scolding (punishment). The dog learns to do what gets treats.</p>
+    <ul>
+      <li><strong>Agent:</strong> The learner/decision-maker (e.g., a robot).</li>
+      <li><strong>Environment:</strong> What the agent interacts with.</li>
+      <li><strong>Action:</strong> What the agent does.</li>
+      <li><strong>State:</strong> Current situation of the agent.</li>
+      <li><strong>Reward:</strong> Feedback from the environment (positive or negative).</li>
+    </ul>
+    <p><strong>Examples:</strong> Game playing AI (AlphaGo, Chess), Robotics, Self-driving cars, Trading bots.</p>
+    <div class="exam-tip">Reinforcement = Trial and Error + Rewards. Key components: Agent, Environment, Action, State, Reward. This is how AI learns to play games.</div>
+
+    <hr>
+
+    <h3>4. Semi-Supervised Learning</h3>
+    <div class="def-box">
+      <strong>Definition</strong>
+      The model is trained with a <strong>combination of labelled and unlabelled data</strong>. This is practical because labelling data is expensive, but unlabelled data is abundant.
+    </div>
+    <p><strong>Example:</strong> Training a medical image classifier with 100 labelled scans and 10,000 unlabelled scans.</p>
+    <p><strong>Why useful?</strong> Getting labeled data requires human experts, which is slow and costly. Semi-supervised uses both labeled and unlabeled data to get better accuracy at lower cost.</p>
+
+    <div class="summary-box">
+      <h4>Types of ML – Quick Recap</h4>
+      <ul>
+        <li><span class="tag tag-blue">Supervised</span> – Labelled data → Classification + Regression</li>
+        <li><span class="tag tag-green">Unsupervised</span> – Unlabelled data → Clustering</li>
+        <li><span class="tag tag-accent">Reinforcement</span> – Trial & Error + Rewards → Game AI, Robotics</li>
+        <li><span class="tag tag-red">Semi-Supervised</span> – Both labelled + unlabelled data</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ════════════════════════════════════════ -->
+  <!-- ISSUES & FAILURES -->
+  <!-- ════════════════════════════════════════ -->
+  <section class="page-card" id="ml-issues">
+    <h2><span class="emoji">⚠️</span>Issues in ML / Why ML Projects Fail</h2>
+
+    <div class="important-box">
+      Gartner claims that approximately 85% of Machine Learning and AI projects fail. Understanding why is crucial for any AI practitioner.
+    </div>
+
+    <h3>Common Reasons for Failure</h3>
+    <ul>
+      <li><strong>Asking the wrong question:</strong> Defining the problem incorrectly from the start.</li>
+      <li><strong>Trying to solve the wrong problem:</strong> Applying ML where simpler solutions work better.</li>
+      <li><strong>Not having enough data:</strong> ML models require large amounts of quality data.</li>
+      <li><strong>Not having the right data:</strong> Irrelevant or biased data leads to wrong models.</li>
+      <li><strong>Having too much data:</strong> Overwhelming noise can obscure useful signals.</li>
+      <li><strong>Hiring the wrong people:</strong> Lack of domain expertise or ML skills.</li>
+      <li><strong>Using the wrong tools:</strong> Mismatch between problem and framework/algorithm.</li>
+      <li><strong>Not having the right model:</strong> Choosing an algorithm unsuited to the data type.</li>
+      <li><strong>Not having the right yardstick:</strong> Using incorrect evaluation metrics.</li>
+    </ul>
+
+    <h3>Ethical Issues in AI</h3>
+    <ul>
+      <li><strong>Bias:</strong> AI trained on biased data produces biased results (e.g., racial bias in facial recognition).</li>
+      <li><strong>Job Displacement:</strong> Amazon fired employees automatically based on AI decisions.</li>
+      <li><strong>Privacy:</strong> AI systems collect and analyze personal data.</li>
+      <li><strong>Accountability:</strong> Who is responsible when an AI makes a wrong decision?</li>
+      <li><strong>Transparency:</strong> Many AI models are "black boxes" — we don't understand how they decide.</li>
+    </ul>
+
+    <div class="exam-tip">
+      Exam often asks: "Name any 4 reasons why AI projects fail." Remember: wrong question, wrong problem, wrong data (too less/too much/wrong type), wrong model, wrong metrics.
+    </div>
+  </section>
+
+  <!-- ════════════════════════════════════════ -->
+  <!-- BRANCHES OF AI -->
+  <!-- ════════════════════════════════════════ -->
+  <section class="page-card" id="branches">
+    <h2><span class="emoji">🌳</span>Branches of Artificial Intelligence</h2>
+
+    <p>AI is a broad field with several specialized branches, each focusing on a different aspect of intelligence:</p>
+
+    <table class="comparison-table">
+      <tr><th>Branch</th><th>What it does</th><th>Example</th></tr>
+      <tr><td>🧠 Machine Learning</td><td>Learn patterns from data</td><td>Recommendation systems</td></tr>
+      <tr><td>💬 Natural Language Processing</td><td>Understand & generate human language</td><td>ChatGPT, Google Translate</td></tr>
+      <tr><td>👁️ Computer Vision</td><td>Interpret visual data (images, video)</td><td>Face recognition, medical imaging</td></tr>
+      <tr><td>🤖 Robotics</td><td>Physical machines that act intelligently</td><td>Industrial robots, Boston Dynamics</td></tr>
+      <tr><td>📚 Expert Systems</td><td>Mimic human domain expertise</td><td>MYCIN medical diagnosis</td></tr>
+      <tr><td>🌫️ Fuzzy Logic</td><td>Handle uncertainty & imprecision</td><td>Washing machine controllers</td></tr>
+      <tr><td>🕸️ Neural Networks</td><td>Brain-inspired computation</td><td>Image classification, GPT models</td></tr>
+    </table>
+
+    <div class="summary-box">
+      <h4>Relationship: AI → ML → Deep Learning</h4>
+      <p>AI is the broadest concept. ML is a subset of AI. Deep Learning is a subset of ML using multi-layered neural networks.</p>
+      <p><strong>AI ⊃ ML ⊃ Deep Learning</strong></p>
+    </div>
+  </section>
+
+  <!-- ════════════════════════════════════════ -->
+  <!-- AI TECHNIQUES -->
+  <!-- ════════════════════════════════════════ -->
+  <section class="page-card" id="ai-tech">
+    <h2><span class="emoji">🛠️</span>Artificial Intelligence Techniques</h2>
+
+    <p>The five main AI techniques covered in this unit are:</p>
+    <ol>
+      <li><strong>Machine Learning</strong> – Learning from data</li>
+      <li><strong>Deep Learning</strong> – Multi-layered neural networks</li>
+      <li><strong>Natural Language Processing (NLP)</strong> – Understanding language</li>
+      <li><strong>Computer Vision</strong> – Interpreting visual data</li>
+      <li><strong>Expert Systems</strong> – Mimicking human expertise with rules</li>
+    </ol>
+
+    <div class="important-box">
+      Know all 5 techniques and one example/application for each — very common in exams and viva.
+    </div>
+  </section>
+
+  <!-- ════════════════════════════════════════ -->
+  <!-- DEEP LEARNING -->
+  <!-- ════════════════════════════════════════ -->
+  <section class="page-card" id="deep-learning">
+    <h2><span class="emoji">🕸️</span>Deep Learning</h2>
+
+    <div class="def-box">
+      <strong>Definition</strong>
+      Deep Learning is a <strong>subset of Machine Learning</strong> that uses artificial neural networks with <strong>multiple hidden layers</strong> (hence "deep") to model complex patterns in data. It excels when the amount of data is very large.
+    </div>
+
+    <h3>Key Characteristics</h3>
+    <ul>
+      <li>Uses <strong>multi-layered (deep) neural networks</strong>.</li>
+      <li>Excels in modeling <strong>complex, non-linear patterns</strong>.</li>
+      <li>Handles <strong>large datasets</strong> for high accuracy.</li>
+      <li>Automatically extracts features — no manual feature engineering needed.</li>
+      <li>Applications: vision, NLP, speech recognition, generative AI.</li>
+    </ul>
+
+    <h3>Structure of a Neural Network</h3>
+    <div class="diagram-box">
+      <div class="diagram-title">Neural Network Architecture</div>
+      <div class="flow">
+        <div class="flow-box">Input Layer<br><small>Raw Data</small></div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-box mid">Hidden Layer 1</div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-box mid">Hidden Layer 2</div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-box mid">Hidden Layer N</div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-box out">Output Layer<br><small>Prediction</small></div>
+      </div>
+    </div>
+
+    <h3>Types of Deep Learning Models</h3>
+
+    <h4>1. Discriminative Models</h4>
+    <p>These models learn to <strong>classify or distinguish</strong> between different types of data.</p>
+    <p><strong>Example:</strong> Given an image → classify it as "Tiger" or "Lion".</p>
+    <p>Flow: Image → Classify → Discriminative Model → Output (Tiger)</p>
+
+    <h4>2. Generative Models</h4>
+    <p>These models learn to <strong>generate new data</strong> that is similar to the training data.</p>
+    <p><strong>Example:</strong> Given examples of tigers → generate a new tiger image.</p>
+    <p>Flow: Image → Generate → Generative Model → New Tiger Image</p>
+    <p><strong>Generative Adversarial Networks (GANs)</strong> are a famous type of generative model used for deepfakes, AI art, and synthetic data generation.</p>
+
+    <h3>ML vs Deep Learning</h3>
+    <table class="comparison-table">
+      <tr><th>Aspect</th><th>Machine Learning</th><th>Deep Learning</th></tr>
+      <tr><td>Data Required</td><td>Medium</td><td>Very large</td></tr>
+      <tr><td>Feature Engineering</td><td>Manual (human picks features)</td><td>Automatic (model learns features)</td></tr>
+      <tr><td>Hardware</td><td>Standard CPU</td><td>Powerful GPU required</td></tr>
+      <tr><td>Interpretability</td><td>More transparent</td><td>"Black box"</td></tr>
+      <tr><td>Training Time</td><td>Faster</td><td>Slower</td></tr>
+      <tr><td>Examples</td><td>Decision Trees, SVM</td><td>CNN, RNN, Transformers</td></tr>
+    </table>
+
+    <div class="exam-tip">
+      Deep Learning ⊂ Machine Learning ⊂ Artificial Intelligence. The more layers, the "deeper" the network. Deep Learning = fancy neural networks with many hidden layers.
+    </div>
+  </section>
+
+  <!-- ════════════════════════════════════════ -->
+  <!-- NLP -->
+  <!-- ════════════════════════════════════════ -->
+  <section class="page-card" id="nlp">
+    <h2><span class="emoji">💬</span>Natural Language Processing (NLP)</h2>
+
+    <div class="def-box">
+      <strong>Definition</strong>
+      Natural Language Processing (NLP) is a branch of AI that deals with the interaction between computers and human (natural) languages. It enables computers to <strong>understand, interpret, and generate human language</strong> in a useful way.
+    </div>
+
+    <h3>What NLP Does</h3>
+    <ul>
+      <li>Analyzes and understands text and speech.</li>
+      <li>Generates human-like text and speech.</li>
+      <li>Translates text between languages.</li>
+      <li>Summarizes long documents automatically.</li>
+      <li>Extracts meaning, entities, and relationships from text.</li>
+      <li>Bridges communication between humans and machines.</li>
+    </ul>
+
+    <h3>Core NLP Tasks</h3>
+    <table class="comparison-table">
+      <tr><th>Task</th><th>Description</th><th>Example</th></tr>
+      <tr><td>Raw Language Processing</td><td>Tokenization, stemming, parsing</td><td>Breaking sentences into words</td></tr>
+      <tr><td>Entity Extraction</td><td>Finding names, places, dates in text</td><td>Named Entity Recognition (NER)</td></tr>
+      <tr><td>Relationship Extraction</td><td>Finding how entities relate</td><td>"Apple founded by Steve Jobs"</td></tr>
+      <tr><td>Topic Classification</td><td>Categorizing text by topic</td><td>News article → Sports/Politics</td></tr>
+      <tr><td>Sentiment Analysis</td><td>Detecting positive/negative opinion</td><td>Product review analysis</td></tr>
+      <tr><td>Machine Translation</td><td>Text in one language to another</td><td>Google Translate</td></tr>
+      <tr><td>Text Summarization</td><td>Condensing long text</td><td>News summaries</td></tr>
+      <tr><td>Question Answering</td><td>Answering questions from text</td><td>ChatGPT, Siri</td></tr>
+    </table>
+
+    <h3>NLP Input Sources</h3>
+    <ul>
+      <li><strong>Text:</strong> Documents, emails, social media posts, web pages.</li>
+      <li><strong>Audio/Speech:</strong> Voice commands, phone calls, podcasts.</li>
+      <li><strong>Video:</strong> Transcription of video content.</li>
+    </ul>
+
+    <h3>Famous NLP Models</h3>
+    <ul>
+      <li><strong>BERT</strong> (Bidirectional Encoder Representations from Transformers) – Google's model for understanding language context.</li>
+      <li><strong>GPT</strong> (Generative Pre-trained Transformer) – OpenAI's model for generating text (basis of ChatGPT).</li>
+      <li><strong>Word2Vec</strong> – Converts words into numerical vectors.</li>
+    </ul>
+
+    <h3>Applications of NLP</h3>
+    <ul>
+      <li>Chatbots and virtual assistants (Siri, Alexa, Google Assistant).</li>
+      <li>Sentiment analysis for product reviews and social media.</li>
+      <li>Search engines (understanding user queries better).</li>
+      <li>Machine translation (Google Translate, DeepL).</li>
+      <li>Email spam filtering and auto-categorization.</li>
+      <li>Autocomplete and autocorrect in keyboards.</li>
+      <li>Medical text analysis for extracting information from patient records.</li>
+    </ul>
+
+    <div class="exam-tip">
+      NLP = AI for human language. Key applications: chatbots, translation, sentiment analysis, voice recognition. Famous models: BERT and GPT.
+    </div>
+  </section>
+
+  <!-- ════════════════════════════════════════ -->
+  <!-- COMPUTER VISION -->
+  <!-- ════════════════════════════════════════ -->
+  <section class="page-card" id="cv">
+    <h2><span class="emoji">👁️</span>Computer Vision</h2>
+
+    <div class="def-box">
+      <strong>Definition</strong>
+      Computer Vision is a field of AI that enables computers to <strong>interpret and understand the visual world</strong>. It processes digital images, videos, and other visual inputs to make decisions or extract information.
+    </div>
+
+    <h3>How Computer Vision Works</h3>
+    <div class="diagram-box">
+      <div class="diagram-title">Computer Vision Pipeline</div>
+      <div class="flow">
+        <div class="flow-box">Visual Input<br><small>(Image/Video)</small></div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-box mid">Sensory Device<br><small>(Camera)</small></div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-box mid">Interpreting Device<br><small>(Computer + Model)</small></div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-box out">Output<br><small>(Labels/Decisions)</small></div>
+      </div>
+    </div>
+
+    <h3>Human Vision vs Computer Vision</h3>
+    <table class="comparison-table">
+      <tr><th>Aspect</th><th>Human Vision</th><th>Computer Vision</th></tr>
+      <tr><td>Sensory Organ</td><td>Eye (captures image)</td><td>Camera (captures image)</td></tr>
+      <tr><td>Processing</td><td>Brain (interprets)</td><td>Computer + ML Model</td></tr>
+      <tr><td>Speed</td><td>Limited (fatigue)</td><td>Fast, 24/7</td></tr>
+      <tr><td>Scale</td><td>Can't review millions of images</td><td>Can process millions per hour</td></tr>
+      <tr><td>Learning</td><td>Through experience</td><td>Through labeled training data</td></tr>
+    </table>
+
+    <h3>Key Computer Vision Tasks</h3>
+    <ul>
+      <li><strong>Image Classification:</strong> "What is in this image?" → Cat, Dog, Car.</li>
+      <li><strong>Object Detection:</strong> "Where are the objects?" → Draw bounding boxes.</li>
+      <li><strong>Image Segmentation:</strong> Identify every pixel's class (semantic segmentation).</li>
+      <li><strong>Facial Recognition:</strong> Identify or verify a person from their face.</li>
+      <li><strong>Scene Understanding:</strong> Understand the complete context of a scene.</li>
+      <li><strong>Optical Character Recognition (OCR):</strong> Convert handwritten/printed text in images to digital text.</li>
+    </ul>
+
+    <h3>Applications of Computer Vision</h3>
+    <ul>
+      <li>Self-driving / autonomous vehicles.</li>
+      <li>Medical imaging – detecting cancer in MRI, X-ray, CT scans.</li>
+      <li>Facial recognition for security and authentication.</li>
+      <li>Retail – cashierless stores (Amazon Go), product defect detection.</li>
+      <li>Agriculture – crop disease detection from drone images.</li>
+      <li>Manufacturing – quality control on production lines.</li>
+      <li>Sports analytics – player tracking and performance analysis.</li>
+    </ul>
+
+    <div class="exam-tip">
+      Computer Vision = AI for eyes. Just like NLP is AI for language, CV is AI for visual data. Key tasks: classification, detection, segmentation, recognition.
+    </div>
+  </section>
+
+  <!-- ════════════════════════════════════════ -->
+  <!-- EXPERT SYSTEMS -->
+  <!-- ════════════════════════════════════════ -->
+  <section class="page-card" id="expert">
+    <h2><span class="emoji">📚</span>Expert Systems</h2>
+
+    <div class="def-box">
+      <strong>Definition</strong>
+      An Expert System is an AI program that <strong>simulates the judgment and behavior of a human expert</strong> in a specific domain. It uses a <strong>knowledge base</strong> (facts and rules from human experts) and an <strong>inference engine</strong> (reasoning mechanism) to solve domain-specific problems.
+    </div>
+
+    <h3>Components of an Expert System</h3>
+    <ul>
+      <li><strong>Knowledge Base:</strong> Stores facts (what is known) and rules (if-then statements from human experts).</li>
+      <li><strong>Inference Engine:</strong> The reasoning mechanism that applies rules to the knowledge base to reach conclusions. Works like: <code>IF (condition) THEN (conclusion)</code></li>
+      <li><strong>User Interface:</strong> Allows non-expert users to interact with the system by entering queries and receiving advice.</li>
+      <li><strong>Explanation Facility:</strong> Can explain how it reached its conclusion (why it made a decision).</li>
+      <li><strong>Knowledge Acquisition Facility:</strong> Tool to add new knowledge from human experts to the knowledge base.</li>
+    </ul>
+
+    <h3>How an Expert System Works</h3>
+    <div class="diagram-box">
+      <div class="diagram-title">Expert System Workflow</div>
+      <div class="flow">
+        <div class="flow-box">Human Expert</div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-box mid">Knowledge Base<br>(Rules & Facts)</div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-box mid">Inference Engine</div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-box out">User Interface</div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-box">Non-Expert User</div>
+      </div>
+    </div>
+
+    <h3>Example: MYCIN (Medical Expert System)</h3>
+    <ul>
+      <li>One of the first expert systems, developed at Stanford in 1970s.</li>
+      <li><strong>Purpose:</strong> Assist doctors in diagnosing bacterial infections and recommending antibiotics.</li>
+      <li><strong>How it works:</strong> Analyzes symptoms, medical history, and lab data.</li>
+      <li>Provides treatment recommendations with a confidence factor.</li>
+      <li>MYCIN's diagnosis matched expert doctors' opinions 65% of the time (better than residents).</li>
+    </ul>
+
+    <h3>Other Examples</h3>
+    <ul>
+      <li><strong>DENDRAL:</strong> Identifies chemical compounds from mass spectra.</li>
+      <li><strong>XCON:</strong> IBM's system to configure computer systems automatically.</li>
+      <li><strong>PROSPECTOR:</strong> Used in geology for mineral exploration.</li>
+    </ul>
+
+    <h3>Advantages of Expert Systems</h3>
+    <ul>
+      <li>Available 24/7, no fatigue or emotional decisions.</li>
+      <li>Consistent decision-making every time.</li>
+      <li>Can preserve and distribute expert knowledge.</li>
+      <li>Can handle very complex rule-based domains.</li>
+    </ul>
+
+    <h3>Disadvantages of Expert Systems</h3>
+    <ul>
+      <li>Cannot learn on their own (static knowledge base).</li>
+      <li>Requires continuous manual updates.</li>
+      <li>Cannot handle situations outside the predefined rules.</li>
+      <li>Expensive to build and maintain (knowledge acquisition bottleneck).</li>
+    </ul>
+
+    <div class="exam-tip">
+      Expert Systems = Knowledge Base + Inference Engine. Most famous example = MYCIN. They use IF-THEN rules. They cannot learn — that's the main limitation compared to ML.
+    </div>
+  </section>
+
+  <!-- ════════════════════════════════════════ -->
+  <!-- FUZZY SYSTEMS -->
+  <!-- ════════════════════════════════════════ -->
+  <section class="page-card" id="fuzzy">
+    <h2><span class="emoji">🌫️</span>Fuzzy Systems (Fuzzy Logic)</h2>
+
+    <div class="def-box">
+      <strong>Definition</strong>
+      Fuzzy Logic is a mathematical framework that deals with <strong>uncertainty, vagueness, and imprecision</strong>. Unlike classical (crisp) logic where things are either TRUE (1) or FALSE (0), fuzzy logic allows values <strong>between 0 and 1</strong> — representing degrees of truth.
+    </div>
+
+    <h3>Classical Logic vs Fuzzy Logic</h3>
+    <table class="comparison-table">
+      <tr><th>Aspect</th><th>Classical (Crisp) Logic</th><th>Fuzzy Logic</th></tr>
+      <tr><td>Values</td><td>Only 0 or 1 (True/False)</td><td>Any value between 0 and 1</td></tr>
+      <tr><td>Example</td><td>Temperature is HOT: Yes or No</td><td>Temperature is 0.7 (somewhat hot)</td></tr>
+      <tr><td>Handles uncertainty</td><td>No</td><td>Yes</td></tr>
+      <tr><td>Best for</td><td>Precise, well-defined problems</td><td>Vague, subjective problems</td></tr>
+    </table>
+
+    <h3>How Fuzzy Logic Works</h3>
+    <ol>
+      <li><strong>Fuzzification:</strong> Convert crisp input (e.g., temperature = 35°C) into fuzzy values (somewhat hot = 0.6, hot = 0.4).</li>
+      <li><strong>Rule Evaluation:</strong> Apply fuzzy IF-THEN rules (e.g., IF temperature is hot THEN fan speed is high).</li>
+      <li><strong>Defuzzification:</strong> Convert fuzzy output back to a crisp value (fan speed = 80%).</li>
+    </ol>
+
+    <h3>Applications of Fuzzy Systems</h3>
+    <ul>
+      <li><strong>Traffic Control Systems:</strong> Fuzzy logic optimizes traffic signal timings based on real-time traffic density (how full the road is).</li>
+      <li><strong>Home Appliances:</strong> Washing machines adjust wash time/water based on dirtiness level. Air conditioners adjust cooling based on temperature feel.</li>
+      <li><strong>Medical Diagnosis:</strong> Helps when symptoms are vague or overlapping.</li>
+      <li><strong>Control Systems:</strong> Used in aircraft autopilot, industrial process control.</li>
+      <li><strong>Speech and Handwriting Recognition:</strong> When patterns are not clearly defined.</li>
+    </ul>
+
+    <div class="exam-tip">
+      Fuzzy Logic = Dealing with "maybe" instead of strict Yes/No. Values between 0 and 1. Real-world example: washing machine, air conditioner, traffic signals.
+    </div>
+  </section>
+
+  <!-- ════════════════════════════════════════ -->
+  <!-- AUGMENTED REALITY -->
+  <!-- ════════════════════════════════════════ -->
+  <section class="page-card" id="ar">
+    <h2><span class="emoji">🥽</span>Augmented Reality (AR) & Virtual Reality (VR)</h2>
+
+    <h3>Augmented Reality (AR)</h3>
+    <div class="def-box">
+      <strong>Definition</strong>
+      Augmented Reality overlays <strong>digital information (images, sounds, text, 3D objects) onto the real-world environment</strong> in real time. The real world is still visible, but enhanced with virtual elements.
+    </div>
+    <p><strong>Key Point:</strong> AR = Real World + Digital Overlay. You still see the real world.</p>
+    <ul>
+      <li><strong>Famous Examples:</strong></li>
+      <li>Pokémon GO – virtual Pokémon characters appear in real-world environments.</li>
+      <li>Snapchat/Instagram filters – add digital effects to real-world camera view.</li>
+      <li>IKEA Place app – see how furniture looks in your room before buying.</li>
+      <li>Google Maps AR navigation – directions overlaid on real streets.</li>
+      <li>Medical AR – surgeons see patient data overlaid on the body during surgery.</li>
+    </ul>
+
+    <h3>Virtual Reality (VR)</h3>
+    <div class="def-box">
+      <strong>Definition</strong>
+      Virtual Reality creates a completely <strong>immersive, computer-generated environment</strong> that replaces the real world entirely. Users wear VR headsets to experience a simulated 3D world.
+    </div>
+    <p><strong>Key Point:</strong> VR = Completely Virtual World. Real world is blocked out.</p>
+    <ul>
+      <li><strong>Famous Examples:</strong></li>
+      <li>Oculus Quest – gaming and entertainment in VR.</li>
+      <li>VR training simulations – military, surgery, pilot training.</li>
+      <li>Virtual tours of museums, real estate, travel destinations.</li>
+    </ul>
+
+    <h3>AR vs VR</h3>
+    <table class="comparison-table">
+      <tr><th>Aspect</th><th>Augmented Reality (AR)</th><th>Virtual Reality (VR)</th></tr>
+      <tr><td>Real World</td><td>Still visible (enhanced)</td><td>Completely replaced</td></tr>
+      <tr><td>Immersion</td><td>Partial</td><td>Full</td></tr>
+      <tr><td>Devices</td><td>Phone, AR glasses</td><td>VR headset required</td></tr>
+      <tr><td>Examples</td><td>Pokémon GO, IKEA app</td><td>Oculus, PlayStation VR</td></tr>
+      <tr><td>AI Role</td><td>Object detection, tracking</td><td>Environment generation, interaction</td></tr>
+    </table>
+
+    <h3>How AR Works – Software & Hardware</h3>
+    <h4>Hardware</h4>
+    <ul>
+      <li>Smartphone camera (most common)</li>
+      <li>AR Glasses (Microsoft HoloLens, Google Glass)</li>
+      <li>Sensors and GPS for location awareness</li>
+    </ul>
+    <h4>Software/AI involved</h4>
+    <ul>
+      <li><strong>Computer Vision:</strong> Recognizes real-world objects and surfaces to anchor AR content.</li>
+      <li><strong>Simultaneous Localization and Mapping (SLAM):</strong> Maps the environment in real time.</li>
+      <li><strong>Object Tracking:</strong> Keeps virtual objects anchored as the camera moves.</li>
+    </ul>
+
+    <h3>Applications of AR/VR</h3>
+    <ul>
+      <li><strong>Education:</strong> Virtual labs, immersive learning (3D anatomy models).</li>
+      <li><strong>Healthcare:</strong> Surgical planning, medical training simulations.</li>
+      <li><strong>Retail:</strong> Virtual try-on for clothes, shoes, glasses.</li>
+      <li><strong>Entertainment:</strong> Gaming, live concerts in VR.</li>
+      <li><strong>Architecture:</strong> Visualize buildings before they are built.</li>
+      <li><strong>Military:</strong> Training simulations, battlefield visualization.</li>
+    </ul>
+
+    <div class="exam-tip">
+      AR = Real world + Virtual overlay. VR = Fully virtual world. Key difference: in AR you still see the real world; in VR you don't. AI powers AR through computer vision and object tracking.
+    </div>
+  </section>
+
+  <!-- ════════════════════════════════════════ -->
+  <!-- AI IN DIFFERENT FIELDS -->
+  <!-- ════════════════════════════════════════ -->
+  <section class="page-card" id="ai-fields">
+    <h2><span class="emoji">🌐</span>AI in Different Fields</h2>
+
+    <h3>1. Natural Language Processing (NLP)</h3>
+    <p>Used in chatbots, language translation, sentiment analysis, and voice recognition. Powers tools like Google Translate, Grammarly, Siri, and ChatGPT.</p>
+
+    <h3>2. Healthcare</h3>
+    <ul>
+      <li><strong>Diagnostics:</strong> AI analyzes medical images (X-ray, MRI, CT) to detect diseases.</li>
+      <li><strong>Drug Discovery:</strong> AI accelerates finding new drug candidates (e.g., AlphaFold for protein structure).</li>
+      <li><strong>Personalized Medicine:</strong> Tailoring treatment to individual patients based on genetics.</li>
+      <li><strong>Patient Management:</strong> AI predicts patient readmission, optimizes hospital workflows.</li>
+    </ul>
+
+    <h3>3. Agriculture</h3>
+    <ul>
+      <li><strong>Precision Farming:</strong> Sensors + AI to apply water, fertilizer exactly where needed.</li>
+      <li><strong>Crop Monitoring:</strong> Drones with CV detect crop health issues early.</li>
+      <li><strong>Pest Control:</strong> AI identifies pest-affected areas and automates treatment.</li>
+      <li><strong>Yield Prediction:</strong> ML models forecast harvest quantity based on weather and soil data.</li>
+    </ul>
+
+    <h3>4. Social Media Monitoring</h3>
+    <ul>
+      <li><strong>Sentiment Analysis:</strong> Analyzing public opinion about brands, politicians, events.</li>
+      <li><strong>Trend Prediction:</strong> Detecting what topics will go viral.</li>
+      <li><strong>Content Moderation:</strong> Auto-flagging hate speech, fake news, inappropriate content.</li>
+      <li><strong>Recommendation Systems:</strong> Showing relevant posts, ads, and videos.</li>
+    </ul>
+
+    <div class="summary-box">
+      <h4>AI Fields – Quick Recap</h4>
+      <p>NLP → Language | Healthcare → Diagnostics, Drug Discovery | Agriculture → Precision Farming | Social Media → Sentiment, Moderation</p>
+    </div>
+  </section>
+
+  <!-- ════════════════════════════════════════ -->
+  <!-- AI PRODUCTS -->
+  <!-- ════════════════════════════════════════ -->
+  <section class="page-card" id="ai-products">
+    <h2><span class="emoji">📱</span>AI-Powered Products</h2>
+
+    <h3>1. Google Translate</h3>
+    <ul>
+      <li>Uses machine learning (specifically deep learning with neural machine translation).</li>
+      <li>Translates text between 100+ languages.</li>
+      <li>Uses sequence-to-sequence models with attention mechanisms.</li>
+      <li>Can translate text in real-time through the camera (AR translation).</li>
+    </ul>
+
+    <h3>2. Driverless Cars (Autonomous Vehicles)</h3>
+    <ul>
+      <li>Companies: Tesla, Waymo, Uber ATG.</li>
+      <li><strong>AI involved:</strong> Computer Vision (detecting pedestrians, lanes, signs), Reinforcement Learning (decision-making), Sensor Fusion (combining LIDAR, radar, camera data).</li>
+      <li>Levels of autonomy: Level 0 (no automation) to Level 5 (full automation).</li>
+      <li>AI algorithms enable the vehicle to navigate, make decisions, and respond to the environment.</li>
+    </ul>
+
+    <h3>3. Voice Assistants – Alexa & Siri</h3>
+    <ul>
+      <li>Use <strong>NLP</strong> to understand user voice commands.</li>
+      <li>Use <strong>ASR</strong> (Automatic Speech Recognition) to convert speech to text.</li>
+      <li>Use <strong>NLU</strong> (Natural Language Understanding) to understand intent.</li>
+      <li>Use <strong>NLG</strong> (Natural Language Generation) to generate responses.</li>
+      <li>Connected to cloud AI services for complex queries.</li>
+    </ul>
+
+    <h3>4. ChatGPT</h3>
+    <ul>
+      <li>Developed by OpenAI. Based on the <strong>GPT (Generative Pre-trained Transformer)</strong> architecture.</li>
+      <li>Trained on vast amounts of internet text.</li>
+      <li>Uses <strong>RLHF</strong> (Reinforcement Learning from Human Feedback) to align with human values.</li>
+      <li>Can write essays, code, poems, explain concepts, answer questions, and much more.</li>
+      <li>Represents a major breakthrough in conversational AI.</li>
+    </ul>
+
+    <div class="exam-tip">
+      For each product, know: What AI technique powers it. Google Translate = ML/DL. Driverless Cars = CV + RL. Alexa/Siri = NLP. ChatGPT = GPT (Transformer) + RLHF.
+    </div>
+  </section>
+
+  <!-- ════════════════════════════════════════ -->
+  <!-- TOOLS -->
+  <!-- ════════════════════════════════════════ -->
+  <section class="page-card" id="tools">
+    <h2><span class="emoji">⚙️</span>Tools & Techniques for Implementing AI</h2>
+
+    <h3>Machine Learning Frameworks</h3>
+    <table class="comparison-table">
+      <tr><th>Tool</th><th>Type</th><th>Best For</th></tr>
+      <tr><td>TensorFlow</td><td>Open-source ML library (Google)</td><td>Production ML, deep learning</td></tr>
+      <tr><td>PyTorch</td><td>Open-source ML library (Meta)</td><td>Research, deep learning</td></tr>
+      <tr><td>scikit-learn</td><td>Python ML library</td><td>Classical ML algorithms</td></tr>
+      <tr><td>Keras</td><td>High-level DL API</td><td>Quick neural network prototyping</td></tr>
+    </table>
+
+    <h3>Development Platforms</h3>
+    <ul>
+      <li><strong>Jupyter Notebooks:</strong> Interactive Python environment. Run code cell-by-cell. Ideal for data analysis and ML experiments. Supports visualization inline.</li>
+      <li><strong>Google Colab:</strong> Free cloud-based Jupyter notebook. Provides free GPU access. No setup needed. Great for students and researchers.</li>
+    </ul>
+
+    <h3>Data Preprocessing Tools</h3>
+    <ul>
+      <li><strong>Pandas:</strong> Python library for data manipulation. Handles DataFrames (tables). Used for loading, cleaning, transforming data.</li>
+      <li><strong>NumPy:</strong> Python library for numerical computation. Handles arrays and matrices. Foundation for ML and scientific computing.</li>
+    </ul>
+
+    <h3>NLP Tools</h3>
+    <ul>
+      <li><strong>NLTK (Natural Language Toolkit):</strong> Python library for text processing. Includes tokenization, stemming, tagging, parsing. Good for learning NLP concepts.</li>
+      <li><strong>spaCy:</strong> Industrial-strength NLP library. Much faster than NLTK. Better for production applications.</li>
+    </ul>
+
+    <h3>Computer Vision Tools</h3>
+    <ul>
+      <li><strong>OpenCV:</strong> Open-source CV library. Image processing, object detection.</li>
+      <li><strong>PIL / Pillow:</strong> Python Imaging Library for basic image processing.</li>
+    </ul>
+
+    <div class="exam-tip">
+      Know which tool is used for what: TensorFlow/PyTorch = Deep Learning. scikit-learn = Classical ML. Pandas/NumPy = Data. NLTK/spaCy = NLP. Jupyter/Colab = Development Platform.
+    </div>
+  </section>
+
+  <!-- ════════════════════════════════════════ -->
+  <!-- CURRENT TRENDS -->
+  <!-- ════════════════════════════════════════ -->
+  <section class="page-card" id="trends">
+    <h2><span class="emoji">📈</span>Current Trends & Opportunities in AI</h2>
+
+    <ol>
+      <li><strong>Development in Predictive Analytics:</strong> AI is increasingly used to predict future events — business trends, stock prices, patient health outcomes, equipment failures.</li>
+      <li><strong>Large Language Models (LLMs):</strong> Models like GPT-4, Gemini, Claude — capable of understanding and generating text at near-human level. Powering chatbots, coding assistants, and content generation.</li>
+      <li><strong>Information Security (InfoSec):</strong> AI is used to detect cyber threats, anomalous network behavior, and automated threat response. AI-powered antivirus and intrusion detection.</li>
+      <li><strong>Launch of Better Autonomous Systems:</strong> Improved self-driving cars, autonomous drones, robotic process automation (RPA) in industries.</li>
+      <li><strong>Art through NFTs:</strong> AI-generated artwork is being sold as Non-Fungible Tokens (NFTs). Tools like DALL·E, Midjourney generate AI art.</li>
+      <li><strong>Digital Avatars:</strong> AI-powered virtual humans and digital twins used in metaverse, gaming, customer service.</li>
+      <li><strong>Military Weapons:</strong> AI-guided drones, autonomous defense systems, battlefield intelligence.</li>
+      <li><strong>Healthcare:</strong> AI in drug discovery, precision medicine, AI diagnostics, remote patient monitoring.</li>
+      <li><strong>Explainable AI (XAI):</strong> Making AI decisions transparent and interpretable. Crucial for legal, medical, and financial applications where accountability is required.</li>
+      <li><strong>Edge AI:</strong> Processing AI tasks directly on devices (phones, IoT sensors) rather than sending data to the cloud. Reduces latency and protects privacy.</li>
+      <li><strong>AI Ethics and Bias Mitigation:</strong> Growing focus on ensuring AI is fair, accountable, transparent, and respects privacy. Regulations like EU AI Act.</li>
+    </ol>
+
+    <div class="exam-tip">
+      Trends you must know: LLMs (ChatGPT), Edge AI, Explainable AI (XAI), AI Ethics. These are very popular in current semester exams and interviews.
+    </div>
+  </section>
+
+  <!-- ════════════════════════════════════════ -->
+  <!-- JOBS -->
+  <!-- ════════════════════════════════════════ -->
+  <section class="page-card" id="jobs">
+    <h2><span class="emoji">💼</span>Job Roles & Skill Sets for AI & ML</h2>
+
+    <h3>Key Job Roles</h3>
+    <table class="comparison-table">
+      <tr><th>Job Role</th><th>What They Do</th></tr>
+      <tr><td>Machine Learning Engineer</td><td>Design, build, and deploy ML models in production. Write scalable ML pipelines.</td></tr>
+      <tr><td>Data Scientist</td><td>Analyze data, build models, extract insights. Focus on experiments and analysis.</td></tr>
+      <tr><td>AI Research Scientist</td><td>Develop new AI algorithms and techniques. Work in universities and R&D labs.</td></tr>
+      <tr><td>NLP Engineer</td><td>Build language models, chatbots, translation systems, voice AI.</td></tr>
+      <tr><td>Computer Vision Engineer</td><td>Build image/video AI systems. Work on face recognition, object detection.</td></tr>
+      <tr><td>Robotics Scientist</td><td>Design and program intelligent robots using AI and ML.</td></tr>
+      <tr><td>AI Ethics Researcher</td><td>Ensure AI systems are fair, transparent, and comply with regulations.</td></tr>
+    </table>
+
+    <h3>Essential Skill Set</h3>
+
+    <h4>Programming Languages</h4>
+    <ul>
+      <li><strong>Python</strong> – Most widely used for ML/AI. Rich ecosystem of libraries.</li>
+      <li><strong>R</strong> – Strong for statistical analysis and data science.</li>
+      <li><strong>Java</strong> – Used in enterprise AI applications.</li>
+      <li>C++ – Used in robotics and real-time systems.</li>
+    </ul>
+
+    <h4>Mathematics & Statistics</h4>
+    <ul>
+      <li><strong>Linear Algebra:</strong> Vectors, matrices, eigenvalues — the language of neural networks.</li>
+      <li><strong>Statistics & Probability:</strong> Distributions, hypothesis testing, Bayesian thinking.</li>
+      <li><strong>Calculus:</strong> Derivatives and gradients for optimization (backpropagation).</li>
+    </ul>
+
+    <h4>Technical Skills</h4>
+    <ul>
+      <li><strong>Signal Processing Techniques:</strong> For audio and time-series data.</li>
+      <li><strong>Neural Network Architectures:</strong> CNN, RNN, LSTM, Transformers.</li>
+      <li><strong>Machine Learning Algorithms:</strong> Decision Trees, SVM, K-Means, Random Forest, Gradient Boosting.</li>
+      <li><strong>Data Engineering:</strong> SQL, data pipelines, ETL processes.</li>
+      <li><strong>Cloud Platforms:</strong> AWS, Google Cloud, Azure for deploying AI models.</li>
+    </ul>
+
+    <div class="summary-box">
+      <h4>Skills Summary</h4>
+      <p>Python > R > Java | Linear Algebra + Statistics | Neural Networks + ML Algorithms | Signal Processing | Cloud (AWS/GCP/Azure)</p>
+    </div>
+  </section>
+
+  <!-- ════════════════════════════════════════ -->
+  <!-- REVISION SUMMARY -->
+  <!-- ════════════════════════════════════════ -->
+  <section class="page-card" id="revision">
+    <h2><span class="emoji">📋</span>Complete Revision Summary – Unit 2</h2>
+
+    <div class="summary-box">
+      <h4>AI Basics</h4>
+      <ul>
+        <li>AI = Simulating human intelligence in machines.</li>
+        <li>AI ⊃ ML ⊃ Deep Learning.</li>
+        <li>ML: Learn from data without explicit programming.</li>
+      </ul>
+    </div>
+
+    <div class="summary-box">
+      <h4>Types of ML</h4>
+      <ul>
+        <li><strong>Supervised:</strong> Labelled data → Classification + Regression.</li>
+        <li><strong>Unsupervised:</strong> Unlabelled data → Clustering.</li>
+        <li><strong>Reinforcement:</strong> Agent + Environment + Reward.</li>
+        <li><strong>Semi-Supervised:</strong> Mix of labelled + unlabelled.</li>
+      </ul>
+    </div>
+
+    <div class="summary-box">
+      <h4>AI Techniques</h4>
+      <ul>
+        <li><strong>Deep Learning:</strong> Multi-layer neural networks. Subset of ML.</li>
+        <li><strong>NLP:</strong> AI for human language. ChatGPT, Google Translate.</li>
+        <li><strong>Computer Vision:</strong> AI for visual data. Self-driving cars, medical imaging.</li>
+        <li><strong>Expert Systems:</strong> Knowledge Base + Inference Engine. MYCIN.</li>
+        <li><strong>Fuzzy Logic:</strong> Handles uncertainty. Values 0–1. Washing machines.</li>
+        <li><strong>AR/VR:</strong> AR = Real + Virtual overlay. VR = Fully virtual.</li>
+      </ul>
+    </div>
+
+    <div class="summary-box">
+      <h4>Products & Tools</h4>
+      <ul>
+        <li>Google Translate = ML/DL | ChatGPT = GPT + RLHF | Alexa/Siri = NLP.</li>
+        <li>Tools: TensorFlow, PyTorch, scikit-learn, Pandas, NumPy, NLTK, spaCy.</li>
+        <li>Platforms: Jupyter Notebook, Google Colab.</li>
+      </ul>
+    </div>
+
+    <div class="summary-box">
+      <h4>Trends & Jobs</h4>
+      <ul>
+        <li>Trends: LLMs, Edge AI, XAI, AI Ethics, Generative AI.</li>
+        <li>Jobs: ML Engineer, Data Scientist, NLP Engineer, CV Engineer.</li>
+        <li>Skills: Python, Linear Algebra, Statistics, Neural Networks, Cloud.</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ════════════════════════════════════════ -->
+  <!-- MCQ SECTION -->
+  <!-- ════════════════════════════════════════ -->
+  <div id="mcq-section">
+    <div id="mcq-header">
+      <h2>🎯 Unit 2 – MCQ Practice</h2>
+      <p>50 Questions | All Topics Covered | Exam Level</p>
+    </div>
+    <div id="mcq-progress-wrap">
+      <div id="mcq-progress-bar-outer">
+        <div id="mcq-progress-bar-inner"></div>
+      </div>
+      <div id="mcq-progress-text">Q 1 / 50</div>
+      <div id="score-display">Score: 0</div>
+    </div>
+
+    <div id="mcq-container"></div>
+
+    <div class="mcq-nav">
+      <button class="mcq-btn secondary" id="btn-prev" onclick="navigateMCQ(-1)" disabled>← Prev</button>
+      <button class="mcq-btn" id="btn-reset" onclick="resetMCQ()" style="background:#e05252">↺ Reset All</button>
+      <button class="mcq-btn" id="btn-next" onclick="navigateMCQ(1)" disabled>Next →</button>
+    </div>
+  </div>
+
+</main>
+
+<button id="scroll-top" onclick="scrollToTop()">↑</button>
+
+<script>
+// ── SIDEBAR TOGGLE ──
+let sidebarOpen = true;
+function toggleSidebar() {
+  sidebarOpen = !sidebarOpen;
+  const sb = document.getElementById('sidebar');
+  const toggle = document.getElementById('sidebar-toggle');
+  const main = document.getElementById('main');
+  if (window.innerWidth <= 768) {
+    sb.classList.toggle('mobile-open', sidebarOpen);
+    toggle.classList.toggle('hidden', sidebarOpen);
+    toggle.textContent = sidebarOpen ? '▶' : '◀';
+  } else {
+    sb.classList.toggle('hidden', !sidebarOpen);
+    toggle.classList.toggle('hidden', !sidebarOpen);
+    main.classList.toggle('full', !sidebarOpen);
+    toggle.textContent = sidebarOpen ? '◀' : '▶';
+    toggle.style.left = sidebarOpen ? '270px' : '0';
+  }
+}
+
+// ── SCROLL PROGRESS ──
+window.addEventListener('scroll', () => {
+  const el = document.documentElement;
+  const pct = (el.scrollTop / (el.scrollHeight - el.clientHeight)) * 100;
+  document.getElementById('progress-bar').style.width = pct + '%';
+  const btn = document.getElementById('scroll-top');
+  btn.classList.toggle('show', el.scrollTop > 300);
+  updateActiveLink();
+});
+
+function scrollToTop() { window.scrollTo({top:0, behavior:'smooth'}); }
+
+// ── ACTIVE TOC LINK ──
+function updateActiveLink() {
+  const sections = document.querySelectorAll('section[id], div[id="mcq-section"]');
+  const links = document.querySelectorAll('.toc-link');
+  let current = '';
+  sections.forEach(s => {
+    if (s.getBoundingClientRect().top <= 120) current = s.id;
+  });
+  links.forEach(l => {
+    l.classList.toggle('active', l.getAttribute('href') === '#' + current);
+  });
+}
+
+// ── SCROLL REVEAL ──
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+}, { threshold: 0.08 });
+document.querySelectorAll('.page-card').forEach(c => observer.observe(c));
+
+// ── EXPAND / COLLAPSE ──
+function toggleExpand(btn) {
+  const target = btn.nextElementSibling;
+  target.classList.toggle('open');
+  btn.textContent = target.classList.contains('open') ? '▲ Hide' : '▼ Show more';
+}
+
+// ══════════════════════════════════════════════════════
+// MCQ DATA
+// ══════════════════════════════════════════════════════
+const mcqs = [
+  {q:"What is Machine Learning?",opts:["A programming language for AI","A subset of AI that enables systems to learn from data without explicit programming","A type of database management system","A hardware component for computing"],ans:1,exp:"Machine Learning is a subset of AI that allows systems to automatically learn and improve from experience without being explicitly programmed."},
+  {q:"In Traditional Programming, the computer takes __ as inputs and produces output.",opts:["Data and Rules","Data and Answers","Data and Labels","Rewards and Penalties"],ans:0,exp:"Traditional Programming: Data + Rules → Computer → Output. The programmer writes the rules."},
+  {q:"In Machine Learning, the computer takes __ as inputs and produces a program (model).",opts:["Data and Rules","Data and Answers (Output Examples)","Only Rules","Only Data"],ans:1,exp:"ML reverses traditional programming: Data + Answers → Computer → Program (Model). The machine learns the rules from examples."},
+  {q:"Which type of ML uses labelled training data?",opts:["Unsupervised Learning","Reinforcement Learning","Supervised Learning","Semi-Supervised Learning"],ans:2,exp:"Supervised Learning uses labelled data where correct answers are provided. The model learns the mapping from input to output."},
+  {q:"Which ML type is used for clustering tasks?",opts:["Supervised Learning","Unsupervised Learning","Reinforcement Learning","Deep Learning"],ans:1,exp:"Unsupervised Learning works with unlabelled data and finds hidden patterns, most commonly through Clustering."},
+  {q:"In Reinforcement Learning, the 'agent' receives __ from the environment.",opts:["Labels","Clusters","Rewards or Penalties","Training Data"],ans:2,exp:"In Reinforcement Learning, an agent takes actions and receives rewards (positive) or punishments (negative) from the environment, learning to maximize cumulative reward."},
+  {q:"Which is a correct hierarchy?",opts:["ML ⊃ AI ⊃ Deep Learning","AI ⊃ ML ⊃ Deep Learning","Deep Learning ⊃ ML ⊃ AI","AI = ML = Deep Learning"],ans:1,exp:"AI is the broadest field. ML is a subset of AI. Deep Learning is a subset of ML. So: AI ⊃ ML ⊃ Deep Learning."},
+  {q:"What percentage of AI/ML projects are claimed to fail according to Gartner?",opts:["50%","65%","85%","95%"],ans:2,exp:"Gartner has claimed that approximately 85% of Machine Learning and AI projects fail due to various reasons."},
+  {q:"Which of the following is NOT a reason for ML project failure?",opts:["Asking the wrong question","Having sufficient high-quality data","Using the wrong tools","Not having the right model"],ans:1,exp:"Having sufficient high-quality data is actually a KEY requirement for success, not a reason for failure. All other options are common failure causes."},
+  {q:"Deep Learning uses which type of architecture?",opts:["Decision Trees","Multi-layered Neural Networks","Single layer perceptrons","Support Vector Machines"],ans:1,exp:"Deep Learning uses neural networks with multiple hidden layers (hence 'deep'). The more layers, the deeper the network."},
+  {q:"Which model learns to GENERATE new data (e.g., new images)?",opts:["Discriminative Model","Supervised Model","Generative Model","Clustering Model"],ans:2,exp:"Generative models learn to generate new data similar to training data (e.g., GAN generating new images). Discriminative models classify existing data."},
+  {q:"What does NLP stand for?",opts:["Natural Learning Protocol","Neural Language Processing","Natural Language Processing","Numerical Logic Programming"],ans:2,exp:"NLP stands for Natural Language Processing — the branch of AI focused on enabling computers to understand and generate human language."},
+  {q:"Which of these is a famous NLP model used by ChatGPT?",opts:["CNN","BERT","GPT (Generative Pre-trained Transformer)","LIDAR"],ans:2,exp:"ChatGPT is based on GPT (Generative Pre-trained Transformer) architecture by OpenAI. BERT is Google's NLP model."},
+  {q:"What is Sentiment Analysis in NLP?",opts:["Translating text from one language to another","Detecting positive, negative, or neutral opinion in text","Generating new text from scratch","Extracting named entities from text"],ans:1,exp:"Sentiment Analysis detects the emotional tone (positive/negative/neutral) of text. Used for product reviews, social media monitoring."},
+  {q:"Computer Vision is primarily concerned with:",opts:["Understanding spoken language","Interpreting visual data (images and videos)","Generating text from data","Learning from rewards and penalties"],ans:1,exp:"Computer Vision is the AI branch that enables computers to interpret and understand visual information from images, videos, and the real world."},
+  {q:"Which of the following is a Computer Vision application?",opts:["Google Translate","Siri voice assistant","Autonomous self-driving cars","Stock price prediction"],ans:2,exp:"Self-driving cars rely heavily on Computer Vision to detect pedestrians, road lanes, signs, and other vehicles."},
+  {q:"An Expert System consists of which two main components?",opts:["Training Data and Model","Knowledge Base and Inference Engine","Neural Network and Dataset","Algorithm and Database"],ans:1,exp:"Expert Systems have: Knowledge Base (stores facts and rules from human experts) + Inference Engine (reasoning mechanism that applies rules)."},
+  {q:"MYCIN is an example of:",opts:["A Deep Learning model","A Fuzzy Logic system","A Medical Expert System","An NLP tool"],ans:2,exp:"MYCIN is a famous medical expert system developed at Stanford to diagnose bacterial infections and recommend antibiotics."},
+  {q:"Which logic allows values BETWEEN 0 and 1 (not just True/False)?",opts:["Boolean Logic","Classical Logic","Binary Logic","Fuzzy Logic"],ans:3,exp:"Fuzzy Logic allows membership values between 0 and 1, unlike classical/Boolean logic which is strictly 0 or 1. This handles uncertainty and vagueness."},
+  {q:"Fuzzy Logic is commonly used in which household appliance?",opts:["Television","Washing Machine","Microwave (basic)","Electric Fan (basic)"],ans:1,exp:"Washing machines use fuzzy logic controllers to adjust wash time, water level, and wash intensity based on the dirtiness level (a fuzzy, vague property)."},
+  {q:"What is Augmented Reality (AR)?",opts:["A fully virtual world replacing the real world","Digital information overlaid onto the real-world environment","A type of machine learning model","An NLP technique"],ans:1,exp:"AR overlays digital content (images, text, 3D objects) onto the real world. The real world is still visible but enhanced with virtual elements."},
+  {q:"Pokémon GO is an example of which technology?",opts:["Virtual Reality","Machine Learning only","Augmented Reality","Expert Systems"],ans:2,exp:"Pokémon GO overlays virtual Pokémon characters onto the real-world camera view — a classic example of Augmented Reality."},
+  {q:"VR (Virtual Reality) differs from AR because:",opts:["VR uses cameras, AR uses headsets","VR completely replaces the real world; AR overlays on it","VR is cheaper than AR","VR is based on NLP, AR is based on CV"],ans:1,exp:"VR creates a completely immersive virtual environment (real world blocked). AR keeps the real world visible but adds digital layers on top."},
+  {q:"Which tool is best for Classical ML algorithms like Linear Regression and Decision Trees?",opts:["TensorFlow","PyTorch","scikit-learn","NLTK"],ans:2,exp:"scikit-learn is the go-to Python library for classical ML algorithms. TensorFlow and PyTorch are better for deep learning."},
+  {q:"Google Colab provides which major benefit for students?",opts:["Paid GPU resources","Free GPU/TPU access in the cloud","Desktop-only usage","Only supports Java"],ans:1,exp:"Google Colab provides free access to GPU and TPU resources in the cloud, making deep learning accessible without expensive hardware."},
+  {q:"Which Python library is used for numerical computing (arrays, matrices)?",opts:["Pandas","NumPy","spaCy","Matplotlib"],ans:1,exp:"NumPy is the foundational Python library for numerical computation, handling arrays, matrices, and mathematical operations efficiently."},
+  {q:"Pandas is primarily used for:",opts:["Deep learning model training","Data manipulation and analysis (DataFrames)","NLP text processing","Neural network building"],ans:1,exp:"Pandas provides DataFrame structures for data manipulation, cleaning, and analysis — essential for data preprocessing in ML projects."},
+  {q:"Which NLP library is considered 'industrial-strength' and faster for production?",opts:["NLTK","spaCy","NumPy","Keras"],ans:1,exp:"spaCy is built for production NLP applications, is faster than NLTK, and provides state-of-the-art accuracy. NLTK is better for learning/research."},
+  {q:"Which AI product uses RLHF (Reinforcement Learning from Human Feedback)?",opts:["Google Translate","OpenCV","ChatGPT","LIDAR"],ans:2,exp:"ChatGPT was trained using RLHF — human trainers rated responses and this feedback was used to improve the model's alignment with human preferences."},
+  {q:"What AI technique powers Google Translate?",opts:["Expert Systems with if-then rules","Machine Learning / Neural Machine Translation","Fuzzy Logic","Reinforcement Learning only"],ans:1,exp:"Google Translate uses Neural Machine Translation (NMT), a deep learning approach with sequence-to-sequence models and attention mechanisms."},
+  {q:"Which of the following represents Supervised Learning?",opts:["Grouping customers without predefined categories","Training a model on labelled images of cats and dogs","An agent learning to play chess by trial and error","Training with both labelled and unlabelled data"],ans:1,exp:"Training on labelled data (images with correct labels cat/dog) is Supervised Learning. The model learns the correct mapping from labelled examples."},
+  {q:"Reinforcement Learning is best analogized as:",opts:["A student with a textbook and answers","Sorting objects without instructions","Training a dog with treats and scolding","Studying with both answered and unanswered questions"],ans:2,exp:"RL is like training a dog: good action → reward (treat), bad action → punishment (scolding). The agent learns to maximize rewards over time."},
+  {q:"Edge AI refers to:",opts:["AI used in space exploration","Processing AI on devices locally rather than sending all data to cloud","AI used only on edges of neural networks","AI working at the edge of the internet"],ans:1,exp:"Edge AI processes AI computations on the device itself (phone, IoT device, car) rather than sending data to a central cloud server, reducing latency and improving privacy."},
+  {q:"Explainable AI (XAI) is focused on:",opts:["Making AI learn faster","Making AI transparent and interpretable to humans","Generating images with AI","Making AI models larger"],ans:1,exp:"XAI makes AI decisions understandable to humans. Critical in healthcare, law, and finance where decisions must be auditable and explainable."},
+  {q:"What is the main limitation of Expert Systems compared to ML?",opts:["They cannot use computers","They cannot handle any domain","They cannot learn on their own; require manual updates","They are too fast"],ans:2,exp:"Expert Systems have a static knowledge base — they cannot learn from new data. ML systems improve automatically with more data. This is the key limitation."},
+  {q:"Which is NOT an application of AI in Agriculture?",opts:["Crop monitoring via drones","Precision farming","Social media content moderation","Pest control using AI"],ans:2,exp:"Social media content moderation is an application of AI in Social Media, not Agriculture. Agriculture applications include precision farming, crop monitoring, and pest control."},
+  {q:"Semi-Supervised Learning is useful because:",opts:["It requires no data at all","Labelling all data is expensive, so it combines cheap unlabelled data with labelled data","It learns purely from rewards","It only works for image data"],ans:1,exp:"Labelling data requires human experts and is expensive. Semi-supervised learning uses a small amount of labelled data combined with large amounts of cheap unlabelled data."},
+  {q:"Which job role focuses on building language models and chatbots?",opts:["Computer Vision Engineer","Robotics Scientist","NLP Engineer","DevOps Engineer"],ans:2,exp:"NLP Engineers specifically work on building language models, chatbots, translation systems, and speech recognition applications."},
+  {q:"What programming language is MOST commonly used in AI and ML?",opts:["Java","C++","Python","COBOL"],ans:2,exp:"Python is the dominant language in AI/ML due to its simple syntax and rich ecosystem (TensorFlow, PyTorch, scikit-learn, Pandas, NumPy)."},
+  {q:"In a Neural Network, which layers process the data between input and output?",opts:["External Layers","Feedback Layers","Hidden Layers","Surface Layers"],ans:2,exp:"A neural network has Input Layer → Hidden Layers (one or more) → Output Layer. The hidden layers are where feature extraction and learning happen."},
+  {q:"Which of the following is an example of Pattern Recognition?",opts:["Predicting stock prices","Detecting cancer in MRI scans","Grouping customers by behavior","Generating new images"],ans:1,exp:"Cancer detection in MRI scans involves recognizing patterns (abnormal tissue shapes) in medical images — a classic pattern recognition task."},
+  {q:"Google Translate uses which technique for real-time camera translation?",opts:["Only NLP","Computer Vision + NLP (AR translation)","Only Fuzzy Logic","Expert Systems"],ans:1,exp:"Google Translate's camera mode uses Computer Vision (to read text in images) + NLP (to translate it), displayed as Augmented Reality overlay."},
+  {q:"What does 'defuzzification' mean in a Fuzzy Logic system?",opts:["Converting crisp input to fuzzy values","Applying if-then fuzzy rules","Converting fuzzy output back to a crisp value","Deleting fuzzy rules"],ans:2,exp:"Defuzzification converts the fuzzy output (e.g., fan speed is 'somewhat fast') back to a precise crisp value (e.g., fan speed = 72%) for actual use."},
+  {q:"Which of these is an AI trend focused on running AI on phones and IoT devices directly?",opts:["Cloud AI","Edge AI","Big Data AI","Quantum AI"],ans:1,exp:"Edge AI processes AI workloads on edge devices (smartphones, IoT sensors, cameras) locally, reducing the need to send data to cloud servers."},
+  {q:"The IKEA Place app, which lets you see furniture in your room before buying, is an example of:",opts:["Virtual Reality","Machine Learning only","Augmented Reality","Expert Systems"],ans:2,exp:"IKEA Place overlays 3D furniture models onto your real room through your phone camera — Augmented Reality at work."},
+  {q:"In the context of AI failures, 'asking the wrong question' means:",opts:["Incorrect algorithm selection","Poorly defining the problem statement from the beginning","Having insufficient training data","Hiring unqualified ML engineers"],ans:1,exp:"'Asking the wrong question' means the problem is incorrectly defined at the start — even a perfect ML model solving the wrong problem leads to failure."},
+  {q:"Which of these is an example of Anomaly Detection using ML?",opts:["Translating French to English","Detecting unusual credit card transactions (fraud detection)","Generating new images","Classifying emails by topic"],ans:1,exp:"Fraud detection identifies unusual/abnormal patterns in credit card transactions that deviate from normal behavior — a classic anomaly detection use case."},
+  {q:"Which AI application helps in analyzing social media opinions about a brand?",opts:["Computer Vision","Expert Systems","Sentiment Analysis (NLP)","Fuzzy Logic"],ans:2,exp:"Sentiment Analysis is an NLP technique that detects positive, negative, or neutral opinions in social media posts, reviews, or news about brands."},
+  {q:"What is the key role of the Inference Engine in an Expert System?",opts:["Storing rules and facts","Providing user interface","Applying stored rules to reach logical conclusions","Training on new data"],ans:2,exp:"The Inference Engine is the reasoning core of an expert system. It applies if-then rules from the Knowledge Base to the current problem to reach conclusions."},
+  {q:"Large Language Models (LLMs) are associated with which AI trend?",opts:["Edge AI","Explainable AI","Generative AI powered by Transformers","Fuzzy Logic systems"],ans:2,exp:"LLMs like GPT-4, Claude, Gemini are massive transformer-based generative AI models capable of understanding and generating human-like text at scale."},
+  {q:"Which of the following correctly describes the 'Regression' task in Supervised Learning?",opts:["Classifying emails as Spam or Not Spam","Grouping customers into segments","Predicting a house price (continuous numerical value)","Learning from rewards and penalties"],ans:2,exp:"Regression in supervised learning predicts a continuous numerical value (e.g., house price, temperature). Classification predicts categories (e.g., spam/not spam)."}
+];
+
+// ── MCQ STATE ──
+let current = 0;
+let answered = new Array(mcqs.length).fill(null); // null or index of selected
+let score = 0;
+
+function buildMCQs() {
+  const container = document.getElementById('mcq-container');
+  container.innerHTML = '';
+  mcqs.forEach((q, qi) => {
+    const card = document.createElement('div');
+    card.className = 'mcq-card' + (qi === 0 ? ' active' : '');
+    card.id = 'mcq-' + qi;
+    card.innerHTML = `
+      <div class="mcq-num">Question ${qi+1} of ${mcqs.length}</div>
+      <div class="mcq-q">${q.q}</div>
+      <div class="mcq-options">
+        ${q.opts.map((o,oi) => `
+          <div class="mcq-option" id="opt-${qi}-${oi}" onclick="selectOption(${qi},${oi})">
+            <span class="opt-letter">${['A','B','C','D'][oi]}.</span>
+            <span>${o}</span>
+          </div>`).join('')}
+      </div>
+      <div class="mcq-explanation" id="exp-${qi}">
+        <strong>✅ Answer: ${['A','B','C','D'][q.ans]} — ${q.opts[q.ans]}</strong><br>${q.exp}
+      </div>`;
+    container.appendChild(card);
+  });
+  updateNav();
+}
+
+function selectOption(qi, oi) {
+  if (answered[qi] !== null) return; // already answered
+  answered[qi] = oi;
+  const q = mcqs[qi];
+  const opts = document.querySelectorAll(`#mcq-${qi} .mcq-option`);
+  opts.forEach((o,i) => {
+    o.classList.add('disabled');
+    if (i === q.ans) o.classList.add('correct');
+    else if (i === oi && oi !== q.ans) o.classList.add('wrong');
+  });
+  if (oi === q.ans) score++;
+  document.getElementById('exp-' + qi).classList.add('show');
+  document.getElementById('score-display').textContent = 'Score: ' + score;
+  updateNav();
+}
+
+function navigateMCQ(dir) {
+  document.getElementById('mcq-' + current).classList.remove('active');
+  current = Math.max(0, Math.min(mcqs.length - 1, current + dir));
+  document.getElementById('mcq-' + current).classList.add('active');
+  document.getElementById('mcq-' + current).scrollIntoView({behavior:'smooth', block:'nearest'});
+  updateNav();
+}
+
+function updateNav() {
+  document.getElementById('btn-prev').disabled = current === 0;
+  document.getElementById('btn-next').disabled = current === mcqs.length - 1;
+  const pct = ((current + 1) / mcqs.length) * 100;
+  document.getElementById('mcq-progress-bar-inner').style.width = pct + '%';
+  document.getElementById('mcq-progress-text').textContent = `Q ${current+1} / ${mcqs.length}`;
+}
+
+function resetMCQ() {
+  if (!confirm('Reset all MCQ answers and score?')) return;
+  answered = new Array(mcqs.length).fill(null);
+  score = 0;
+  current = 0;
+  document.getElementById('score-display').textContent = 'Score: 0';
+  buildMCQs();
+}
+
+// Keyboard navigation
+document.addEventListener('keydown', e => {
+  if (e.key === 'ArrowRight') navigateMCQ(1);
+  if (e.key === 'ArrowLeft') navigateMCQ(-1);
+});
+
+// ── INIT ──
+buildMCQs();
+
+// Trigger sidebar active on load
+setTimeout(updateActiveLink, 100);
+</script>
+</body>
+</html>

@@ -1,0 +1,884 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CSE121 – Unit VI: Full Stack Web Development &amp; UI/UX</title>
+<meta name="description" content="Complete interactive notes for CSE121 Unit VI: Full Stack Web Development, UI/UX Design, AR/VR, HTML, CSS, JavaScript, PHP, SPA, Responsive Design and 50 MCQs">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Caveat:wght@400;500;600;700&family=Kalam:wght@300;400;700&family=Patrick+Hand&family=Nunito:ital,wght@0,300;0,400;0,600;0,700;1,400&display=swap');
+
+  :root {
+    --paper: #fdfcf7;
+    --paper2: #f9f8f0;
+    --lines: #c8dff5;
+    --ink: #1a1a2e;
+    --ink-light: #3a3a5c;
+    --blue: #2563eb;
+    --blue-light: #dbeafe;
+    --blue-mid: #93c5fd;
+    --teal: #0d9488;
+    --teal-light: #ccfbf1;
+    --amber: #d97706;
+    --amber-light: #fef3c7;
+    --rose: #e11d48;
+    --rose-light: #ffe4e6;
+    --green: #16a34a;
+    --green-light: #dcfce7;
+    --purple: #7c3aed;
+    --purple-light: #ede9fe;
+    --indigo: #4f46e5;
+    --indigo-light: #e0e7ff;
+    --shadow: rgba(37,99,235,0.10);
+    --hole-shadow: rgba(0,0,0,0.12);
+    --spiral: #9ca3af;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body { font-family: 'Nunito', sans-serif; background: #e8edf5; background-image: radial-gradient(#c3d1e8 1px, transparent 1px); background-size: 24px 24px; color: var(--ink); min-height: 100vh; }
+
+  #progress-bar { position: fixed; top: 0; left: 0; height: 3px; background: linear-gradient(90deg, var(--indigo), var(--teal), var(--purple)); width: 0%; z-index: 9999; transition: width 0.2s ease; box-shadow: 0 0 6px rgba(79,70,229,.4); }
+
+  #top-nav { position: fixed; top: 0; left: 0; right: 0; z-index: 1000; background: rgba(253,252,247,.96); backdrop-filter: blur(8px); border-bottom: 2px solid var(--lines); display: flex; align-items: center; justify-content: space-between; padding: 0 20px; height: 54px; box-shadow: 0 2px 12px var(--shadow); }
+  #top-nav .brand { font-family: 'Caveat', cursive; font-size: 1.4rem; font-weight: 700; color: var(--indigo); letter-spacing: 0.5px; }
+  #top-nav .brand span { color: var(--teal); }
+  #menu-toggle { display: none; flex-direction: column; gap: 5px; background: none; border: none; cursor: pointer; padding: 4px; }
+  #menu-toggle span { display: block; width: 22px; height: 2px; background: var(--ink); border-radius: 2px; transition: all .3s; }
+  .nav-links { display: flex; gap: 14px; flex-wrap: wrap; }
+  .nav-links a { font-family: 'Kalam', cursive; font-size: .85rem; font-weight: 700; color: var(--ink-light); text-decoration: none; padding: 4px 10px; border-radius: 20px; transition: all .2s; }
+  .nav-links a:hover, .nav-links a.active { background: var(--indigo-light); color: var(--indigo); }
+
+  .layout { display: flex; padding-top: 54px; min-height: 100vh; }
+
+  #sidebar { position: fixed; top: 54px; left: 0; bottom: 0; width: 260px; overflow-y: auto; background: var(--paper); border-right: 2px solid var(--lines); padding: 16px 0 40px; z-index: 800; transition: transform .3s ease; box-shadow: 2px 0 16px var(--shadow); }
+  #sidebar::-webkit-scrollbar { width: 4px; }
+  #sidebar::-webkit-scrollbar-thumb { background: var(--lines); border-radius: 4px; }
+  .sidebar-title { font-family: 'Caveat', cursive; font-size: 1rem; font-weight: 700; color: var(--indigo); padding: 0 16px 10px; border-bottom: 1.5px dashed var(--lines); margin-bottom: 8px; }
+  .toc-item { display: block; padding: 6px 16px 6px 20px; font-family: 'Patrick Hand', cursive; font-size: .82rem; color: var(--ink-light); text-decoration: none; border-left: 3px solid transparent; transition: all .2s; line-height: 1.4; }
+  .toc-item:hover, .toc-item.active { background: var(--indigo-light); border-left-color: var(--indigo); color: var(--indigo); }
+  .toc-item.sub { padding-left: 30px; font-size: .77rem; opacity: .85; }
+  .toc-item.mcq-link { color: var(--purple); font-weight: bold; margin-top: 8px; }
+  .toc-item.mcq-link:hover { background: var(--purple-light); border-left-color: var(--purple); }
+
+  #main { margin-left: 260px; flex: 1; padding: 30px 24px 60px; max-width: 900px; }
+
+  .notebook-page { background: var(--paper); border-radius: 4px 12px 12px 4px; margin-bottom: 28px; box-shadow: 4px 4px 20px var(--shadow), 1px 1px 0 rgba(0,0,0,.04); position: relative; overflow: hidden; }
+  .notebook-page::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 44px; background: var(--paper2); border-right: 2px solid var(--lines); }
+  .spiral-holes { position: absolute; left: 0; top: 0; bottom: 0; width: 44px; display: flex; flex-direction: column; align-items: center; justify-content: space-evenly; z-index: 2; pointer-events: none; }
+  .spiral-hole { width: 14px; height: 14px; border-radius: 50%; background: #e8edf5; border: 2px solid var(--spiral); box-shadow: inset 0 1px 3px var(--hole-shadow); flex-shrink: 0; }
+  .page-content { padding: 24px 28px 28px 58px; background-image: repeating-linear-gradient(transparent, transparent 27px, var(--lines) 28px); min-height: 200px; }
+
+  .cover-page { text-align: center; padding: 48px 58px 40px 58px; background: var(--paper); background-image: none; }
+  .cover-subject { font-family: 'Kalam', cursive; font-size: .9rem; font-weight: 400; color: var(--teal); letter-spacing: 2px; text-transform: uppercase; margin-bottom: 8px; }
+  .cover-title { font-family: 'Caveat', cursive; font-size: 2.6rem; font-weight: 700; color: var(--ink); line-height: 1.2; margin-bottom: 6px; }
+  .cover-subtitle { font-family: 'Patrick Hand', cursive; font-size: 1.1rem; color: var(--indigo); margin-bottom: 24px; }
+  .cover-divider { width: 100px; height: 3px; background: linear-gradient(90deg, var(--indigo), var(--teal)); border-radius: 2px; margin: 0 auto 24px; }
+  .cover-meta { display: flex; justify-content: center; gap: 16px; flex-wrap: wrap; }
+  .cover-tag { background: var(--indigo-light); color: var(--indigo); border-radius: 20px; padding: 5px 14px; font-family: 'Patrick Hand', cursive; font-size: .82rem; border: 1.5px solid #a5b4fc; }
+
+  .section-heading { font-family: 'Caveat', cursive; font-size: 1.85rem; font-weight: 700; color: var(--ink); margin-bottom: 8px; display: flex; align-items: center; gap: 10px; padding-bottom: 6px; border-bottom: 2px solid var(--lines); }
+  .section-heading .icon { font-size: 1.4rem; flex-shrink: 0; }
+  .section-heading .badge { font-family: 'Patrick Hand', cursive; font-size: .75rem; background: var(--indigo); color: #fff; border-radius: 20px; padding: 2px 10px; margin-left: auto; }
+  .sub-heading { font-family: 'Caveat', cursive; font-size: 1.35rem; font-weight: 600; color: var(--indigo); margin: 18px 0 6px; padding-left: 10px; border-left: 3px solid var(--indigo); }
+  .sub-heading2 { font-family: 'Kalam', cursive; font-size: 1.05rem; font-weight: 700; color: var(--teal); margin: 14px 0 5px; }
+
+  p { font-size: .96rem; line-height: 1.9; color: var(--ink-light); margin-bottom: 10px; font-family: 'Patrick Hand', cursive; }
+  strong { color: var(--ink); font-weight: 700; }
+
+  ul.notes-list, ol.notes-list { padding-left: 22px; margin: 8px 0 10px; }
+  ul.notes-list li, ol.notes-list li { font-family: 'Patrick Hand', cursive; font-size: .95rem; line-height: 1.8; color: var(--ink-light); margin-bottom: 4px; padding-left: 4px; }
+  ul.notes-list li::marker { color: var(--indigo); }
+  ol.notes-list li::marker { color: var(--indigo); font-weight: 700; }
+
+  .box { border-radius: 10px; padding: 14px 18px; margin: 14px 0; border-left: 4px solid; font-family: 'Patrick Hand', cursive; font-size: .93rem; line-height: 1.8; }
+  .box-title { font-family: 'Kalam', cursive; font-weight: 700; font-size: 1rem; margin-bottom: 5px; display: flex; align-items: center; gap: 6px; }
+  .box.def { background: var(--blue-light); border-color: var(--blue); }
+  .box.tip { background: var(--amber-light); border-color: var(--amber); }
+  .box.imp { background: var(--rose-light); border-color: var(--rose); }
+  .box.sum { background: var(--green-light); border-color: var(--green); }
+  .box.note { background: var(--purple-light); border-color: var(--purple); }
+  .box.teal { background: var(--teal-light); border-color: var(--teal); }
+
+  .cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 14px; margin: 14px 0; }
+  .card { background: var(--paper2); border: 1.5px solid var(--lines); border-radius: 10px; padding: 14px; transition: transform .2s, box-shadow .2s; cursor: default; }
+  .card:hover { transform: translateY(-3px); box-shadow: 0 6px 20px var(--shadow); }
+  .card .card-icon { font-size: 1.6rem; margin-bottom: 6px; }
+  .card .card-title { font-family: 'Kalam', cursive; font-size: .95rem; font-weight: 700; color: var(--ink); margin-bottom: 4px; }
+  .card .card-body { font-family: 'Patrick Hand', cursive; font-size: .83rem; color: var(--ink-light); line-height: 1.6; }
+
+  .notes-table { width: 100%; border-collapse: collapse; margin: 14px 0; font-family: 'Patrick Hand', cursive; font-size: .88rem; }
+  .notes-table th { background: var(--indigo); color: #fff; padding: 8px 12px; text-align: left; font-family: 'Kalam', cursive; font-weight: 700; }
+  .notes-table td { padding: 8px 12px; border-bottom: 1px solid var(--lines); color: var(--ink-light); vertical-align: top; }
+  .notes-table tr:nth-child(even) td { background: var(--indigo-light); }
+  .notes-table tr:hover td { background: var(--teal-light); }
+
+  .collapsible-btn { width: 100%; background: var(--paper2); border: 1.5px solid var(--lines); border-radius: 8px; padding: 10px 14px; text-align: left; font-family: 'Kalam', cursive; font-size: 1rem; font-weight: 700; color: var(--ink); cursor: pointer; display: flex; justify-content: space-between; align-items: center; transition: all .2s; margin: 8px 0; }
+  .collapsible-btn:hover { background: var(--indigo-light); color: var(--indigo); }
+  .collapsible-btn .arrow { transition: transform .3s; font-size: .9rem; }
+  .collapsible-btn.open .arrow { transform: rotate(90deg); }
+  .collapsible-body { display: none; padding: 12px 16px; background: var(--paper2); border: 1.5px solid var(--lines); border-top: none; border-radius: 0 0 8px 8px; font-family: 'Patrick Hand', cursive; font-size: .93rem; color: var(--ink-light); line-height: 1.8; animation: slideDown .3s ease; }
+  .collapsible-body.open { display: block; }
+  @keyframes slideDown { from { opacity: 0; transform: translateY(-8px); } to { opacity: 1; transform: translateY(0); } }
+
+  .revision-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 12px; margin: 14px 0; }
+  .rev-card { border-radius: 10px; padding: 14px; border: 1.5px dashed #a5b4fc; background: var(--indigo-light); }
+  .rev-card .rev-q { font-family: 'Kalam', cursive; font-size: .88rem; font-weight: 700; color: var(--indigo); margin-bottom: 5px; }
+  .rev-card .rev-a { font-family: 'Patrick Hand', cursive; font-size: .85rem; color: var(--ink-light); line-height: 1.6; }
+
+  #mcq-section { background: var(--paper); border-radius: 4px 12px 12px 4px; box-shadow: 4px 4px 20px var(--shadow); overflow: hidden; margin-bottom: 28px; }
+  .mcq-header { background: linear-gradient(135deg, var(--indigo) 0%, var(--purple) 100%); color: #fff; padding: 28px 32px; position: relative; overflow: hidden; }
+  .mcq-header::after { content: '💻'; position: absolute; right: 28px; bottom: 8px; font-size: 4rem; opacity: .15; }
+  .mcq-header h2 { font-family: 'Caveat', cursive; font-size: 2rem; font-weight: 700; margin-bottom: 4px; }
+  .mcq-header p { font-family: 'Patrick Hand', cursive; font-size: .9rem; color: rgba(255,255,255,.85); margin: 0; }
+  .mcq-progress-bar-wrap { background: rgba(255,255,255,.2); border-radius: 20px; height: 8px; margin-top: 14px; overflow: hidden; }
+  .mcq-progress-fill { height: 100%; border-radius: 20px; background: rgba(255,255,255,.7); transition: width .4s ease; width: 0%; }
+  .mcq-progress-text { font-family: 'Patrick Hand', cursive; font-size: .82rem; color: rgba(255,255,255,.85); margin-top: 4px; }
+  .mcq-body { padding: 28px 32px; }
+  .mcq-question-block { display: none; animation: fadeIn .4s ease; }
+  .mcq-question-block.active { display: block; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateX(20px); } to { opacity: 1; transform: translateX(0); } }
+
+  .q-number { font-family: 'Kalam', cursive; font-size: .82rem; font-weight: 700; color: var(--indigo); letter-spacing: 1px; text-transform: uppercase; margin-bottom: 8px; }
+  .q-text { font-family: 'Kalam', cursive; font-size: 1.1rem; font-weight: 700; color: var(--ink); line-height: 1.6; margin-bottom: 18px; }
+  .q-options { display: flex; flex-direction: column; gap: 10px; margin-bottom: 18px; }
+  .q-option { display: flex; align-items: flex-start; gap: 12px; padding: 12px 16px; border-radius: 10px; border: 2px solid var(--lines); cursor: pointer; transition: all .2s; font-family: 'Patrick Hand', cursive; font-size: .95rem; color: var(--ink-light); background: var(--paper2); user-select: none; }
+  .q-option:hover:not(.answered) { border-color: var(--indigo); background: var(--indigo-light); color: var(--indigo); transform: translateX(4px); }
+  .q-option .opt-label { font-family: 'Kalam', cursive; font-weight: 700; font-size: 1rem; color: var(--indigo); min-width: 22px; flex-shrink: 0; }
+  .q-option.correct { background: var(--green-light); border-color: var(--green); color: var(--green); }
+  .q-option.correct .opt-label { color: var(--green); }
+  .q-option.wrong { background: var(--rose-light); border-color: var(--rose); color: var(--rose); }
+  .q-option.wrong .opt-label { color: var(--rose); }
+  .q-option.reveal-correct { background: var(--green-light); border-color: var(--green); color: var(--green); }
+
+  .q-explanation { display: none; padding: 14px 16px; background: var(--amber-light); border-left: 4px solid var(--amber); border-radius: 8px; margin-bottom: 18px; font-family: 'Patrick Hand', cursive; font-size: .9rem; color: var(--ink); line-height: 1.7; animation: slideDown .3s ease; }
+  .q-explanation.show { display: block; }
+  .q-explanation .exp-title { font-family: 'Kalam', cursive; font-weight: 700; font-size: .9rem; color: var(--amber); margin-bottom: 4px; }
+
+  .mcq-nav { display: flex; justify-content: space-between; align-items: center; padding-top: 14px; border-top: 1.5px dashed var(--lines); }
+  .mcq-btn { padding: 10px 22px; border: none; border-radius: 8px; font-family: 'Kalam', cursive; font-size: .95rem; font-weight: 700; cursor: pointer; transition: all .2s; }
+  .mcq-btn.prev { background: var(--paper2); color: var(--ink-light); border: 2px solid var(--lines); }
+  .mcq-btn.prev:hover { background: var(--indigo-light); color: var(--indigo); }
+  .mcq-btn.next { background: var(--indigo); color: #fff; }
+  .mcq-btn.next:hover { background: #3730a3; }
+  .mcq-btn:disabled { opacity: .4; cursor: not-allowed; }
+  .q-counter { font-family: 'Kalam', cursive; font-size: .9rem; color: var(--ink-light); }
+  .q-counter strong { color: var(--indigo); }
+
+  .score-panel { display: none; text-align: center; padding: 40px 20px; animation: fadeIn .5s ease; }
+  .score-panel.show { display: block; }
+  .score-emoji { font-size: 4rem; margin-bottom: 14px; }
+  .score-title { font-family: 'Caveat', cursive; font-size: 2rem; font-weight: 700; color: var(--ink); margin-bottom: 8px; }
+  .score-value { font-family: 'Kalam', cursive; font-size: 1.4rem; color: var(--indigo); margin-bottom: 16px; }
+  .score-restart { padding: 12px 28px; background: var(--indigo); color: #fff; border: none; border-radius: 10px; font-family: 'Kalam', cursive; font-size: 1rem; font-weight: 700; cursor: pointer; transition: all .2s; }
+  .score-restart:hover { background: #3730a3; transform: scale(1.03); }
+
+  .reveal { opacity: 0; transform: translateY(28px); transition: opacity .6s ease, transform .6s ease; }
+  .reveal.visible { opacity: 1; transform: translateY(0); }
+  .hl { background: #fef08a; padding: 0 2px; border-radius: 3px; }
+  .hl-blue { background: var(--blue-light); padding: 0 2px; border-radius: 3px; color: var(--blue); font-weight: 700; }
+  .hl-green { background: var(--green-light); padding: 0 2px; border-radius: 3px; color: var(--green); font-weight: 700; }
+  .hl-rose { background: var(--rose-light); padding: 0 2px; border-radius: 3px; color: var(--rose); font-weight: 700; }
+
+  @media (max-width: 768px) { #sidebar { transform: translateX(-100%); } #sidebar.open { transform: translateX(0); } #main { margin-left: 0; padding: 20px 14px 50px; } #menu-toggle { display: flex; } .mcq-body { padding: 20px 16px; } .cover-title { font-size: 2rem; } }
+  @media (max-width: 500px) { .cards { grid-template-columns: 1fr; } .revision-grid { grid-template-columns: 1fr; } .nav-links { display: none; } }
+</style>
+</head>
+<body>
+
+<div id="progress-bar"></div>
+
+<nav id="top-nav">
+  <div class="brand">CSE121 <span>Notes</span></div>
+  <button id="menu-toggle" aria-label="Menu"><span></span><span></span><span></span></button>
+  <div class="nav-links">
+    <a href="#cover">Home</a>
+    <a href="#sec-webdev">Web Dev</a>
+    <a href="#sec-uiux">UI/UX</a>
+    <a href="#sec-frontend">Frontend</a>
+    <a href="#sec-backend">Backend</a>
+    <a href="#sec-responsive">Responsive</a>
+    <a href="#sec-arvr">AR/VR</a>
+    <a href="#mcq-section">MCQs</a>
+  </div>
+</nav>
+
+<div id="sidebar-overlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.3);z-index:799;"></div>
+
+<div class="layout">
+  <aside id="sidebar">
+    <div class="sidebar-title">💻 Unit VI Contents</div>
+    <a class="toc-item" href="#cover">🏠 Cover</a>
+    <a class="toc-item" href="#sec-webdev">🌐 Introduction to Web Dev</a>
+    <a class="toc-item" href="#sec-uiux">🎨 UI/UX Design</a>
+    <a class="toc-item sub" href="#ui-types">→ Types of UI</a>
+    <a class="toc-item sub" href="#ui-principles">→ UI Principles</a>
+    <a class="toc-item sub" href="#ux-design">→ UX Design</a>
+    <a class="toc-item" href="#sec-frontend">🖥️ Frontend Development</a>
+    <a class="toc-item sub" href="#fe-html">→ HTML</a>
+    <a class="toc-item sub" href="#fe-css">→ CSS</a>
+    <a class="toc-item sub" href="#fe-js">→ JavaScript</a>
+    <a class="toc-item" href="#sec-backend">⚙️ Backend Development</a>
+    <a class="toc-item sub" href="#be-php">→ PHP</a>
+    <a class="toc-item sub" href="#be-db">→ Databases</a>
+    <a class="toc-item sub" href="#be-crud">→ CRUD Applications</a>
+    <a class="toc-item" href="#sec-fullstack">🔗 Full Stack Development</a>
+    <a class="toc-item sub" href="#fs-frameworks">→ Frameworks</a>
+    <a class="toc-item sub" href="#fs-vscode">→ VS Code</a>
+    <a class="toc-item" href="#sec-responsive">📱 Responsive & Mobile-First</a>
+    <a class="toc-item sub" href="#resp-spa">→ Single Page Apps</a>
+    <a class="toc-item" href="#sec-arvr">🥽 AR/VR Technologies</a>
+    <a class="toc-item sub" href="#ar-def">→ AR vs VR</a>
+    <a class="toc-item sub" href="#ar-how">→ How AR/VR Works</a>
+    <a class="toc-item sub" href="#ar-devices">→ Devices & Software</a>
+    <a class="toc-item sub" href="#ar-apps">→ Applications</a>
+    <a class="toc-item" href="#sec-careers">💼 Job Roles & Skillset</a>
+    <a class="toc-item" href="#sec-revision">✏️ Quick Revision</a>
+    <a class="toc-item mcq-link" href="#mcq-section">🧠 MCQ Practice (50 Qs)</a>
+  </aside>
+
+  <main id="main">
+    <!-- COVER -->
+    <div id="cover" class="notebook-page reveal">
+      <div class="spiral-holes"></div>
+      <div class="page-content cover-page">
+        <div class="cover-subject">Orientation to Computing – II &nbsp;|&nbsp; CSE121</div>
+        <div class="cover-title">Unit VI: Full Stack Web Dev &amp; UI/UX</div>
+        <div class="cover-subtitle">LPU School of Computer Science &amp; Engineering</div>
+        <div class="cover-divider"></div>
+        <div class="cover-meta">
+          <span class="cover-tag">🌐 Web Development</span>
+          <span class="cover-tag">🎨 UI/UX Design</span>
+          <span class="cover-tag">🖥️ HTML · CSS · JS</span>
+          <span class="cover-tag">⚙️ Backend · PHP</span>
+          <span class="cover-tag">📱 Responsive · SPA</span>
+          <span class="cover-tag">🥽 AR/VR</span>
+          <span class="cover-tag">💼 Job Roles</span>
+          <span class="cover-tag">🧠 50 MCQs</span>
+        </div>
+        <div style="margin-top:24px;">
+          <div class="box def" style="text-align:left;max-width:500px;margin:0 auto;">
+            <div class="box-title">🎯 Course Outcome (CO6)</div>
+            Understand the concepts of front-end, back-end, and AR/VR technologies along with their tools, job roles, and required skill sets.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- WEB DEVELOPMENT INTRO -->
+    <div id="sec-webdev" class="notebook-page reveal">
+      <div class="spiral-holes"></div>
+      <div class="page-content">
+        <div class="section-heading"><span class="icon">🌐</span> Introduction to Web Development <span class="badge">Section 1</span></div>
+        <div class="box def">
+          <div class="box-title">📌 Definition</div>
+          <strong>Web Development</strong> refers to creating, building, and maintaining websites. It includes <span class="hl">web design, web publishing, web programming, and database management</span>. It is the creation of applications that work over the internet. <strong>Web</strong> = websites, web pages, anything over the internet. <strong>Development</strong> = building the application from scratch.
+        </div>
+        <div class="sub-heading2">Web Development Can Be Classified Into:</div>
+        <div class="cards">
+          <div class="card"><div class="card-icon">🖥️</div><div class="card-title">Frontend Development</div><div class="card-body">The visible part of the website — what users interact with directly (client-side).</div></div>
+          <div class="card"><div class="card-icon">⚙️</div><div class="card-title">Backend Development</div><div class="card-body">The server-side logic — how data is stored, processed, and served to the frontend.</div></div>
+          <div class="card"><div class="card-icon">🔗</div><div class="card-title">Full Stack Development</div><div class="card-body">Working on both frontend and backend — complete end-to-end development.</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- UI/UX DESIGN -->
+    <div id="sec-uiux" class="notebook-page reveal">
+      <div class="spiral-holes"></div>
+      <div class="page-content">
+        <div class="section-heading"><span class="icon">🎨</span> User Interface (UI) &amp; User Experience (UX) Design <span class="badge">Section 2</span></div>
+
+        <div class="sub-heading">UI Design</div>
+        <div class="box def">
+          <div class="box-title">📌 Definition</div>
+          <strong>UI (User Interface)</strong> design is responsible for a product's <span class="hl">appearance, interactivity, usability, behavior, and overall feel</span>. It is the first thing you encounter when using an application. Anything you interact with as a user is part of the UI.
+        </div>
+
+        <div id="ui-types">
+          <div class="sub-heading2">Types of User Interface Design</div>
+          <div class="cards">
+            <div class="card"><div class="card-icon">🖱️</div><div class="card-title">GUI (Graphical UI)</div><div class="card-body">Visual interface with icons, buttons, menus, windows. Examples: Windows, macOS, Android, iOS.</div></div>
+            <div class="card"><div class="card-icon">🎤</div><div class="card-title">VUI (Voice UI)</div><div class="card-body">Interact through voice commands. Uses speech recognition. Examples: Siri, Google Assistant, Alexa.</div></div>
+            <div class="card"><div class="card-icon">📋</div><div class="card-title">MDI (Menu-Driven Interface)</div><div class="card-body">Navigate using series of menus. Examples: ATMs, Kiosks, Smartphones, Domestic appliances.</div></div>
+            <div class="card"><div class="card-icon">👆</div><div class="card-title">Touchscreen UI</div><div class="card-body">GUIs using touchscreen — swipe and tap instead of mouse. Found on phones, tablets, kiosks.</div></div>
+            <div class="card"><div class="card-icon">📝</div><div class="card-title">Form-Based UI</div><div class="card-body">Uses text boxes, checkboxes, dropdowns. Enables users to fill out electronic forms.</div></div>
+          </div>
+        </div>
+
+        <div id="ui-principles">
+          <div class="sub-heading">Key Principles of UI Design</div>
+          <ul class="notes-list">
+            <li><strong>Control:</strong> Users should feel in control of the interface</li>
+            <li><strong>Consistency:</strong> Use common elements to make the UI predictable and easy to navigate</li>
+            <li><strong>Comfortability:</strong> Interacting with the product should be effortless and comfortable</li>
+            <li><strong>Cognitive Load:</strong> Don't bombard users with content — be clear and concise</li>
+          </ul>
+          <div class="box note"><div class="box-title">🔧 UI Design Tools</div>Figma, Adobe XD, Sketch, InVision, Balsamiq, Marvel — tools for creating wireframes, prototypes, and visual designs.</div>
+        </div>
+
+        <div id="ux-design">
+          <div class="sub-heading">UX (User Experience) Design</div>
+          <div class="box def">
+            <div class="box-title">📌 Definition</div>
+            <strong>UX Design</strong> focuses on having a deep understanding of users — <span class="hl">what they need, value, their abilities, and limitations</span>. It involves the design of the entire process of acquiring and integrating a product, including branding, design, usability, and function.
+          </div>
+
+          <div class="sub-heading2">UI vs UX — Key Differences</div>
+          <table class="notes-table">
+            <thead><tr><th>Aspect</th><th>UI Design</th><th>UX Design</th></tr></thead>
+            <tbody>
+              <tr><td><strong>Focus</strong></td><td>Visual appearance and interactivity</td><td>Overall user experience and satisfaction</td></tr>
+              <tr><td><strong>Scope</strong></td><td>Look and feel — colors, typography, buttons</td><td>Complete user journey — from start to finish</td></tr>
+              <tr><td><strong>Goal</strong></td><td>Make it beautiful and interactive</td><td>Make it useful and easy to use</td></tr>
+              <tr><td><strong>Analogy</strong></td><td>The paint, decor, and fittings of a house</td><td>The floor plan, room layout, and flow of a house</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- FRONTEND -->
+    <div id="sec-frontend" class="notebook-page reveal">
+      <div class="spiral-holes"></div>
+      <div class="page-content">
+        <div class="section-heading"><span class="icon">🖥️</span> Frontend Development <span class="badge">Section 3</span></div>
+        <p>The <strong>frontend</strong> (client side) is the visible part of a website that users interact with directly. Frontend developers use HTML, CSS, and JavaScript to ensure content is presented effectively and users have an excellent experience.</p>
+
+        <div id="fe-html">
+          <div class="sub-heading">HTML — HyperText Markup Language</div>
+          <div class="box def"><div class="box-title">📌 Definition</div><strong>HTML</strong> stands for <span class="hl">HyperText Markup Language</span>. It is the standard markup language for creating web pages. HTML describes the <strong>structure</strong> of a web page using a series of elements that tell the browser how to display content — headings, paragraphs, links, images, etc. It acts as the <strong>skeleton</strong> of a website.</div>
+        </div>
+
+        <div id="fe-css">
+          <div class="sub-heading">CSS — Cascading Style Sheets</div>
+          <div class="box def"><div class="box-title">📌 Definition</div><strong>CSS</strong> stands for <span class="hl">Cascading Style Sheets</span>. It is used to <strong>style</strong> HTML documents — controlling colors, fonts, spacing, layout, and responsive design. CSS makes web pages presentable.</div>
+          <div class="sub-heading2">Three Ways to Add CSS to HTML</div>
+          <ul class="notes-list">
+            <li><strong>Inline:</strong> Using the <code>style</code> attribute inside HTML elements</li>
+            <li><strong>Internal:</strong> Using a <code>&lt;style&gt;</code> element in the <code>&lt;head&gt;</code> section</li>
+            <li><strong>External:</strong> Using a <code>&lt;link&gt;</code> element to link to an external CSS file</li>
+          </ul>
+        </div>
+
+        <div id="fe-js">
+          <div class="sub-heading">JavaScript</div>
+          <div class="box def"><div class="box-title">📌 Definition</div><strong>JavaScript</strong> was initially created to <span class="hl">"make web pages alive"</span>. It is a scripting language that provides <strong>dynamic behavior</strong> to websites. Scripts can be written directly in HTML and run automatically as the page loads. JavaScript is very different from Java.</div>
+          <ul class="notes-list">
+            <li>Can execute in the browser <strong>and</strong> on the server (Node.js)</li>
+            <li>Runs on any device with a <strong>JavaScript engine</strong> (also called "JavaScript virtual machine")</li>
+            <li>Scripts are plain text — no compilation needed</li>
+            <li>Enables interactive features: form validation, animations, dynamic content, event handling</li>
+          </ul>
+        </div>
+
+        <div class="box tip">
+          <div class="box-title">💡 Exam Tip</div>
+          The Frontend Trinity: <span class="hl-rose">HTML</span> = Structure (skeleton), <span class="hl-blue">CSS</span> = Style (design/appearance), <span class="hl-green">JavaScript</span> = Behavior (interactivity). All three work together!
+        </div>
+      </div>
+    </div>
+
+    <!-- BACKEND -->
+    <div id="sec-backend" class="notebook-page reveal">
+      <div class="spiral-holes"></div>
+      <div class="page-content">
+        <div class="section-heading"><span class="icon">⚙️</span> Backend Development <span class="badge">Section 4</span></div>
+        <div class="box def"><div class="box-title">📌 Definition</div><strong>Backend</strong> is the <span class="hl">server side</span> of a website. It stores and serves program data to ensure the frontend has what it needs. It's the portion of software that does NOT come in direct contact with users — users cannot see or interact with it directly.</div>
+
+        <div class="sub-heading2">Popular Backend Technologies</div>
+        <div class="cards">
+          <div class="card"><div class="card-icon">🐘</div><div class="card-title">PHP</div><div class="card-body">Server-side scripting language designed for web development. Open-source and widely-used.</div></div>
+          <div class="card"><div class="card-icon">☕</div><div class="card-title">Java</div><div class="card-body">Popular, widely-used, highly scalable. Used for enterprise web applications.</div></div>
+          <div class="card"><div class="card-icon">🐍</div><div class="card-title">Python</div><div class="card-body">Lets you work quickly and integrate systems efficiently. Used with Django, Flask.</div></div>
+          <div class="card"><div class="card-icon">💚</div><div class="card-title">Node.js</div><div class="card-body">Open-source runtime for executing JavaScript outside the browser. Server-side JS.</div></div>
+        </div>
+
+        <div id="be-php">
+          <div class="sub-heading">PHP — In Detail</div>
+          <ul class="notes-list">
+            <li><strong>PHP</strong> = "PHP: Hypertext Preprocessor" (recursive acronym)</li>
+            <li>Widely-used, <strong>open-source</strong> scripting language</li>
+            <li>PHP files can contain text, HTML, CSS, JavaScript, and PHP code</li>
+            <li>PHP code is <strong>executed on the server</strong>, result returned as plain HTML</li>
+            <li>PHP files have extension <strong>.php</strong></li>
+            <li>Can: generate dynamic content, create/read/write/delete files, collect form data, send/receive cookies, add/delete/modify database data, control user-access, encrypt data</li>
+            <li>Runs on Windows, Linux, Unix, Mac OS X</li>
+            <li>Compatible with Apache, IIS servers; supports many databases</li>
+            <li><strong>Free</strong> to download from php.net</li>
+          </ul>
+        </div>
+
+        <div id="be-db">
+          <div class="sub-heading">Databases</div>
+          <div class="box def"><div class="box-title">📌 Definition</div>A <strong>database</strong> is an organized collection of structured information/data, stored electronically and controlled by a <span class="hl">Database Management System (DBMS)</span>. It organizes data in the form of tables, views, schemas, and reports.<br><strong>Examples:</strong> Oracle, MongoDB, MySQL, PostgreSQL, SQL Server.</div>
+        </div>
+
+        <div id="be-crud">
+          <div class="sub-heading">CRUD Applications</div>
+          <div class="box def"><div class="box-title">📌 Definition</div><strong>CRUD</strong> = <span class="hl">Create, Read, Update, Delete</span> — the four fundamental operations for persistent storage applications.</div>
+          <ul class="notes-list">
+            <li><strong>Create:</strong> Add new data records</li>
+            <li><strong>Read:</strong> Retrieve and display existing data</li>
+            <li><strong>Update:</strong> Modify existing data records</li>
+            <li><strong>Delete:</strong> Remove data records</li>
+          </ul>
+          <p>Full-fledged CRUD apps consist of 3 parts: <strong>API</strong> (code and methods), <strong>Database</strong> (storage), and <strong>UI</strong> (user interaction). You can build CRUD apps with any programming language.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- FULL STACK -->
+    <div id="sec-fullstack" class="notebook-page reveal">
+      <div class="spiral-holes"></div>
+      <div class="page-content">
+        <div class="section-heading"><span class="icon">🔗</span> Full Stack Development <span class="badge">Section 5</span></div>
+        <div class="box def"><div class="box-title">📌 Definition</div><strong>Full Stack Web Development</strong> refers to the development of <span class="hl">both frontend (client side) and backend (server side)</span> portions of web applications. Full-stack developers work on frontend, backend, database, and debugging.</div>
+
+        <div id="fs-frameworks">
+          <div class="sub-heading">Frameworks</div>
+          <div class="box teal"><div class="box-title">📌 What is a Framework?</div>A <strong>framework</strong> is a platform for developing software applications. It provides <strong>pre-defined classes and functions</strong> that can be reused (e.g., HTTP requests). Examples: Ruby on Rails, Django, AngularJS, Spring, React, TensorFlow.</div>
+        </div>
+
+        <div id="fs-vscode">
+          <div class="sub-heading">VS Code — Development Tool</div>
+          <p><strong>Visual Studio Code (VS Code)</strong> is a free, lightweight, powerful source code editor by Microsoft.</p>
+          <ul class="notes-list">
+            <li><strong>Editor Area:</strong> Where you write code</li>
+            <li><strong>Sidebar:</strong> File explorer, search, Git, extensions</li>
+            <li><strong>Status Bar:</strong> File info, errors, settings</li>
+            <li><strong>Supported Languages:</strong> HTML, CSS, JavaScript, Python, Java, C++, and more</li>
+            <li><strong>Built-in Debugger:</strong> Run and test code efficiently</li>
+            <li><strong>Git Integration:</strong> Track changes, commits, branches</li>
+            <li><strong>Built-in Terminal:</strong> Run commands directly inside VS Code</li>
+            <li><strong>Extensions Marketplace:</strong> Add themes, debuggers, linters, language support</li>
+            <li><strong>IntelliSense:</strong> Smart code completion and syntax highlighting</li>
+            <li><strong>Cross-platform:</strong> Windows, macOS, Linux — free and open-source</li>
+          </ul>
+
+          <div class="sub-heading2">Other Coding Tools</div>
+          <ul class="notes-list">
+            <li>Visual Studio, Notepad++, Sublime Text, UltraEdit, Atom</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- RESPONSIVE & SPA -->
+    <div id="sec-responsive" class="notebook-page reveal">
+      <div class="spiral-holes"></div>
+      <div class="page-content">
+        <div class="section-heading"><span class="icon">📱</span> Responsive Design &amp; Mobile-First <span class="badge">Section 6</span></div>
+
+        <div class="sub-heading">Responsive Web Design</div>
+        <div class="box def"><div class="box-title">📌 Definition</div><strong>Responsive Web Design</strong> suggests that design and development should <span class="hl">respond to the user's behavior and environment</span> based on screen size, platform, and orientation.</div>
+        <div class="sub-heading2">Elements of Responsive Design</div>
+        <ul class="notes-list">
+          <li><strong>Media Queries:</strong> CSS rules that alter designs based on device characteristics</li>
+          <li><strong>Flexible Images:</strong> Images that resize neatly without fixed size limitations</li>
+          <li><strong>Fluid Grids/Layouts:</strong> Automatically rearrange columns to fit different screens</li>
+          <li><strong>Flexible Code:</strong> HTML and CSS that resize page elements proportionally</li>
+        </ul>
+
+        <div class="sub-heading">Mobile-First Development</div>
+        <p><strong>Mobile-first</strong> means designing for the <strong>smallest screen first</strong> and gradually working up to larger screens. Mobile-first = Content-first. It is a tenet of <strong>progressive enhancement</strong>.</p>
+        <div class="sub-heading2">Steps for Mobile-First Design</div>
+        <ol class="notes-list">
+          <li>Set your content priorities</li>
+          <li>Design smartphone view first</li>
+          <li>Work on tablet view</li>
+          <li>Create desktop view last</li>
+        </ol>
+        <p><strong>Companies using mobile-first:</strong> Google, Dropbox, BBC, Flipkart, Airbnb, Spotify.</p>
+
+        <div id="resp-spa">
+          <div class="sub-heading">Single Page Applications (SPA)</div>
+          <div class="box def"><div class="box-title">📌 Definition</div>A <strong>SPA</strong> is a website that <span class="hl">dynamically rewrites the current page</span> with new data from the server, instead of loading entire new pages. Only one HTML page is loaded; when navigating, <strong>content changes but the page doesn't reload</strong>.</div>
+          <ul class="notes-list">
+            <li><strong>Examples:</strong> Gmail, Google Maps, Airbnb, Netflix, Pinterest, PayPal</li>
+            <li><strong>Popular SPA Frameworks:</strong> React, Angular, Vue.js</li>
+            <li>Faster user experience — no full page reloads</li>
+            <li>Reduces server load — only data is transferred, not entire pages</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- AR/VR -->
+    <div id="sec-arvr" class="notebook-page reveal">
+      <div class="spiral-holes"></div>
+      <div class="page-content">
+        <div class="section-heading"><span class="icon">🥽</span> Augmented Reality (AR) &amp; Virtual Reality (VR) <span class="badge">Section 7</span></div>
+
+        <div id="ar-def">
+          <div class="sub-heading">What is AR &amp; VR?</div>
+          <div class="cards">
+            <div class="card"><div class="card-icon">📱</div><div class="card-title">Augmented Reality (AR)</div><div class="card-body">Overlays digital objects onto the real world. User remains connected to reality. Common on phones and AR glasses. <strong>Partially immersive.</strong></div></div>
+            <div class="card"><div class="card-icon">🥽</div><div class="card-title">Virtual Reality (VR)</div><div class="card-body">Creates a fully immersive digital environment. User experiences a simulated 3D world. Requires VR headsets. <strong>Fully immersive.</strong></div></div>
+          </div>
+
+          <div class="sub-heading2">AR vs VR — Key Differences</div>
+          <table class="notes-table">
+            <thead><tr><th>Aspect</th><th>AR</th><th>VR</th></tr></thead>
+            <tbody>
+              <tr><td><strong>Environment</strong></td><td>Enhances the real environment</td><td>Replaces the real environment</td></tr>
+              <tr><td><strong>Immersion</strong></td><td>Partially immersive</td><td>Fully immersive</td></tr>
+              <tr><td><strong>Devices</strong></td><td>Smartphones, AR glasses</td><td>VR headsets (HMDs)</td></tr>
+              <tr><td><strong>Input</strong></td><td>Real-world camera feed</td><td>Pre-built virtual world</td></tr>
+              <tr><td><strong>Tracking</strong></td><td>Environment + device position</td><td>User movement only</td></tr>
+              <tr><td><strong>Analogy</strong></td><td>Transparent glasses adding digital objects</td><td>Blindfold replacing reality with new world</td></tr>
+            </tbody>
+          </table>
+
+          <div class="sub-heading2">Significance of AR/VR</div>
+          <ul class="notes-list">
+            <li>Improves visualization of complex information</li>
+            <li>Enhances learning and training</li>
+            <li>Supports remote collaboration</li>
+            <li>Reduces training costs through simulations</li>
+            <li>Improves engagement and user experience</li>
+          </ul>
+        </div>
+
+        <div id="ar-how">
+          <div class="sub-heading">How AR Works</div>
+          <ol class="notes-list">
+            <li><strong>Scene Capture:</strong> Camera captures real-world environment continuously</li>
+            <li><strong>Sensor Data:</strong> Gyroscope (rotation), Accelerometer (movement), GPS (location), Depth sensors (distance)</li>
+            <li><strong>Environment Understanding:</strong> SLAM (Simultaneous Localization & Mapping) builds 3D map, detects surfaces</li>
+            <li><strong>Processing:</strong> AR engine (Unity, ARCore, ARKit) processes camera + sensor + mapping data</li>
+            <li><strong>Rendering:</strong> 3D digital objects are generated, positioned, and lit to match the real world</li>
+            <li><strong>Display:</strong> Final output shown on screen or AR glasses — Real + Virtual = Augmented View</li>
+          </ol>
+
+          <div class="sub-heading">How VR Works</div>
+          <ol class="notes-list">
+            <li><strong>Virtual World Creation:</strong> Complete 3D environment designed using game engines (Unity, Unreal)</li>
+            <li><strong>Stereoscopic Vision:</strong> Two slightly different images (one per eye) create depth perception</li>
+            <li><strong>Head Tracking:</strong> Sensors track head rotation (pitch, yaw, roll). 3DoF = rotation only, 6DoF = rotation + movement</li>
+            <li><strong>Input Tracking:</strong> Controllers detect hand movement and button actions</li>
+            <li><strong>Real-Time Rendering:</strong> Scene updates instantly based on head movement (within milliseconds)</li>
+            <li><strong>Display & Immersion:</strong> High refresh rate (90Hz–120Hz), wide field of view (100°–120°), spatial audio</li>
+          </ol>
+        </div>
+
+        <div id="ar-devices">
+          <div class="sub-heading">AR/VR Hardware & Software</div>
+          <div class="sub-heading2">Common AR Devices</div>
+          <ul class="notes-list">
+            <li><strong>Smartphones & Tablets:</strong> Most accessible AR devices (Pokémon GO, IKEA Place)</li>
+            <li><strong>AR Headsets:</strong> Microsoft HoloLens 2, Magic Leap 2</li>
+            <li><strong>Smart Glasses:</strong> Google Glass, XREAL Light/Air</li>
+            <li><strong>Automotive HUDs:</strong> Head-Up Displays projecting data on windshields</li>
+          </ul>
+
+          <div class="sub-heading2">Common VR Devices</div>
+          <ul class="notes-list">
+            <li><strong>VR Headsets:</strong> Meta Quest 3, Apple Vision Pro, Pico 4, PlayStation VR2, Valve Index, HTC Vive</li>
+            <li><strong>Motion Controllers:</strong> Handheld devices detecting hand movements and gestures</li>
+            <li><strong>VR Gloves:</strong> Track finger/hand movements for virtual object manipulation</li>
+            <li><strong>VR Treadmill:</strong> Walk/run in virtual space while staying in one place</li>
+            <li><strong>Tracking Sensors:</strong> Track user's position and movement in the environment</li>
+          </ul>
+
+          <div class="sub-heading2">AR/VR Software & Development Platforms</div>
+          <ul class="notes-list">
+            <li><strong>Unity:</strong> Cross-platform game engine — #1 for mobile AR/VR</li>
+            <li><strong>Unreal Engine:</strong> High-end, photorealistic visualization</li>
+            <li><strong>ARCore (Google):</strong> AR SDK for Android</li>
+            <li><strong>ARKit (Apple):</strong> AR SDK for iOS</li>
+            <li><strong>Vuforia:</strong> AR development platform</li>
+            <li><strong>WebXR:</strong> Web-based AR/VR experiences</li>
+          </ul>
+        </div>
+
+        <div id="ar-apps">
+          <div class="sub-heading">AR/VR Applications</div>
+          <div class="cards">
+            <div class="card"><div class="card-icon">📚</div><div class="card-title">Education</div><div class="card-body">Virtual classrooms, 3D concept visualization, interactive learning</div></div>
+            <div class="card"><div class="card-icon">🏥</div><div class="card-title">Healthcare</div><div class="card-body">Surgical simulation, therapy, rehabilitation</div></div>
+            <div class="card"><div class="card-icon">🎮</div><div class="card-title">Gaming</div><div class="card-body">Immersive games, interactive storytelling</div></div>
+            <div class="card"><div class="card-icon">🏗️</div><div class="card-title">Architecture</div><div class="card-body">3D building visualization and walkthroughs</div></div>
+            <div class="card"><div class="card-icon">🛍️</div><div class="card-title">Retail</div><div class="card-body">Virtual try-ons, furniture placement (IKEA Place)</div></div>
+            <div class="card"><div class="card-icon">🏭</div><div class="card-title">Industry</div><div class="card-body">Product design, training simulations, digital twins</div></div>
+          </div>
+
+          <div class="sub-heading2">Future Trends</div>
+          <ul class="notes-list">
+            <li>Integration with AI</li>
+            <li>Metaverse environments</li>
+            <li>Improved wearable devices — lighter, more affordable</li>
+            <li>Remote work and collaboration in virtual spaces</li>
+            <li>Companies investing: Meta, Apple, Google</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- CAREERS -->
+    <div id="sec-careers" class="notebook-page reveal">
+      <div class="spiral-holes"></div>
+      <div class="page-content">
+        <div class="section-heading"><span class="icon">💼</span> Job Roles &amp; Skillset <span class="badge">Section 8</span></div>
+
+        <div class="sub-heading">Full Stack Developer</div>
+        <p>A professional capable of working on both frontend and backend. Duties: design, develop, test, deploy, maintain software; write APIs; troubleshoot bugs; write documentation.</p>
+        <div class="sub-heading2">Full Stack Skillset</div>
+        <ul class="notes-list">
+          <li><strong>Frontend:</strong> JavaScript, jQuery, Angular, Vue, React</li>
+          <li><strong>Backend:</strong> PHP, ASP, Python, Node.js</li>
+          <li><strong>Database:</strong> MySQL, MongoDB, PostgreSQL</li>
+        </ul>
+
+        <div class="sub-heading">UI/UX Designer</div>
+        <p>Identifies opportunities to create better user experiences. Responsibilities: gather user requirements, illustrate design ideas with storyboards and sitemaps, design graphic UI elements.</p>
+        <div class="sub-heading2">Key UI/UX Roles</div>
+        <ul class="notes-list"><li>UX Researcher, Information Architect, Interaction Designer, UI Designer</li></ul>
+        <div class="sub-heading2">Essential Skills</div>
+        <ul class="notes-list"><li>User Research, Wireframing & Prototyping, Visual Design, Interaction Design, Usability Testing, Information Architecture, Design Tools, Communication, Analytical & Problem-Solving Skills</li></ul>
+
+        <div class="sub-heading">AR/VR Job Roles</div>
+        <div class="cards">
+          <div class="card"><div class="card-icon">👨‍💻</div><div class="card-title">AR/VR Developer</div><div class="card-body">Build immersive AR/VR applications using Unity/Unreal.</div></div>
+          <div class="card"><div class="card-icon">🎨</div><div class="card-title">3D Artist</div><div class="card-body">Create 3D models, environments, and assets.</div></div>
+          <div class="card"><div class="card-icon">🎮</div><div class="card-title">Game Developer</div><div class="card-body">Develop interactive games and simulations.</div></div>
+          <div class="card"><div class="card-icon">⚙️</div><div class="card-title">Simulation Engineer</div><div class="card-body">Build training and industrial simulations.</div></div>
+        </div>
+        <p><strong>AR/VR Skills Required:</strong> Programming (C#, C++, JavaScript), 3D modeling, UI/UX design, knowledge of Unity/Unreal, problem-solving & creativity.</p>
+      </div>
+    </div>
+
+    <!-- REVISION -->
+    <div id="sec-revision" class="notebook-page reveal">
+      <div class="spiral-holes"></div>
+      <div class="page-content">
+        <div class="section-heading"><span class="icon">✏️</span> Quick Revision <span class="badge">Revision</span></div>
+        <div class="revision-grid">
+          <div class="rev-card"><div class="rev-q">Q: Frontend vs Backend?</div><div class="rev-a">Frontend = visible, client-side (HTML, CSS, JS). Backend = server-side, hidden (PHP, Python, Node.js, databases).</div></div>
+          <div class="rev-card"><div class="rev-q">Q: HTML, CSS, JS roles?</div><div class="rev-a">HTML = structure/skeleton. CSS = style/design. JavaScript = behavior/interactivity.</div></div>
+          <div class="rev-card"><div class="rev-q">Q: What is CRUD?</div><div class="rev-a">Create, Read, Update, Delete — the 4 fundamental operations for persistent storage apps.</div></div>
+          <div class="rev-card"><div class="rev-q">Q: UI vs UX?</div><div class="rev-a">UI = visual appearance (buttons, colors). UX = overall user experience (ease of use, satisfaction).</div></div>
+          <div class="rev-card"><div class="rev-q">Q: What is a SPA?</div><div class="rev-a">Single Page Application — dynamically rewrites current page instead of loading new pages. Examples: Gmail, Netflix.</div></div>
+          <div class="rev-card"><div class="rev-q">Q: Mobile-First approach?</div><div class="rev-a">Design for smallest screen first, then scale up. Mobile-first = content-first.</div></div>
+          <div class="rev-card"><div class="rev-q">Q: AR vs VR?</div><div class="rev-a">AR overlays digital on real world (partial). VR replaces reality with virtual world (full immersion).</div></div>
+          <div class="rev-card"><div class="rev-q">Q: What is SLAM?</div><div class="rev-a">Simultaneous Localization & Mapping — AR core tech that maps environment while tracking device position.</div></div>
+          <div class="rev-card"><div class="rev-q">Q: Name AR/VR platforms?</div><div class="rev-a">Unity, Unreal Engine, ARCore (Google), ARKit (Apple), Vuforia, WebXR.</div></div>
+          <div class="rev-card"><div class="rev-q">Q: Full Stack = ?</div><div class="rev-a">Frontend + Backend + Database development. Developer handles entire application lifecycle.</div></div>
+          <div class="rev-card"><div class="rev-q">Q: What is PHP?</div><div class="rev-a">Server-side scripting language for web dev. Executes on server, returns HTML. Free, open-source, .php files.</div></div>
+          <div class="rev-card"><div class="rev-q">Q: Responsive Design?</div><div class="rev-a">Design that responds to user's device — uses media queries, flexible images, fluid grids for all screen sizes.</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- MCQ SECTION -->
+    <div id="mcq-section">
+      <div class="mcq-header">
+        <h2>💻 Unit VI — MCQ Practice</h2>
+        <p>50 MCQs on Full Stack Web Development, UI/UX & AR/VR</p>
+        <div class="mcq-progress-bar-wrap"><div class="mcq-progress-fill" id="mcq-progress-fill"></div></div>
+        <div class="mcq-progress-text" id="mcq-progress-text">0 of 50 attempted</div>
+      </div>
+      <div class="mcq-body">
+        <div id="mcq-container"></div>
+        <div class="mcq-nav">
+          <button class="mcq-btn prev" id="btn-prev" onclick="changeMCQ(-1)">← Previous</button>
+          <span class="q-counter">Question <strong id="q-current">1</strong> / <strong>50</strong></span>
+          <button class="mcq-btn next" id="btn-next" onclick="changeMCQ(1)">Next →</button>
+        </div>
+        <div class="score-panel" id="score-panel">
+          <div class="score-emoji" id="score-emoji">🏆</div>
+          <div class="score-title">Results</div>
+          <div class="score-value" id="score-value"></div>
+          <button class="score-restart" onclick="restartMCQ()">🔄 Restart Quiz</button>
+        </div>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<script>
+document.querySelectorAll('.spiral-holes').forEach(sh => {
+  const page = sh.parentElement; const h = page.offsetHeight;
+  const count = Math.max(3, Math.floor(h / 60));
+  sh.innerHTML = Array.from({length: count}, () => '<div class="spiral-hole"></div>').join('');
+});
+
+window.addEventListener('scroll', () => {
+  const h = document.documentElement;
+  document.getElementById('progress-bar').style.width = (h.scrollTop / (h.scrollHeight - h.clientHeight)) * 100 + '%';
+});
+
+const sidebar = document.getElementById('sidebar');
+const overlay = document.getElementById('sidebar-overlay');
+document.getElementById('menu-toggle').addEventListener('click', () => {
+  sidebar.classList.toggle('open');
+  overlay.style.display = sidebar.classList.contains('open') ? 'block' : 'none';
+});
+overlay.addEventListener('click', () => { sidebar.classList.remove('open'); overlay.style.display = 'none'; });
+document.querySelectorAll('.toc-item').forEach(a => {
+  a.addEventListener('click', () => { if (window.innerWidth <= 768) { sidebar.classList.remove('open'); overlay.style.display = 'none'; } });
+});
+
+const revealEls = document.querySelectorAll('.reveal');
+const revealObs = new IntersectionObserver((entries) => {
+  entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); revealObs.unobserve(e.target); } });
+}, { threshold: 0.08 });
+revealEls.forEach(el => revealObs.observe(el));
+
+const sections = document.querySelectorAll('[id]');
+const tocLinks = document.querySelectorAll('.toc-item');
+window.addEventListener('scroll', () => {
+  let current = '';
+  sections.forEach(s => { if (window.scrollY >= s.offsetTop - 120) current = s.id; });
+  tocLinks.forEach(l => { l.classList.remove('active'); if (l.getAttribute('href') === '#' + current) l.classList.add('active'); });
+});
+
+const mcqs = [
+  // Web Dev Basics (Q1-5)
+  {q:"Web development includes all EXCEPT:",opts:["Web design","Web programming","Database management","Hardware manufacturing"],ans:3,exp:"Web development covers web design, publishing, programming, and database management — not hardware manufacturing which is a completely different field."},
+  {q:"The client-side of a website is called:",opts:["Backend","Frontend","Database","Server"],ans:1,exp:"Frontend (client-side) is the visible part users interact with directly — built with HTML, CSS, and JavaScript in the browser."},
+  {q:"Backend development is also known as:",opts:["Client-side","Server-side","Browser-side","User-side"],ans:1,exp:"Backend (server-side) handles data storage, processing, and business logic. Users don't see or interact with it directly."},
+  {q:"A Full Stack Developer works on:",opts:["Only frontend","Only backend","Both frontend and backend","Only database"],ans:2,exp:"Full Stack Developers are capable of working on both frontend (client-side) and backend (server-side), plus databases — the complete application."},
+  {q:"Which is NOT a classification of web development?",opts:["Frontend","Backend","Full Stack","Hardware Development"],ans:3,exp:"Web development is classified into Frontend (client-side), Backend (server-side), and Full Stack (both). Hardware Development is not web development."},
+
+  // UI/UX (Q6-13)
+  {q:"UI stands for:",opts:["Universal Interface","User Interface","Unified Integration","User Intelligence"],ans:1,exp:"UI = User Interface — it covers everything users interact with: buttons, menus, colors, typography, icons, and the overall visual design of a product."},
+  {q:"Which is an example of a Voice User Interface (VUI)?",opts:["Windows desktop","ATM machine","Amazon Alexa","Touchscreen kiosk"],ans:2,exp:"Amazon Alexa, Google Assistant, and Siri are all VUIs — they allow users to interact with devices through voice/speech commands using speech recognition technology."},
+  {q:"GUI stands for:",opts:["General User Input","Graphical User Interface","Global Unified Interface","Graphics Utility Integration"],ans:1,exp:"GUI = Graphical User Interface — a visual interface using icons, buttons, menus, and windows. Examples: Windows, macOS, Android, iOS."},
+  {q:"Which UI design principle says 'don't bombard users with content'?",opts:["Control","Consistency","Comfortability","Cognitive Load"],ans:3,exp:"Cognitive Load principle says be mindful of overwhelming users with too much content. Be clear and concise to reduce mental effort required to use the interface."},
+  {q:"UX stands for:",opts:["User Extension","Universal Experience","User Experience","User Extraction"],ans:2,exp:"UX = User Experience — it focuses on the overall experience of using a product, including usability, accessibility, and satisfaction throughout the user journey."},
+  {q:"The key difference between UI and UX is:",opts:["They are the same thing","UI = visual appearance; UX = overall user journey and satisfaction","UI is for mobile; UX is for desktop","UI is backend; UX is frontend"],ans:1,exp:"UI focuses on visual appearance (colors, typography, buttons). UX focuses on the complete user experience (how easy, enjoyable, and effective the product is to use)."},
+  {q:"An ATM machine uses which type of interface?",opts:["Voice User Interface","Command Line Interface","Menu-Driven Interface","Gesture Interface"],ans:2,exp:"ATMs use Menu-Driven Interfaces (MDI) — users navigate through a series of menus/screens to select options like withdraw, deposit, check balance."},
+  {q:"Which is a popular UI design tool?",opts:["Git","Figma","Docker","Jenkins"],ans:1,exp:"Figma is one of the most popular UI design tools for creating wireframes, prototypes, and visual designs. Others include Adobe XD, Sketch, and InVision."},
+
+  // Frontend (Q14-20)
+  {q:"HTML stands for:",opts:["Hyper Text Markup Language","High Text Machine Language","Hyper Transfer Markup Language","Home Tool Markup Language"],ans:0,exp:"HTML = HyperText Markup Language — the standard markup language for creating the structure of web pages using elements like headings, paragraphs, links, and images."},
+  {q:"HTML acts as the ___ of a website:",opts:["Brain","Style","Skeleton/Structure","Behavior"],ans:2,exp:"HTML acts as the skeleton/structure of a website — it defines what content appears on the page (headings, text, images, links) without any styling or interactivity."},
+  {q:"CSS stands for:",opts:["Computer Style Sheets","Cascading Style Sheets","Creative Style System","Colorful Style Sheets"],ans:1,exp:"CSS = Cascading Style Sheets — the language used to style HTML documents, controlling colors, fonts, spacing, layout, and responsive design."},
+  {q:"Which is NOT a way to add CSS to HTML?",opts:["Inline","Internal","External","Encrypted"],ans:3,exp:"CSS can be added three ways: Inline (style attribute), Internal (<style> in <head>), External (linking a .css file). 'Encrypted' is not a CSS method."},
+  {q:"JavaScript was created to:",opts:["Style web pages","Make web pages alive/interactive","Structure web pages","Store data in databases"],ans:1,exp:"JavaScript was created to 'make web pages alive' — adding dynamic behavior, interactivity, form validation, animations, and event handling."},
+  {q:"JavaScript can execute:",opts:["Only in browsers","Only on servers","In browsers AND on servers","Only in mobile apps"],ans:2,exp:"JavaScript runs in browsers (client-side) AND on servers using Node.js (server-side) — making it one of the most versatile programming languages."},
+  {q:"The Frontend Trinity is:",opts:["PHP, Python, Ruby","HTML, CSS, JavaScript","Git, Docker, Jenkins","React, Angular, Vue"],ans:1,exp:"HTML (structure) + CSS (style) + JavaScript (behavior) = the Frontend Trinity — the three core technologies every frontend developer must know."},
+
+  // Backend & Database (Q21-28)
+  {q:"PHP stands for:",opts:["Personal Home Page","PHP: Hypertext Preprocessor","Program for Hosting Pages","Public Hosting Protocol"],ans:1,exp:"PHP = 'PHP: Hypertext Preprocessor' (a recursive acronym). Originally stood for 'Personal Home Page' but was renamed as it evolved."},
+  {q:"PHP code is executed on the:",opts:["Client/Browser","Server","Database","User's computer"],ans:1,exp:"PHP is a server-side scripting language — code executes on the web server, and the result is returned to the browser as plain HTML."},
+  {q:"PHP files have the extension:",opts:[".html",".js",".php",".css"],ans:2,exp:"PHP files use the .php extension. They can contain text, HTML, CSS, JavaScript, and PHP code — all in one file."},
+  {q:"A Database is best defined as:",opts:["A web browser","An organized collection of structured data managed by a DBMS","A programming language","A styling framework"],ans:1,exp:"A database is an organized collection of structured information stored electronically and controlled by a Database Management System (DBMS)."},
+  {q:"CRUD stands for:",opts:["Create, Run, Update, Debug","Create, Read, Update, Delete","Connect, Retrieve, Upload, Download","Code, Review, Upload, Deploy"],ans:1,exp:"CRUD = Create, Read, Update, Delete — the four fundamental operations needed for any persistent storage application (database operations)."},
+  {q:"A full CRUD application consists of:",opts:["Only a frontend","Only a database","API, Database, and UI","Only an API"],ans:2,exp:"Full CRUD apps have 3 parts: API (code/methods), Database (storage/retrieval), and UI (user interface for interaction)."},
+  {q:"Which is a backend technology?",opts:["HTML","CSS","Node.js","Bootstrap"],ans:2,exp:"Node.js is a backend technology — an open-source runtime for executing JavaScript on the server side. HTML and CSS are frontend; Bootstrap is a CSS framework."},
+  {q:"MongoDB is an example of:",opts:["A frontend framework","A programming language","A database","A design tool"],ans:2,exp:"MongoDB is a popular NoSQL database that stores data in flexible, JSON-like documents — commonly used in full-stack web development."},
+
+  // Frameworks & Tools (Q29-33)
+  {q:"A framework in programming is:",opts:["A type of database","A platform with pre-defined classes and functions for development","A hardware component","A design pattern only"],ans:1,exp:"A framework provides pre-built code (classes, functions, libraries) that developers can reuse, making it more efficient to build applications."},
+  {q:"VS Code is developed by:",opts:["Google","Apple","Microsoft","Facebook"],ans:2,exp:"Visual Studio Code (VS Code) is a free, lightweight code editor developed by Microsoft. It's one of the most popular code editors in the world."},
+  {q:"Which is NOT a feature of VS Code?",opts:["Built-in debugger","Git integration","IntelliSense","3D modeling"],ans:3,exp:"VS Code offers debugging, Git integration, IntelliSense (code completion), extensions, and built-in terminal — but not 3D modeling (that's for tools like Blender)."},
+  {q:"IntelliSense in VS Code provides:",opts:["3D rendering","Smart code completion and syntax highlighting","Video editing","Cloud hosting"],ans:1,exp:"IntelliSense provides smart code completion, parameter info, quick info, and syntax highlighting — making coding faster and reducing errors."},
+  {q:"Which is NOT a coding tool/editor?",opts:["Notepad++","Sublime Text","Photoshop","Atom"],ans:2,exp:"Photoshop is an image editing tool, not a code editor. Notepad++, Sublime Text, Atom, and VS Code are all popular code editors."},
+
+  // Responsive & SPA (Q34-38)
+  {q:"Responsive Web Design responds to:",opts:["Only desktop screens","Screen size, platform, and orientation","Only mobile phones","Only tablets"],ans:1,exp:"Responsive design adapts to the user's behavior and environment based on screen size, platform, and orientation — working on all devices."},
+  {q:"Media Queries in CSS are used to:",opts:["Play audio files","Alter designs based on device characteristics","Query databases","Send emails"],ans:1,exp:"CSS Media Queries apply different styles based on device characteristics like screen width, height, and orientation — essential for responsive design."},
+  {q:"Mobile-First Development means:",opts:["Design for desktop first","Design for the smallest screen first, then scale up","Only develop for mobile","Ignore desktop users"],ans:1,exp:"Mobile-first means starting design with the smallest screen (smartphone) and progressively enhancing for larger screens (tablet → desktop)."},
+  {q:"A Single Page Application (SPA) is:",opts:["A website with only one paragraph","A website that dynamically rewrites content without page reloads","A website that only works on one browser","A static HTML page"],ans:1,exp:"SPAs load one HTML page and dynamically update content using JavaScript — no full page reloads. Examples: Gmail, Google Maps, Netflix."},
+  {q:"Which is NOT a SPA example?",opts:["Gmail","Netflix","A static HTML brochure page","Google Maps"],ans:2,exp:"A static HTML brochure page loads entirely new pages on navigation. Gmail, Netflix, and Google Maps are SPAs that dynamically update content without full reloads."},
+
+  // AR/VR (Q39-48)
+  {q:"AR overlays digital content on:",opts:["A completely virtual world","The real world","A blank screen","A printed document"],ans:1,exp:"Augmented Reality overlays digital objects (3D models, text, images) onto the real-world view captured by a camera — enhancing reality, not replacing it."},
+  {q:"VR provides which type of experience?",opts:["Partially immersive","Text-based","Fully immersive","Non-immersive"],ans:2,exp:"VR creates a FULLY immersive experience — the user is completely surrounded by a virtual 3D environment, replacing the real world entirely."},
+  {q:"SLAM in AR stands for:",opts:["Simple Language And Mapping","Simultaneous Localization And Mapping","System Level Application Management","Structured Learning And Modeling"],ans:1,exp:"SLAM = Simultaneous Localization And Mapping — the core AR technology that builds a 3D map of the environment while tracking the device's position in real-time."},
+  {q:"Which engine is commonly used for AR/VR development?",opts:["Unity","Excel","Photoshop","Notepad"],ans:0,exp:"Unity is the most popular engine for AR/VR development — a cross-platform game engine used to build immersive experiences for mobile and headset-based XR."},
+  {q:"ARCore is developed by:",opts:["Apple","Microsoft","Google","Meta"],ans:2,exp:"ARCore is Google's AR development SDK for creating augmented reality apps on Android devices. Apple's equivalent is ARKit for iOS."},
+  {q:"6DoF in VR stands for:",opts:["6 Degrees of Freedom","6 Digital of Format","6 Dimensions of Function","6 Data of Files"],ans:0,exp:"6DoF = 6 Degrees of Freedom — tracking both rotation (pitch, yaw, roll) AND positional movement (forward/back, left/right, up/down) in 3D space."},
+  {q:"Which device is mainly used for VR experience?",opts:["VR Headset (HMD)","Keyboard","Printer","Scanner"],ans:0,exp:"VR Headsets (Head-Mounted Displays) are the primary VR devices — worn on the head to display stereoscopic 3D images creating an immersive virtual environment."},
+  {q:"Meta Quest 3 is an example of a:",opts:["AR smart glasses","VR headset","3D printer","Gaming console"],ans:1,exp:"Meta Quest 3 is one of the most popular standalone VR headsets — used for gaming, mixed reality, and immersive experiences without needing a PC."},
+  {q:"AR/VR applications include all EXCEPT:",opts:["Education and training","Healthcare simulation","Manual paper filing","Retail virtual try-ons"],ans:2,exp:"AR/VR is used in education, healthcare, gaming, architecture, retail, and industry. Manual paper filing is a traditional physical process, not an AR/VR application."},
+  {q:"Which company is investing heavily in metaverse/AR/VR?",opts:["A farming equipment company","Meta Platforms (Facebook)","A textile manufacturer","A food delivery service"],ans:1,exp:"Meta Platforms (formerly Facebook) is investing billions in metaverse, AR, and VR technologies — including Quest headsets and Horizon Worlds platform."},
+
+  // Careers (Q49-50)
+  {q:"A Full Stack Developer's duties include all EXCEPT:",opts:["Writing effective APIs","Troubleshooting bugs","Designing hardware circuits","Testing and deploying software"],ans:2,exp:"Full Stack Developers design software, write APIs, test, deploy, debug, and write documentation — but designing hardware circuits is an electrical engineering task."},
+  {q:"Essential skills for UI/UX design include:",opts:["Hardware assembly","User Research and Wireframing","Database administration","Network security"],ans:1,exp:"UI/UX designers need skills in user research, wireframing, prototyping, visual design, interaction design, usability testing, and design tools like Figma."}
+];
+
+let currentQ = 0;
+const answered = new Array(mcqs.length).fill(false);
+const scores = new Array(mcqs.length).fill(null);
+
+function renderMCQ(idx) {
+  const container = document.getElementById('mcq-container');
+  container.innerHTML = '';
+  const data = mcqs[idx];
+  const div = document.createElement('div');
+  div.className = 'mcq-question-block active';
+  const optLetters = ['A','B','C','D'];
+  let optHtml = data.opts.map((o, i) =>
+    `<div class="q-option ${answered[idx] ? (i === data.ans ? 'reveal-correct' : (scores[idx] === i ? 'wrong' : '')) : ''}" onclick="selectOpt(${idx}, ${i}, this)" data-idx="${i}"><span class="opt-label">${optLetters[i]}.</span><span>${o}</span></div>`
+  ).join('');
+  div.innerHTML = `<div class="q-number">Question ${idx + 1} of ${mcqs.length}</div><div class="q-text">${data.q}</div><div class="q-options">${optHtml}</div><div class="q-explanation ${answered[idx] ? 'show' : ''}" id="exp-${idx}"><div class="exp-title">💡 Explanation</div>${data.exp}</div>`;
+  container.appendChild(div);
+  if (answered[idx]) div.querySelectorAll('.q-option').forEach(o => o.style.pointerEvents = 'none');
+  document.getElementById('q-current').textContent = idx + 1;
+  document.getElementById('btn-prev').disabled = idx === 0;
+  document.getElementById('btn-next').textContent = idx === mcqs.length - 1 ? 'Finish Quiz' : 'Next →';
+  updateMCQProgress();
+}
+
+function selectOpt(qIdx, optIdx, el) {
+  if (answered[qIdx]) return;
+  answered[qIdx] = true; scores[qIdx] = optIdx;
+  const data = mcqs[qIdx];
+  el.parentElement.querySelectorAll('.q-option').forEach(o => {
+    o.style.pointerEvents = 'none';
+    const i = parseInt(o.dataset.idx);
+    if (i === data.ans) o.classList.add('reveal-correct');
+    if (i === optIdx && optIdx !== data.ans) o.classList.add('wrong');
+  });
+  const exp = document.getElementById(`exp-${qIdx}`);
+  if (exp) exp.classList.add('show');
+  updateMCQProgress();
+}
+
+function changeMCQ(dir) {
+  const newIdx = currentQ + dir;
+  if (newIdx >= mcqs.length) { showScore(); return; }
+  if (newIdx < 0) return;
+  currentQ = newIdx; renderMCQ(currentQ);
+}
+
+function updateMCQProgress() {
+  const attempted = answered.filter(Boolean).length;
+  document.getElementById('mcq-progress-fill').style.width = (attempted / mcqs.length * 100) + '%';
+  document.getElementById('mcq-progress-text').textContent = `${attempted} of ${mcqs.length} attempted`;
+}
+
+function showScore() {
+  document.getElementById('mcq-container').style.display = 'none';
+  document.querySelector('.mcq-nav').style.display = 'none';
+  const correct = scores.reduce((acc, s, i) => acc + (s === mcqs[i].ans ? 1 : 0), 0);
+  const pct = Math.round((correct / mcqs.length) * 100);
+  document.getElementById('score-panel').classList.add('show');
+  document.getElementById('score-value').textContent = `${correct} / ${mcqs.length} correct (${pct}%)`;
+  let emoji = '😅', msg = 'Keep practicing!';
+  if (pct >= 90) { emoji = '🏆'; msg = 'Outstanding! Exam-ready!'; }
+  else if (pct >= 75) { emoji = '🎉'; msg = 'Great job! Almost there!'; }
+  else if (pct >= 60) { emoji = '👍'; msg = 'Good effort! Review weak areas.'; }
+  document.getElementById('score-emoji').textContent = emoji;
+  document.querySelector('.score-title').textContent = msg;
+  document.getElementById('mcq-progress-fill').style.width = '100%';
+  document.getElementById('mcq-progress-text').textContent = `Quiz Complete — ${correct}/${mcqs.length} correct`;
+}
+
+function restartMCQ() {
+  answered.fill(false); scores.fill(null); currentQ = 0;
+  document.getElementById('mcq-container').style.display = 'block';
+  document.querySelector('.mcq-nav').style.display = 'flex';
+  document.getElementById('score-panel').classList.remove('show');
+  renderMCQ(0);
+}
+
+renderMCQ(0);
+</script>
+</body>
+</html>

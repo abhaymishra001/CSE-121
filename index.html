@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CSE121 – Interactive Notes Dashboard</title>
+<meta name="description" content="Main portal for CSE121 Orientation to Computing II interactive notes.">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Caveat:wght@400;500;600;700&family=Kalam:wght@300;400;700&family=Patrick+Hand&family=Nunito:ital,wght@0,300;0,400;0,600;0,700;1,400&display=swap');
+
+  :root {
+    --paper: #fdfcf7;
+    --paper2: #f9f8f0;
+    --lines: #c8dff5;
+    --ink: #1a1a2e;
+    --ink-light: #3a3a5c;
+    --blue: #2563eb;
+    --blue-light: #dbeafe;
+    --teal: #0d9488;
+    --teal-light: #ccfbf1;
+    --rose: #e11d48;
+    --rose-light: #ffe4e6;
+    --amber: #d97706;
+    --amber-light: #fef3c7;
+    --green: #16a34a;
+    --green-light: #dcfce7;
+    --purple: #7c3aed;
+    --purple-light: #ede9fe;
+    --orange: #ea580c;
+    --orange-light: #fff7ed;
+    --shadow: rgba(37,99,235,0.15);
+    --hole-shadow: rgba(0,0,0,0.12);
+    --spiral: #9ca3af;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'Nunito', sans-serif;
+    background: #e8edf5;
+    background-image: radial-gradient(#c3d1e8 1px, transparent 1px);
+    background-size: 24px 24px;
+    color: var(--ink);
+    min-height: 100vh;
+    display: flex; flex-direction: column; align-items: center;
+    padding: 60px 20px;
+  }
+
+  /* ─── MAIN CONTAINER ─── */
+  .notebook-page {
+    background: var(--paper); border-radius: 4px 12px 12px 4px;
+    box-shadow: 4px 8px 30px var(--shadow), 1px 1px 0 rgba(0,0,0,.04);
+    position: relative; overflow: hidden; max-width: 1100px; width: 100%;
+  }
+  .notebook-page::before {
+    content: ''; position: absolute; left: 0; top: 0; bottom: 0;
+    width: 44px; background: var(--paper2); border-right: 2px solid var(--lines);
+  }
+  .spiral-holes {
+    position: absolute; left: 0; top: 0; bottom: 0; width: 44px;
+    display: flex; flex-direction: column; align-items: center; justify-content: space-evenly;
+    z-index: 2; pointer-events: none;
+  }
+  .spiral-hole {
+    width: 14px; height: 14px; border-radius: 50%;
+    background: #e8edf5; border: 2px solid var(--spiral);
+    box-shadow: inset 0 1px 3px var(--hole-shadow); flex-shrink: 0;
+  }
+  .page-content {
+    padding: 40px 40px 60px 70px;
+    background-image: repeating-linear-gradient(transparent, transparent 27px, var(--lines) 28px);
+    min-height: 500px;
+  }
+
+  /* ─── HEADER ─── */
+  .header { text-align: center; margin-bottom: 50px; }
+  .course-code { font-family: 'Kalam', cursive; font-size: 1.2rem; color: var(--teal); letter-spacing: 2px; }
+  .title { font-family: 'Caveat', cursive; font-size: 4rem; font-weight: 700; color: var(--ink); line-height: 1.1; margin-bottom: 10px; }
+  .subtitle { font-family: 'Patrick Hand', cursive; font-size: 1.3rem; color: var(--rose); margin-bottom: 20px; }
+  .divider { width: 150px; height: 4px; background: linear-gradient(90deg, var(--rose), var(--purple), var(--blue)); border-radius: 2px; margin: 0 auto; }
+
+  /* ─── DASHBOARD GRID ─── */
+  .grid {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 24px; padding: 0 10px;
+  }
+
+  /* ─── CARDS ─── */
+  .card {
+    background: var(--paper2); border: 2px solid var(--lines); border-radius: 16px;
+    padding: 24px; text-decoration: none; color: var(--ink);
+    display: flex; flex-direction: column;
+    transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.3s;
+    position: relative; overflow: hidden;
+  }
+  .card:hover { transform: translateY(-8px) scale(1.02); box-shadow: 0 15px 30px var(--shadow); z-index: 10; }
+  .card::after {
+    content: '→'; position: absolute; bottom: 20px; right: 24px;
+    font-size: 1.5rem; color: inherit; opacity: 0; transition: all 0.3s; transform: translateX(-10px);
+  }
+  .card:hover::after { opacity: 1; transform: translateX(0); }
+
+  .icon { font-size: 3rem; margin-bottom: 12px; }
+  .unit-no { font-family: 'Kalam', cursive; font-size: 0.9rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px; }
+  .unit-title { font-family: 'Caveat', cursive; font-size: 1.8rem; font-weight: 700; line-height: 1.2; margin-bottom: 10px; }
+  .desc { font-family: 'Patrick Hand', cursive; font-size: 0.95rem; color: var(--ink-light); line-height: 1.6; }
+
+  /* ─── CARD THEMES ─── */
+  .c1 { border-color: var(--blue); } .c1:hover { background: var(--blue-light); } .c1 .unit-no, .c1 .unit-title { color: var(--blue); }
+  .c2 { border-color: var(--green); } .c2:hover { background: var(--green-light); } .c2 .unit-no, .c2 .unit-title { color: var(--green); }
+  .c3 { border-color: var(--rose); } .c3:hover { background: var(--rose-light); } .c3 .unit-no, .c3 .unit-title { color: var(--rose); }
+  .c4 { border-color: var(--orange); } .c4:hover { background: var(--orange-light); } .c4 .unit-no, .c4 .unit-title { color: var(--orange); }
+  .c5 { border-color: var(--purple); } .c5:hover { background: var(--purple-light); } .c5 .unit-no, .c5 .unit-title { color: var(--purple); }
+  .c6 { border-color: var(--teal); } .c6:hover { background: var(--teal-light); } .c6 .unit-no, .c6 .unit-title { color: var(--teal); }
+
+  .c-rev { border-color: var(--amber); grid-column: 1 / -1; display: flex; flex-direction: row; align-items: center; gap: 20px; }
+  .c-rev:hover { background: var(--amber-light); } .c-rev .unit-no, .c-rev .unit-title { color: var(--amber); }
+  .c-rev .icon { margin-bottom: 0; font-size: 4rem; }
+  .c-rev::after { top: 50%; bottom: auto; transform: translateY(-50%) translateX(-10px); }
+  .c-rev:hover::after { transform: translateY(-50%) translateX(0); }
+
+  @media (max-width: 600px) {
+    .page-content { padding: 30px 20px 40px 60px; }
+    .title { font-size: 3rem; }
+    .c-rev { flex-direction: column; text-align: center; }
+  }
+</style>
+</head>
+<body>
+
+  <div class="notebook-page">
+    <div class="spiral-holes" id="holes"></div>
+    <div class="page-content">
+      
+      <div class="header">
+        <div class="course-code">CSE121</div>
+        <h1 class="title">Interactive Notes Dashboard</h1>
+        <div class="subtitle">Orientation to Computing – II</div>
+        <div class="divider"></div>
+      </div>
+
+      <div class="grid">
+        
+        <!-- Quick Revision -->
+        <a href="short_notes.html" class="card c-rev">
+          <div class="icon">⚡</div>
+          <div>
+            <div class="unit-no">Exam Prep</div>
+            <div class="unit-title">Quick Revision / Short Notes</div>
+            <div class="desc">A 5-minute cheat sheet covering the most important concepts and definitions from all 6 units. Start here for quick review!</div>
+          </div>
+        </a>
+
+        <!-- Unit 1 -->
+        <a href="CSE121_Unit1_Notes.html" class="card c1">
+          <div class="icon">📊</div>
+          <div class="unit-no">Unit I</div>
+          <div class="unit-title">Data Science &amp; Big Data</div>
+          <div class="desc">Introduction to Data Science, Big Data (5 V's), Hadoop Ecosystem, and Data Visualization using tools like Tableau and R.</div>
+        </a>
+
+        <!-- Unit 2 -->
+        <a href="unit2_ai_ml_notes.html" class="card c2">
+          <div class="icon">🤖</div>
+          <div class="unit-no">Unit II</div>
+          <div class="unit-title">Artificial Intelligence &amp; ML</div>
+          <div class="desc">Explore AI, Machine Learning algorithms, Deep Learning, Neural Networks, Natural Language Processing, and their real-world applications.</div>
+        </a>
+
+        <!-- Unit 3 -->
+        <a href="unit3_cybersecurity_notes.html" class="card c3">
+          <div class="icon">🛡️</div>
+          <div class="unit-no">Unit III</div>
+          <div class="unit-title">Cybersecurity</div>
+          <div class="desc">Learn about the CIA Triad, malware, common cyber attacks (phishing, DoS, zero-day), secure browsing, and tools like Nmap and Wireshark.</div>
+        </a>
+
+        <!-- Unit 4 -->
+        <a href="unit4_devops_testing_notes.html" class="card c4">
+          <div class="icon">🔄</div>
+          <div class="unit-no">Unit IV</div>
+          <div class="unit-title">DevOps &amp; Software Testing</div>
+          <div class="desc">Understand the DevOps lifecycle, CI/CD pipelines, Docker, Git, manual vs automated testing, and the defect life cycle.</div>
+        </a>
+
+        <!-- Unit 5 -->
+        <a href="unit5_cloud_computing_notes.html" class="card c5">
+          <div class="icon">☁️</div>
+          <div class="unit-no">Unit V</div>
+          <div class="unit-title">Cloud Computing</div>
+          <div class="desc">Discover cloud delivery models (IaaS, PaaS, SaaS), deployment models, virtualization techniques, and major cloud providers (AWS, Azure, GCP).</div>
+        </a>
+
+        <!-- Unit 6 -->
+        <a href="unit6_fullstack_uiux_notes.html" class="card c6">
+          <div class="icon">🌐</div>
+          <div class="unit-no">Unit VI</div>
+          <div class="unit-title">Full Stack Web Dev &amp; UI/UX</div>
+          <div class="desc">Dive into Frontend (HTML, CSS, JS), Backend (PHP), UI vs UX design principles, Single Page Applications, and AR/VR technologies.</div>
+        </a>
+
+      </div>
+
+    </div>
+  </div>
+
+<script>
+  // Dynamic spiral holes calculation
+  const page = document.querySelector('.notebook-page');
+  const holesContainer = document.getElementById('holes');
+  
+  function updateHoles() {
+    const h = page.offsetHeight;
+    const count = Math.max(3, Math.floor(h / 60));
+    holesContainer.innerHTML = Array.from({length: count}, () => '<div class="spiral-hole"></div>').join('');
+  }
+  
+  window.addEventListener('load', updateHoles);
+  window.addEventListener('resize', updateHoles);
+</script>
+</body>
+</html>

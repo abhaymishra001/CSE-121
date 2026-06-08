@@ -1,0 +1,1708 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CSE121 – Unit III: Cybersecurity</title>
+<meta name="description" content="Complete interactive notes for CSE121 Unit III: Cybersecurity - CIA Triad, Cyber Attacks, Malware, Tools, Compliance, Job Roles and 50 MCQs">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Caveat:wght@400;500;600;700&family=Kalam:wght@300;400;700&family=Patrick+Hand&family=Nunito:ital,wght@0,300;0,400;0,600;0,700;1,400&display=swap');
+
+  :root {
+    --paper: #fdfcf7;
+    --paper2: #f9f8f0;
+    --lines: #c8dff5;
+    --ink: #1a1a2e;
+    --ink-light: #3a3a5c;
+    --blue: #2563eb;
+    --blue-light: #dbeafe;
+    --blue-mid: #93c5fd;
+    --teal: #0d9488;
+    --teal-light: #ccfbf1;
+    --amber: #d97706;
+    --amber-light: #fef3c7;
+    --rose: #e11d48;
+    --rose-light: #ffe4e6;
+    --green: #16a34a;
+    --green-light: #dcfce7;
+    --purple: #7c3aed;
+    --purple-light: #ede9fe;
+    --shadow: rgba(37,99,235,0.10);
+    --hole-shadow: rgba(0,0,0,0.12);
+    --spiral: #9ca3af;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'Nunito', sans-serif;
+    background: #e8edf5;
+    background-image: radial-gradient(#c3d1e8 1px, transparent 1px);
+    background-size: 24px 24px;
+    color: var(--ink);
+    min-height: 100vh;
+  }
+
+  /* ─── PROGRESS BAR ─── */
+  #progress-bar {
+    position: fixed; top: 0; left: 0; height: 3px;
+    background: linear-gradient(90deg, var(--rose), var(--amber), var(--purple));
+    width: 0%; z-index: 9999;
+    transition: width 0.2s ease;
+    box-shadow: 0 0 6px rgba(225,29,72,.4);
+  }
+
+  /* ─── TOP NAV ─── */
+  #top-nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 1000;
+    background: rgba(253,252,247,.96);
+    backdrop-filter: blur(8px);
+    border-bottom: 2px solid var(--lines);
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 20px; height: 54px;
+    box-shadow: 0 2px 12px var(--shadow);
+  }
+  #top-nav .brand {
+    font-family: 'Caveat', cursive; font-size: 1.4rem;
+    font-weight: 700; color: var(--rose);
+    letter-spacing: 0.5px;
+  }
+  #top-nav .brand span { color: var(--teal); }
+  #menu-toggle {
+    display: none; flex-direction: column; gap: 5px;
+    background: none; border: none; cursor: pointer; padding: 4px;
+  }
+  #menu-toggle span {
+    display: block; width: 22px; height: 2px;
+    background: var(--ink); border-radius: 2px;
+    transition: all .3s;
+  }
+  .nav-links { display: flex; gap: 14px; flex-wrap: wrap; }
+  .nav-links a {
+    font-family: 'Kalam', cursive; font-size: .85rem; font-weight: 700;
+    color: var(--ink-light); text-decoration: none;
+    padding: 4px 10px; border-radius: 20px;
+    transition: all .2s;
+  }
+  .nav-links a:hover, .nav-links a.active {
+    background: var(--rose-light); color: var(--rose);
+  }
+
+  /* ─── LAYOUT ─── */
+  .layout { display: flex; padding-top: 54px; min-height: 100vh; }
+
+  /* ─── SIDEBAR ─── */
+  #sidebar {
+    position: fixed; top: 54px; left: 0; bottom: 0;
+    width: 260px; overflow-y: auto;
+    background: var(--paper);
+    border-right: 2px solid var(--lines);
+    padding: 16px 0 40px;
+    z-index: 800;
+    transition: transform .3s ease;
+    box-shadow: 2px 0 16px var(--shadow);
+  }
+  #sidebar::-webkit-scrollbar { width: 4px; }
+  #sidebar::-webkit-scrollbar-thumb { background: var(--lines); border-radius: 4px; }
+
+  .sidebar-title {
+    font-family: 'Caveat', cursive; font-size: 1rem; font-weight: 700;
+    color: var(--rose); padding: 0 16px 10px;
+    border-bottom: 1.5px dashed var(--lines);
+    margin-bottom: 8px; letter-spacing: 0.5px;
+  }
+  .toc-item {
+    display: block; padding: 6px 16px 6px 20px;
+    font-family: 'Patrick Hand', cursive; font-size: .82rem;
+    color: var(--ink-light); text-decoration: none;
+    border-left: 3px solid transparent;
+    transition: all .2s; line-height: 1.4;
+  }
+  .toc-item:hover, .toc-item.active {
+    background: var(--rose-light);
+    border-left-color: var(--rose);
+    color: var(--rose);
+  }
+  .toc-item.sub { padding-left: 30px; font-size: .77rem; opacity: .85; }
+  .toc-item.mcq-link { color: var(--purple); font-weight: bold; margin-top: 8px; }
+  .toc-item.mcq-link:hover { background: var(--purple-light); border-left-color: var(--purple); }
+
+  /* ─── MAIN CONTENT ─── */
+  #main {
+    margin-left: 260px; flex: 1;
+    padding: 30px 24px 60px; max-width: 900px;
+  }
+
+  /* ─── NOTEBOOK PAGE ─── */
+  .notebook-page {
+    background: var(--paper);
+    border-radius: 4px 12px 12px 4px;
+    margin-bottom: 28px;
+    box-shadow: 4px 4px 20px var(--shadow), 1px 1px 0 rgba(0,0,0,.04);
+    position: relative; overflow: hidden;
+  }
+  .notebook-page::before {
+    content: '';
+    position: absolute; left: 0; top: 0; bottom: 0;
+    width: 44px; background: var(--paper2);
+    border-right: 2px solid var(--lines);
+  }
+  .spiral-holes {
+    position: absolute; left: 0; top: 0; bottom: 0;
+    width: 44px; display: flex; flex-direction: column;
+    align-items: center; justify-content: space-evenly;
+    z-index: 2; pointer-events: none;
+  }
+  .spiral-hole {
+    width: 14px; height: 14px; border-radius: 50%;
+    background: #e8edf5; border: 2px solid var(--spiral);
+    box-shadow: inset 0 1px 3px var(--hole-shadow); flex-shrink: 0;
+  }
+  .page-content {
+    padding: 24px 28px 28px 58px;
+    background-image: repeating-linear-gradient(
+      transparent, transparent 27px, var(--lines) 28px
+    );
+    min-height: 200px;
+  }
+
+  /* ─── COVER PAGE ─── */
+  .cover-page {
+    text-align: center; padding: 48px 58px 40px 58px;
+    background: var(--paper); background-image: none;
+  }
+  .cover-subject {
+    font-family: 'Kalam', cursive; font-size: .9rem; font-weight: 400;
+    color: var(--teal); letter-spacing: 2px; text-transform: uppercase; margin-bottom: 8px;
+  }
+  .cover-title {
+    font-family: 'Caveat', cursive; font-size: 2.8rem; font-weight: 700;
+    color: var(--ink); line-height: 1.2; margin-bottom: 6px;
+  }
+  .cover-subtitle {
+    font-family: 'Patrick Hand', cursive; font-size: 1.1rem;
+    color: var(--rose); margin-bottom: 24px;
+  }
+  .cover-divider {
+    width: 100px; height: 3px;
+    background: linear-gradient(90deg, var(--rose), var(--amber));
+    border-radius: 2px; margin: 0 auto 24px;
+  }
+  .cover-meta { display: flex; justify-content: center; gap: 20px; flex-wrap: wrap; }
+  .cover-tag {
+    background: var(--rose-light); color: var(--rose);
+    border-radius: 20px; padding: 5px 14px;
+    font-family: 'Patrick Hand', cursive; font-size: .82rem;
+    border: 1.5px solid #fda4af;
+  }
+
+  /* ─── SECTION HEADINGS ─── */
+  .section-heading {
+    font-family: 'Caveat', cursive; font-size: 1.85rem; font-weight: 700;
+    color: var(--ink); margin-bottom: 8px;
+    display: flex; align-items: center; gap: 10px;
+    padding-bottom: 6px; border-bottom: 2px solid var(--lines);
+  }
+  .section-heading .icon { font-size: 1.4rem; flex-shrink: 0; }
+  .section-heading .badge {
+    font-family: 'Patrick Hand', cursive; font-size: .75rem;
+    background: var(--rose); color: #fff;
+    border-radius: 20px; padding: 2px 10px;
+    margin-left: auto; letter-spacing: .5px;
+  }
+  .sub-heading {
+    font-family: 'Caveat', cursive; font-size: 1.35rem; font-weight: 600;
+    color: var(--rose); margin: 18px 0 6px;
+    padding-left: 10px; border-left: 3px solid var(--rose);
+  }
+  .sub-heading2 {
+    font-family: 'Kalam', cursive; font-size: 1.05rem; font-weight: 700;
+    color: var(--teal); margin: 14px 0 5px;
+  }
+
+  /* ─── BODY TEXT ─── */
+  p {
+    font-size: .96rem; line-height: 1.9; color: var(--ink-light);
+    margin-bottom: 10px; font-family: 'Patrick Hand', cursive;
+  }
+  strong { color: var(--ink); font-weight: 700; }
+
+  /* ─── LISTS ─── */
+  ul.notes-list, ol.notes-list { padding-left: 22px; margin: 8px 0 10px; }
+  ul.notes-list li, ol.notes-list li {
+    font-family: 'Patrick Hand', cursive; font-size: .95rem;
+    line-height: 1.8; color: var(--ink-light); margin-bottom: 4px; padding-left: 4px;
+  }
+  ul.notes-list li::marker { color: var(--rose); }
+  ol.notes-list li::marker { color: var(--rose); font-weight: 700; }
+
+  /* ─── CALLOUT BOXES ─── */
+  .box {
+    border-radius: 10px; padding: 14px 18px; margin: 14px 0;
+    border-left: 4px solid;
+    font-family: 'Patrick Hand', cursive; font-size: .93rem; line-height: 1.8;
+  }
+  .box-title {
+    font-family: 'Kalam', cursive; font-weight: 700; font-size: 1rem;
+    margin-bottom: 5px; display: flex; align-items: center; gap: 6px;
+  }
+  .box.def { background: var(--blue-light); border-color: var(--blue); color: var(--ink); }
+  .box.tip { background: var(--amber-light); border-color: var(--amber); color: var(--ink); }
+  .box.imp { background: var(--rose-light); border-color: var(--rose); color: var(--ink); }
+  .box.sum { background: var(--green-light); border-color: var(--green); color: var(--ink); }
+  .box.note { background: var(--purple-light); border-color: var(--purple); color: var(--ink); }
+  .box.teal { background: var(--teal-light); border-color: var(--teal); color: var(--ink); }
+
+  /* ─── CARDS GRID ─── */
+  .cards {
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 14px; margin: 14px 0;
+  }
+  .card {
+    background: var(--paper2); border: 1.5px solid var(--lines);
+    border-radius: 10px; padding: 14px;
+    transition: transform .2s, box-shadow .2s; cursor: default;
+  }
+  .card:hover { transform: translateY(-3px); box-shadow: 0 6px 20px var(--shadow); }
+  .card .card-icon { font-size: 1.6rem; margin-bottom: 6px; }
+  .card .card-title {
+    font-family: 'Kalam', cursive; font-size: .95rem; font-weight: 700;
+    color: var(--ink); margin-bottom: 4px;
+  }
+  .card .card-body {
+    font-family: 'Patrick Hand', cursive; font-size: .83rem;
+    color: var(--ink-light); line-height: 1.6;
+  }
+
+  /* ─── TABLE ─── */
+  .notes-table {
+    width: 100%; border-collapse: collapse;
+    margin: 14px 0; font-family: 'Patrick Hand', cursive; font-size: .88rem;
+  }
+  .notes-table th {
+    background: var(--rose); color: #fff;
+    padding: 8px 12px; text-align: left;
+    font-family: 'Kalam', cursive; font-weight: 700;
+  }
+  .notes-table td {
+    padding: 8px 12px; border-bottom: 1px solid var(--lines);
+    color: var(--ink-light); vertical-align: top;
+  }
+  .notes-table tr:nth-child(even) td { background: var(--rose-light); }
+  .notes-table tr:hover td { background: var(--teal-light); }
+
+  /* ─── CIA TRIAD ─── */
+  .cia-triad {
+    display: grid; grid-template-columns: repeat(3, 1fr);
+    gap: 14px; margin: 14px 0;
+  }
+  .cia-card {
+    border-radius: 10px; padding: 16px; text-align: center;
+    border: 1.5px solid; transition: transform .2s;
+  }
+  .cia-card:hover { transform: translateY(-4px); }
+  .cia-card .cia-letter {
+    font-family: 'Caveat', cursive; font-size: 2.4rem; font-weight: 700; line-height: 1;
+  }
+  .cia-card .cia-name {
+    font-family: 'Kalam', cursive; font-size: 1rem; font-weight: 700; margin: 4px 0;
+  }
+  .cia-card .cia-desc {
+    font-family: 'Patrick Hand', cursive; font-size: .82rem; line-height: 1.6; color: var(--ink-light);
+  }
+  .cia-card.conf { background: var(--blue-light); border-color: var(--blue); }
+  .cia-card.conf .cia-letter { color: var(--blue); }
+  .cia-card.integ { background: var(--green-light); border-color: var(--green); }
+  .cia-card.integ .cia-letter { color: var(--green); }
+  .cia-card.avail { background: var(--amber-light); border-color: var(--amber); }
+  .cia-card.avail .cia-letter { color: var(--amber); }
+
+  /* ─── ATTACK FLOW ─── */
+  .attack-flow {
+    display: flex; flex-wrap: wrap; gap: 0; margin: 14px 0; align-items: center;
+  }
+  .attack-step {
+    background: var(--rose); color: #fff;
+    padding: 10px 16px; font-family: 'Kalam', cursive;
+    font-weight: 700; font-size: .83rem;
+    clip-path: polygon(0 0,calc(100% - 12px) 0,100% 50%,calc(100% - 12px) 100%,0 100%,12px 50%);
+    margin-right: -8px; min-width: 110px; text-align: center;
+    line-height: 1.3; transition: transform .2s;
+  }
+  .attack-step:first-child { clip-path: polygon(0 0,calc(100% - 12px) 0,100% 50%,calc(100% - 12px) 100%,0 100%); margin-left: 0; }
+  .attack-step:hover { transform: scale(1.05); z-index: 2; }
+  .attack-step:nth-child(2) { background: #9f1239; }
+  .attack-step:nth-child(3) { background: var(--amber); }
+  .attack-step:nth-child(4) { background: var(--teal); }
+  .attack-step:nth-child(5) { background: var(--blue); }
+  .attack-step:nth-child(6) { background: var(--purple); }
+
+  /* ─── COLLAPSIBLE ─── */
+  .collapsible-btn {
+    width: 100%; background: var(--paper2);
+    border: 1.5px solid var(--lines); border-radius: 8px;
+    padding: 10px 14px; text-align: left;
+    font-family: 'Kalam', cursive; font-size: 1rem; font-weight: 700;
+    color: var(--ink); cursor: pointer;
+    display: flex; justify-content: space-between; align-items: center;
+    transition: all .2s; margin: 8px 0;
+  }
+  .collapsible-btn:hover { background: var(--rose-light); color: var(--rose); }
+  .collapsible-btn .arrow { transition: transform .3s; font-size: .9rem; }
+  .collapsible-btn.open .arrow { transform: rotate(90deg); }
+  .collapsible-body {
+    display: none; padding: 12px 16px;
+    background: var(--paper2);
+    border: 1.5px solid var(--lines); border-top: none;
+    border-radius: 0 0 8px 8px;
+    font-family: 'Patrick Hand', cursive; font-size: .93rem;
+    color: var(--ink-light); line-height: 1.8;
+    animation: slideDown .3s ease;
+  }
+  .collapsible-body.open { display: block; }
+  @keyframes slideDown {
+    from { opacity: 0; transform: translateY(-8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ─── TOOL CARDS ─── */
+  .tool-grid {
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 14px; margin: 14px 0;
+  }
+  .tool-card {
+    border-radius: 12px; padding: 18px;
+    border: 2px solid var(--lines); background: var(--paper);
+    transition: transform .2s, box-shadow .2s;
+  }
+  .tool-card:hover { transform: translateY(-4px); box-shadow: 0 8px 24px var(--shadow); }
+  .tool-card .tool-name {
+    font-family: 'Caveat', cursive; font-size: 1.4rem; font-weight: 700; margin-bottom: 8px;
+  }
+  .tool-card .tool-desc {
+    font-family: 'Patrick Hand', cursive; font-size: .88rem;
+    color: var(--ink-light); line-height: 1.7;
+  }
+  .tool-card.nmap { border-color: var(--teal); }
+  .tool-card.nmap .tool-name { color: var(--teal); }
+  .tool-card.wireshark { border-color: var(--blue); }
+  .tool-card.wireshark .tool-name { color: var(--blue); }
+  .tool-card.ai-tool { border-color: var(--purple); }
+  .tool-card.ai-tool .tool-name { color: var(--purple); }
+
+  /* ─── REVISION SECTION ─── */
+  .revision-grid {
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 12px; margin: 14px 0;
+  }
+  .rev-card {
+    border-radius: 10px; padding: 14px;
+    border: 1.5px dashed #fda4af; background: var(--rose-light);
+  }
+  .rev-card .rev-q {
+    font-family: 'Kalam', cursive; font-size: .88rem; font-weight: 700;
+    color: var(--rose); margin-bottom: 5px;
+  }
+  .rev-card .rev-a {
+    font-family: 'Patrick Hand', cursive; font-size: .85rem;
+    color: var(--ink-light); line-height: 1.6;
+  }
+
+  /* ─── MCQ SECTION ─── */
+  #mcq-section {
+    background: var(--paper);
+    border-radius: 4px 12px 12px 4px;
+    box-shadow: 4px 4px 20px var(--shadow); overflow: hidden; margin-bottom: 28px;
+  }
+  .mcq-header {
+    background: linear-gradient(135deg, var(--rose) 0%, var(--purple) 100%);
+    color: #fff; padding: 28px 32px; position: relative; overflow: hidden;
+  }
+  .mcq-header::after {
+    content: '🛡️'; position: absolute; right: 28px; bottom: 8px;
+    font-size: 4rem; opacity: .15;
+  }
+  .mcq-header h2 {
+    font-family: 'Caveat', cursive; font-size: 2rem; font-weight: 700; margin-bottom: 4px;
+  }
+  .mcq-header p {
+    font-family: 'Patrick Hand', cursive; font-size: .9rem;
+    color: rgba(255,255,255,.85); margin: 0;
+  }
+  .mcq-progress-bar-wrap {
+    background: rgba(255,255,255,.2); border-radius: 20px;
+    height: 8px; margin-top: 14px; overflow: hidden;
+  }
+  .mcq-progress-fill {
+    height: 100%; border-radius: 20px; background: rgba(255,255,255,.7);
+    transition: width .4s ease; width: 0%;
+  }
+  .mcq-progress-text {
+    font-family: 'Patrick Hand', cursive; font-size: .82rem;
+    color: rgba(255,255,255,.85); margin-top: 4px;
+  }
+  .mcq-body { padding: 28px 32px; }
+  .mcq-question-block { display: none; animation: fadeIn .4s ease; }
+  .mcq-question-block.active { display: block; }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateX(20px); }
+    to { opacity: 1; transform: translateX(0); }
+  }
+
+  .q-number {
+    font-family: 'Kalam', cursive; font-size: .82rem; font-weight: 700;
+    color: var(--rose); letter-spacing: 1px; text-transform: uppercase; margin-bottom: 8px;
+  }
+  .q-text {
+    font-family: 'Kalam', cursive; font-size: 1.1rem; font-weight: 700;
+    color: var(--ink); line-height: 1.6; margin-bottom: 18px;
+  }
+  .q-options { display: flex; flex-direction: column; gap: 10px; margin-bottom: 18px; }
+  .q-option {
+    display: flex; align-items: flex-start; gap: 12px;
+    padding: 12px 16px; border-radius: 10px;
+    border: 2px solid var(--lines); cursor: pointer; transition: all .2s;
+    font-family: 'Patrick Hand', cursive; font-size: .95rem;
+    color: var(--ink-light); background: var(--paper2); user-select: none;
+  }
+  .q-option:hover:not(.answered) {
+    border-color: var(--rose); background: var(--rose-light);
+    color: var(--rose); transform: translateX(4px);
+  }
+  .q-option .opt-label {
+    font-family: 'Kalam', cursive; font-weight: 700; font-size: 1rem;
+    color: var(--rose); min-width: 22px; flex-shrink: 0;
+  }
+  .q-option.correct { background: var(--green-light); border-color: var(--green); color: var(--green); }
+  .q-option.correct .opt-label { color: var(--green); }
+  .q-option.wrong { background: var(--rose-light); border-color: var(--rose); color: var(--rose); }
+  .q-option.wrong .opt-label { color: var(--rose); }
+  .q-option.reveal-correct { background: var(--green-light); border-color: var(--green); color: var(--green); }
+
+  .q-explanation {
+    display: none; padding: 14px 16px;
+    background: var(--amber-light); border-left: 4px solid var(--amber);
+    border-radius: 8px; margin-bottom: 18px;
+    font-family: 'Patrick Hand', cursive; font-size: .9rem;
+    color: var(--ink); line-height: 1.7; animation: slideDown .3s ease;
+  }
+  .q-explanation.show { display: block; }
+  .q-explanation .exp-title {
+    font-family: 'Kalam', cursive; font-weight: 700; font-size: .9rem;
+    color: var(--amber); margin-bottom: 4px;
+    display: flex; align-items: center; gap: 5px;
+  }
+
+  .mcq-nav {
+    display: flex; justify-content: space-between; align-items: center;
+    padding-top: 14px; border-top: 1.5px dashed var(--lines);
+  }
+  .mcq-btn {
+    padding: 10px 22px; border: none; border-radius: 8px;
+    font-family: 'Kalam', cursive; font-size: .95rem; font-weight: 700;
+    cursor: pointer; transition: all .2s;
+  }
+  .mcq-btn.prev { background: var(--paper2); color: var(--ink-light); border: 2px solid var(--lines); }
+  .mcq-btn.prev:hover { background: var(--rose-light); color: var(--rose); }
+  .mcq-btn.next { background: var(--rose); color: #fff; }
+  .mcq-btn.next:hover { background: #9f1239; }
+  .mcq-btn:disabled { opacity: .4; cursor: not-allowed; }
+  .q-counter { font-family: 'Kalam', cursive; font-size: .9rem; color: var(--ink-light); }
+  .q-counter strong { color: var(--rose); }
+
+  /* ─── SCORE PANEL ─── */
+  .score-panel { display: none; text-align: center; padding: 40px 20px; animation: fadeIn .5s ease; }
+  .score-panel.show { display: block; }
+  .score-emoji { font-size: 4rem; margin-bottom: 14px; }
+  .score-title {
+    font-family: 'Caveat', cursive; font-size: 2rem; font-weight: 700;
+    color: var(--ink); margin-bottom: 8px;
+  }
+  .score-value { font-family: 'Kalam', cursive; font-size: 1.4rem; color: var(--rose); margin-bottom: 16px; }
+  .score-restart {
+    padding: 12px 28px; background: var(--rose); color: #fff;
+    border: none; border-radius: 10px;
+    font-family: 'Kalam', cursive; font-size: 1rem; font-weight: 700;
+    cursor: pointer; transition: all .2s;
+  }
+  .score-restart:hover { background: #9f1239; transform: scale(1.03); }
+
+  /* ─── SCROLL REVEAL ─── */
+  .reveal { opacity: 0; transform: translateY(28px); transition: opacity .6s ease, transform .6s ease; }
+  .reveal.visible { opacity: 1; transform: translateY(0); }
+
+  /* ─── HIGHLIGHT ─── */
+  .hl { background: #fef08a; padding: 0 2px; border-radius: 3px; }
+  .hl-blue { background: var(--blue-light); padding: 0 2px; border-radius: 3px; color: var(--blue); font-weight: 700; }
+  .hl-green { background: var(--green-light); padding: 0 2px; border-radius: 3px; color: var(--green); font-weight: 700; }
+  .hl-rose { background: var(--rose-light); padding: 0 2px; border-radius: 3px; color: var(--rose); font-weight: 700; }
+
+  /* ─── RESPONSIVE ─── */
+  @media (max-width: 768px) {
+    #sidebar { transform: translateX(-100%); }
+    #sidebar.open { transform: translateX(0); }
+    #main { margin-left: 0; padding: 20px 14px 50px; }
+    #menu-toggle { display: flex; }
+    .cia-triad { grid-template-columns: 1fr; }
+    .attack-flow { flex-direction: column; }
+    .attack-step { clip-path: none; margin: 2px 0; border-radius: 6px; }
+    .mcq-body { padding: 20px 16px; }
+    .cover-title { font-size: 2rem; }
+  }
+  @media (max-width: 500px) {
+    .cards { grid-template-columns: 1fr; }
+    .tool-grid { grid-template-columns: 1fr; }
+    .revision-grid { grid-template-columns: 1fr; }
+    .nav-links { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Progress Bar -->
+<div id="progress-bar"></div>
+
+<!-- Top Nav -->
+<nav id="top-nav">
+  <div class="brand">CSE121 <span>Notes</span></div>
+  <button id="menu-toggle" aria-label="Menu"><span></span><span></span><span></span></button>
+  <div class="nav-links">
+    <a href="#cover">Home</a>
+    <a href="#sec-intro">Intro</a>
+    <a href="#sec-cia">CIA Triad</a>
+    <a href="#sec-threats">Threats</a>
+    <a href="#sec-attacks">Attacks</a>
+    <a href="#sec-browsing">Browsing</a>
+    <a href="#sec-tools">Tools</a>
+    <a href="#sec-compliance">Compliance</a>
+    <a href="#mcq-section">MCQs</a>
+  </div>
+</nav>
+
+<!-- Sidebar Overlay -->
+<div id="sidebar-overlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.3);z-index:799;"></div>
+
+<div class="layout">
+  <!-- Sidebar -->
+  <aside id="sidebar">
+    <div class="sidebar-title">🛡️ Unit III Contents</div>
+    <a class="toc-item" href="#cover">🏠 Cover</a>
+    <a class="toc-item" href="#sec-intro">🔐 Introduction to Cybersecurity</a>
+    <a class="toc-item sub" href="#cs-def">→ Definition & Importance</a>
+    <a class="toc-item sub" href="#cs-applications">→ Applications</a>
+    <a class="toc-item" href="#sec-cia">🔺 CIA Triad</a>
+    <a class="toc-item sub" href="#cia-conf">→ Confidentiality</a>
+    <a class="toc-item sub" href="#cia-integ">→ Integrity</a>
+    <a class="toc-item sub" href="#cia-avail">→ Availability</a>
+    <a class="toc-item" href="#sec-threats">⚠️ Cyber Threats</a>
+    <a class="toc-item sub" href="#threats-insider">→ Insider vs External</a>
+    <a class="toc-item sub" href="#threats-malware">→ Malware Types</a>
+    <a class="toc-item" href="#sec-attacks">💥 Common Cyber Attacks</a>
+    <a class="toc-item sub" href="#atk-phishing">→ Phishing & Social Engineering</a>
+    <a class="toc-item sub" href="#atk-brute">→ Password & Brute Force</a>
+    <a class="toc-item sub" href="#atk-malware">→ Malware-based Attacks</a>
+    <a class="toc-item sub" href="#atk-dos">→ DoS Attack</a>
+    <a class="toc-item sub" href="#atk-zeroday">→ Zero-Day Attack</a>
+    <a class="toc-item sub" href="#atk-casestudy">→ Case Studies</a>
+    <a class="toc-item" href="#sec-browsing">🌐 Secure Web Browsing</a>
+    <a class="toc-item sub" href="#browsing-social">→ Social Media Security</a>
+    <a class="toc-item sub" href="#browsing-email">→ Email Security</a>
+    <a class="toc-item sub" href="#browsing-digital">→ Digital Footprints</a>
+    <a class="toc-item" href="#sec-tools">🔧 Cybersecurity Tools</a>
+    <a class="toc-item sub" href="#tool-nmap">→ Nmap</a>
+    <a class="toc-item sub" href="#tool-wireshark">→ Wireshark</a>
+    <a class="toc-item sub" href="#tool-ai">→ AI-Based Detection</a>
+    <a class="toc-item" href="#sec-compliance">📋 Compliance & Laws</a>
+    <a class="toc-item" href="#sec-careers">💼 Job Roles & Skillset</a>
+    <a class="toc-item" href="#sec-revision">✏️ Quick Revision</a>
+    <a class="toc-item mcq-link" href="#mcq-section">🧠 MCQ Practice (50 Qs)</a>
+  </aside>
+
+  <main id="main">
+
+    <!-- COVER -->
+    <div id="cover" class="notebook-page reveal">
+      <div class="spiral-holes" id="holes-cover"></div>
+      <div class="page-content cover-page">
+        <div class="cover-subject">Orientation to Computing – II &nbsp;|&nbsp; CSE121</div>
+        <div class="cover-title">Unit III: Cybersecurity</div>
+        <div class="cover-subtitle">LPU School of Computer Science &amp; Engineering</div>
+        <div class="cover-divider"></div>
+        <div class="cover-meta">
+          <span class="cover-tag">🔐 Cybersecurity Basics</span>
+          <span class="cover-tag">🔺 CIA Triad</span>
+          <span class="cover-tag">💥 Cyber Attacks</span>
+          <span class="cover-tag">🛡️ Malware & Threats</span>
+          <span class="cover-tag">🔧 Nmap · Wireshark</span>
+          <span class="cover-tag">📋 Compliance</span>
+          <span class="cover-tag">💼 Job Roles</span>
+          <span class="cover-tag">🧠 50 MCQs Included</span>
+        </div>
+        <div style="margin-top:24px;">
+          <div class="box def" style="text-align:left;max-width:500px;margin:0 auto;">
+            <div class="box-title">🎯 Course Outcome (CO3)</div>
+            Recognize the attacks, malware, tools, job roles, suspicious links, secure connection and skill set for cyber security.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════
+         SECTION 1: INTRODUCTION TO CYBERSECURITY
+    ════════════════════════════════════════ -->
+    <div id="sec-intro" class="notebook-page reveal">
+      <div class="spiral-holes"></div>
+      <div class="page-content">
+        <div class="section-heading">
+          <span class="icon">🔐</span> Introduction to Cybersecurity
+          <span class="badge">Section 1</span>
+        </div>
+
+        <div id="cs-def">
+          <div class="sub-heading">What is Cybersecurity?</div>
+          <div class="box def">
+            <div class="box-title">📌 Definition</div>
+            <strong>Cybersecurity</strong> (also called <span class="hl">Electronic Information Security</span> or <span class="hl">Information Technology Security</span>) is the practice of protecting systems, networks, programs, and data from digital attacks, unauthorized access, damage, or theft. It involves a combination of technologies, processes, and practices designed to safeguard digital assets.
+          </div>
+          <p>In simple terms, <strong>Cyber</strong> includes systems, networks, programs, and data. <strong>Security</strong> includes protecting all of these from threats. Cybersecurity ensures the <strong>privacy, confidentiality, and data integrity</strong> of every piece of information stored or transmitted digitally.</p>
+
+          <div class="sub-heading2">Key Aspects of Cybersecurity</div>
+          <ul class="notes-list">
+            <li><strong>Protects data</strong> from cyber threats and malicious actors</li>
+            <li><strong>Secures networks, devices,</strong> and sensitive information</li>
+            <li><strong>Prevents unauthorized access</strong> to systems and applications</li>
+            <li>Involves <strong>encryption, authentication,</strong> and monitoring techniques</li>
+            <li>Ensures <strong>privacy, confidentiality,</strong> and data integrity</li>
+            <li>Vital for <strong>safeguarding against cyberattacks</strong> globally</li>
+          </ul>
+        </div>
+
+        <div class="sub-heading">Importance in the Digital Era</div>
+        <p>We live in a digital-first world where nearly every aspect of our lives — banking, shopping, healthcare, education — happens online. This makes cybersecurity absolutely critical:</p>
+        <div class="cards">
+          <div class="card">
+            <div class="card-icon">💰</div>
+            <div class="card-title">Financial Protection</div>
+            <div class="card-body">Cyberattacks cost businesses trillions of dollars annually. Protecting financial data is paramount.</div>
+          </div>
+          <div class="card">
+            <div class="card-icon">🏥</div>
+            <div class="card-title">Healthcare Security</div>
+            <div class="card-body">Patient records, medical devices, and hospital systems need protection from ransomware and data breaches.</div>
+          </div>
+          <div class="card">
+            <div class="card-icon">🏛️</div>
+            <div class="card-title">National Security</div>
+            <div class="card-body">Governments protect critical infrastructure — power grids, defense systems, and communication networks.</div>
+          </div>
+          <div class="card">
+            <div class="card-icon">👤</div>
+            <div class="card-title">Personal Privacy</div>
+            <div class="card-body">Individuals need protection from identity theft, phishing scams, and social media exploitation.</div>
+          </div>
+        </div>
+
+        <div id="cs-applications">
+          <div class="sub-heading">Applications of Cybersecurity</div>
+          <ul class="notes-list">
+            <li><strong>Network Security Surveillance:</strong> Monitoring and protecting network traffic from intruders and threats</li>
+            <li><strong>Identity and Access Control (IAM):</strong> Ensuring only authorized users can access specific resources</li>
+            <li><strong>Software Security:</strong> Protecting applications from vulnerabilities during development and deployment</li>
+            <li><strong>Risk Management:</strong> Identifying, assessing, and mitigating security risks in organizations</li>
+            <li><strong>Security During Software Development:</strong> Integrating security practices into the SDLC (DevSecOps approach)</li>
+            <li><strong>Security Against DDoS:</strong> Protecting servers and services from Distributed Denial of Service attacks</li>
+          </ul>
+        </div>
+
+        <div class="box tip">
+          <div class="box-title">💡 Exam Tip</div>
+          Cybersecurity = Protecting <strong>CIA</strong> (Confidentiality, Integrity, Availability). This is the most fundamental concept and appears in almost every exam!
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════
+         SECTION 2: CIA TRIAD
+    ════════════════════════════════════════ -->
+    <div id="sec-cia" class="notebook-page reveal">
+      <div class="spiral-holes"></div>
+      <div class="page-content">
+        <div class="section-heading">
+          <span class="icon">🔺</span> CIA Triad
+          <span class="badge">Section 2</span>
+        </div>
+
+        <p>The <strong>CIA Triad</strong> is the foundational model of cybersecurity. Every security measure, policy, and tool is designed to protect one or more of these three principles:</p>
+
+        <div class="cia-triad">
+          <div class="cia-card conf" id="cia-conf">
+            <div class="cia-letter">C</div>
+            <div class="cia-name">Confidentiality</div>
+            <div class="cia-desc">Ensuring that information is accessible only to those authorized to have access. Prevents unauthorized disclosure of data.</div>
+          </div>
+          <div class="cia-card integ" id="cia-integ">
+            <div class="cia-letter">I</div>
+            <div class="cia-name">Integrity</div>
+            <div class="cia-desc">Ensuring that information is accurate, complete, and not altered by unauthorized parties. Data remains trustworthy.</div>
+          </div>
+          <div class="cia-card avail" id="cia-avail">
+            <div class="cia-letter">A</div>
+            <div class="cia-name">Availability</div>
+            <div class="cia-desc">Ensuring that information and resources are available to authorized users when needed. Systems remain operational.</div>
+          </div>
+        </div>
+
+        <div class="sub-heading">Confidentiality — Detailed</div>
+        <p><strong>Confidentiality</strong> means keeping sensitive information private. Only people who are authorized should be able to see or access the data. If an unauthorized person reads your private emails, confidentiality is breached.</p>
+        <ul class="notes-list">
+          <li><strong>Encryption:</strong> Converting data into coded form so only authorized parties can decode it</li>
+          <li><strong>Access Control Lists (ACLs):</strong> Defining who can access what resources</li>
+          <li><strong>Two-Factor Authentication (2FA):</strong> Adding an extra verification step beyond passwords</li>
+          <li><strong>Data Classification:</strong> Labeling data as public, internal, confidential, or top-secret</li>
+        </ul>
+
+        <div class="sub-heading">Integrity — Detailed</div>
+        <p><strong>Integrity</strong> ensures that data has not been tampered with or modified by unauthorized users. When you send an email, integrity guarantees the recipient gets the exact same message you sent — without any changes.</p>
+        <ul class="notes-list">
+          <li><strong>Hash Functions:</strong> Creating a unique "fingerprint" of data (e.g., SHA-256) to verify it hasn't changed</li>
+          <li><strong>Digital Signatures:</strong> Verifying the identity of the sender and ensuring message integrity</li>
+          <li><strong>Version Control:</strong> Tracking changes to files and data over time</li>
+          <li><strong>Checksums:</strong> Mathematical values used to verify data hasn't been corrupted during transfer</li>
+        </ul>
+
+        <div class="sub-heading">Availability — Detailed</div>
+        <p><strong>Availability</strong> means that systems, networks, and data are accessible when needed. If a website goes down during a sale or a hospital system crashes during an emergency, availability has failed.</p>
+        <ul class="notes-list">
+          <li><strong>Redundancy:</strong> Having backup systems that can take over if the primary system fails</li>
+          <li><strong>Load Balancing:</strong> Distributing traffic across multiple servers to prevent overload</li>
+          <li><strong>Disaster Recovery Plans:</strong> Procedures to restore systems after a cyberattack or failure</li>
+          <li><strong>Regular Maintenance:</strong> Keeping systems updated and patched to prevent downtime</li>
+        </ul>
+
+        <div class="box imp">
+          <div class="box-title">🚨 Important for Exams</div>
+          The CIA Triad is the <strong>most asked concept</strong> in cybersecurity exams. Remember: <span class="hl-rose">Confidentiality</span> = Who can see? <span class="hl-green">Integrity</span> = Is it accurate? <span class="hl-blue">Availability</span> = Can I access it?
+        </div>
+
+        <div class="box sum">
+          <div class="box-title">📝 Summary — CIA Triad</div>
+          <ul class="notes-list">
+            <li>Confidentiality prevents unauthorized access to information</li>
+            <li>Integrity ensures data is accurate and unaltered</li>
+            <li>Availability ensures systems and data are accessible when needed</li>
+            <li>All three must be balanced — strengthening one should not weaken another</li>
+            <li>Techniques: Encryption, hashing, access control, backups, redundancy</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════
+         SECTION 3: CYBER THREATS
+    ════════════════════════════════════════ -->
+    <div id="sec-threats" class="notebook-page reveal">
+      <div class="spiral-holes"></div>
+      <div class="page-content">
+        <div class="section-heading">
+          <span class="icon">⚠️</span> Cyber Threat Landscape
+          <span class="badge">Section 3</span>
+        </div>
+
+        <div id="threats-insider">
+          <div class="sub-heading">Insider vs External Threats</div>
+          <p>Cyber threats can come from <strong>inside</strong> or <strong>outside</strong> an organization. Understanding both is essential for building a complete security strategy.</p>
+
+          <table class="notes-table">
+            <thead>
+              <tr><th>Category</th><th>Internal Threats</th><th>External Threats</th></tr>
+            </thead>
+            <tbody>
+              <tr><td><strong>Source</strong></td><td>Employees, vendors, contractors, insiders with system access</td><td>Cybercriminals, state actors, hacktivists, external attackers</td></tr>
+              <tr><td><strong>Intent</strong></td><td>Malicious or accidental</td><td>Typically malicious</td></tr>
+              <tr><td><strong>Attack Methods</strong></td><td>Data theft, privilege misuse, misconfigurations</td><td>Phishing, malware, DDoS, credential stuffing</td></tr>
+              <tr><td><strong>Detection Difficulty</strong></td><td>Often harder — trusted access makes it invisible</td><td>Faster to trigger alerts once perimeter is breached</td></tr>
+              <tr><td><strong>Response Time</strong></td><td>Slow — often detected after damage is done</td><td>Faster — response kicks in after alerts/disruptions</td></tr>
+              <tr><td><strong>Example Impacts</strong></td><td>Leaked IP, financial fraud, sabotage, compliance issues</td><td>System downtime, data breaches, ransomware, public exposure</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div id="threats-malware">
+          <div class="sub-heading">Malware — Malicious Software</div>
+          <div class="box def">
+            <div class="box-title">📌 Definition</div>
+            <strong>Malware</strong> (Malicious Software) is any software intentionally designed to <span class="hl">disrupt, damage, or gain unauthorized access</span> to computer systems. It appears as code, scripts, or software and can spread through multiple channels.
+          </div>
+
+          <div class="sub-heading2">How Malware Spreads</div>
+          <p>Malware requires execution to infect systems. It is distributed through:</p>
+          <ul class="notes-list">
+            <li><strong>Social Networks:</strong> Malicious links shared through social media platforms</li>
+            <li><strong>Pirated Software:</strong> Downloading cracked software that contains hidden malware</li>
+            <li><strong>Removable Media:</strong> Infected USB drives, external hard drives</li>
+            <li><strong>Emails:</strong> Phishing emails with malicious attachments or links</li>
+            <li><strong>Websites:</strong> Visiting compromised or fake websites (drive-by downloads)</li>
+          </ul>
+
+          <div class="sub-heading2">Types of Malware</div>
+          <div class="cards">
+            <div class="card">
+              <div class="card-icon">🦠</div>
+              <div class="card-title">Virus</div>
+              <div class="card-body">Attaches to files and executes when the file is opened. Corrupts data and spreads via email attachments or downloads. Examples: Macro virus, Boot virus, Logic Bomb, Resident virus.</div>
+            </div>
+            <div class="card">
+              <div class="card-icon">🐴</div>
+              <div class="card-title">Trojan Horse</div>
+              <div class="card-body">Disguises itself as legitimate software. Once installed, it creates backdoors for attackers to access the system secretly.</div>
+            </div>
+            <div class="card">
+              <div class="card-icon">🐛</div>
+              <div class="card-title">Worm</div>
+              <div class="card-body">Self-replicating malware that spreads across networks without requiring user action or host files. Very dangerous for network congestion.</div>
+            </div>
+            <div class="card">
+              <div class="card-icon">🕵️</div>
+              <div class="card-title">Spyware</div>
+              <div class="card-body">Secretly monitors user activity — tracks keystrokes, browsing habits, and collects sensitive personal information.</div>
+            </div>
+            <div class="card">
+              <div class="card-icon">🧟</div>
+              <div class="card-title">Zombie</div>
+              <div class="card-body">A compromised computer controlled by an attacker, often used as part of a botnet to launch DDoS attacks.</div>
+            </div>
+            <div class="card">
+              <div class="card-icon">🎣</div>
+              <div class="card-title">Phishing</div>
+              <div class="card-body">Deceptive emails/messages that trick users into revealing sensitive information like passwords and credit card numbers.</div>
+            </div>
+            <div class="card">
+              <div class="card-icon">📧</div>
+              <div class="card-title">Spam</div>
+              <div class="card-body">Unsolicited bulk messages, often containing malicious links or attachments, sent via email or messaging platforms.</div>
+            </div>
+            <div class="card">
+              <div class="card-icon">📢</div>
+              <div class="card-title">Adware</div>
+              <div class="card-body">Displays unwanted advertisements on the user's system. May track browsing habits and slow down the computer.</div>
+            </div>
+            <div class="card">
+              <div class="card-icon">🔒</div>
+              <div class="card-title">Ransomware</div>
+              <div class="card-body">Encrypts the victim's data and demands a ransom payment to unlock it. One of the most dangerous modern threats.</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="box sum">
+          <div class="box-title">📝 Summary — Threats & Malware</div>
+          <ul class="notes-list">
+            <li>Threats can be internal (employees) or external (hackers)</li>
+            <li>Internal threats are harder to detect because insiders have trusted access</li>
+            <li>Malware is any malicious software — viruses, worms, trojans, ransomware, spyware</li>
+            <li>Malware spreads via emails, pirated software, USBs, social networks, and websites</li>
+            <li>Prevention: Antivirus, updates, avoiding suspicious links, regular backups</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════
+         SECTION 4: COMMON CYBER ATTACKS
+    ════════════════════════════════════════ -->
+    <div id="sec-attacks" class="notebook-page reveal">
+      <div class="spiral-holes"></div>
+      <div class="page-content">
+        <div class="section-heading">
+          <span class="icon">💥</span> Common Cyber Attacks
+          <span class="badge">Section 4</span>
+        </div>
+
+        <!-- Phishing -->
+        <div id="atk-phishing">
+          <div class="sub-heading">Phishing & Social Engineering Attacks</div>
+          <div class="box def">
+            <div class="box-title">📌 Definition</div>
+            <strong>Phishing</strong> is a type of social engineering attack where attackers send <span class="hl">fraudulent communications</span> (usually emails) that appear to come from a trusted source. The goal is to trick victims into revealing sensitive information like passwords, credit card numbers, or personal data.
+          </div>
+          <p><strong>Social Engineering</strong> is the broader category — it's the art of manipulating people into giving up confidential information. Phishing is just one technique under this umbrella.</p>
+
+          <div class="sub-heading2">Types of Phishing</div>
+          <ul class="notes-list">
+            <li><strong>Email Phishing:</strong> Mass emails impersonating trusted organizations (banks, tech companies)</li>
+            <li><strong>Spear Phishing:</strong> Targeted attacks aimed at specific individuals or organizations</li>
+            <li><strong>Whaling:</strong> Targeting high-level executives (CEOs, CFOs) for maximum impact</li>
+            <li><strong>Smishing:</strong> Phishing via SMS text messages</li>
+            <li><strong>Vishing:</strong> Phishing via voice calls — attackers impersonate customer service</li>
+          </ul>
+
+          <div class="box tip">
+            <div class="box-title">💡 How to Identify Phishing</div>
+            <ul class="notes-list">
+              <li>Check sender's email address carefully for misspellings</li>
+              <li>Look for urgent language — "Your account will be closed!"</li>
+              <li>Hover over links before clicking — verify the actual URL</li>
+              <li>Legitimate companies never ask for passwords via email</li>
+              <li>Check for grammar errors and generic greetings ("Dear Customer")</li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- Brute Force -->
+        <div id="atk-brute">
+          <div class="sub-heading">Password & Brute-Force Attacks</div>
+          <div class="box def">
+            <div class="box-title">📌 Definition</div>
+            <strong>Brute-force attack</strong> is a trial-and-error method used to <span class="hl">crack passwords and login credentials</span>. The attacker systematically tries multiple username-password combinations until the correct one is found.
+          </div>
+
+          <div class="sub-heading2">Types of Brute-Force Attacks</div>
+          <ul class="notes-list">
+            <li><strong>Simple/Dictionary Attack:</strong> Uses common words, phrases, and dictionary terms as password guesses</li>
+            <li><strong>Hybrid Attack:</strong> Combines dictionary words with numbers and special symbols (e.g., "password123!")</li>
+            <li><strong>Reverse Brute Force:</strong> Starts with a known password and tries it against many usernames</li>
+          </ul>
+
+          <div class="box tip">
+            <div class="box-title">💡 Prevention</div>
+            Use strong, unique passwords (12+ characters with mixed case, numbers, symbols). Enable account lockout after failed attempts. Use CAPTCHA and multi-factor authentication.
+          </div>
+        </div>
+
+        <!-- Malware-based -->
+        <div id="atk-malware">
+          <div class="sub-heading">Malware-Based Attacks</div>
+          <p><strong>Malware-based attacks</strong> use malicious software to harm systems or steal data. Primary goals include unauthorized access, data theft, and system disruption. Common targets are end users, organizations, and networks. Entry points include emails, downloads, and removable media.</p>
+
+          <div class="sub-heading2">Types & Attack Mechanisms</div>
+          <ul class="notes-list">
+            <li><strong>Virus:</strong> Attaches to files and spreads on execution</li>
+            <li><strong>Worm:</strong> Self-replicates across networks without user action</li>
+            <li><strong>Trojan:</strong> Disguises as legitimate software to create backdoors</li>
+            <li><strong>Ransomware:</strong> Encrypts data and demands ransom for decryption</li>
+            <li><strong>Spyware:</strong> Secretly monitors user activity and steals data</li>
+          </ul>
+
+          <div class="sub-heading2">Impact & Prevention</div>
+          <ul class="notes-list">
+            <li><strong>Impact:</strong> Data loss, system damage, financial loss, reputation damage, service downtime</li>
+            <li><strong>Prevention:</strong> Use antivirus, keep systems updated, avoid suspicious links, maintain regular backups</li>
+          </ul>
+        </div>
+
+        <!-- DoS -->
+        <div id="atk-dos">
+          <div class="sub-heading">Denial of Service (DoS) Attack</div>
+          <div class="box def">
+            <div class="box-title">📌 Definition</div>
+            A <strong>Denial of Service (DoS)</strong> attack aims to make a system or service <span class="hl">unavailable to legitimate users</span> by overwhelming the server with excessive requests. When launched from multiple sources, it's called a <strong>Distributed DoS (DDoS)</strong> attack.
+          </div>
+          <ul class="notes-list">
+            <li>Overwhelms servers with excessive traffic/requests</li>
+            <li>Targets websites, servers, or entire networks</li>
+            <li>Legitimate users are denied access to services</li>
+            <li><strong>Impact:</strong> Website downtime, business loss, reputation damage, network congestion</li>
+            <li><strong>Prevention:</strong> Use firewalls, intrusion detection systems (IDS), rate limiting, and traffic filtering</li>
+          </ul>
+        </div>
+
+        <!-- Zero-Day -->
+        <div id="atk-zeroday">
+          <div class="sub-heading">Zero-Day Attack</div>
+          <div class="box def">
+            <div class="box-title">📌 Definition</div>
+            A <strong>Zero-Day attack</strong> exploits an <span class="hl">unknown software vulnerability</span> for which no patch or fix is available at the time of attack. Attackers discover and exploit the flaw before developers or security teams even know it exists.
+          </div>
+          <ul class="notes-list">
+            <li>Vulnerability exists but is undiscovered by the vendor</li>
+            <li>Attacker identifies and exploits the flaw first</li>
+            <li>Attack occurs before any security update can be released ("zero days" of protection)</li>
+            <li>Targets operating systems, browsers, and applications</li>
+            <li>Used in Advanced Persistent Threats (APTs)</li>
+            <li>Threatens both Confidentiality and Integrity</li>
+            <li><strong>Difficult to detect and defend</strong> — traditional security tools may not recognize the attack</li>
+          </ul>
+        </div>
+
+        <!-- Case Studies -->
+        <div id="atk-casestudy">
+          <div class="sub-heading">Case Studies of Recent Cyber Incidents</div>
+          <table class="notes-table">
+            <thead>
+              <tr><th>#</th><th>Incident</th><th>Date</th><th>Impact</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>1</td><td><strong>National Defense Corporation</strong> Ransomware Attack</td><td>March 2025</td><td>4.2 TB of sensitive data breached</td></tr>
+              <tr><td>2</td><td><strong>Microsoft</strong> Zero-Day Vulnerability</td><td>April 2025</td><td>Ransomware attacks via CLFS vulnerability</td></tr>
+              <tr><td>3</td><td><strong>WestJet</strong> Cyber Attack</td><td>June 2025</td><td>Intermittent disruptions on website and mobile app</td></tr>
+              <tr><td>4</td><td><strong>Aflac</strong> Social Engineering Attack</td><td>June 2025</td><td>Exposure of sensitive customer, employee, and health data</td></tr>
+              <tr><td>5</td><td><strong>Marks and Spencer Group</strong> Attack</td><td>April 2025</td><td>Data breach affecting 16.9 million customers, $27M in costs</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="box sum">
+          <div class="box-title">📝 Summary — Common Cyber Attacks</div>
+          <ul class="notes-list">
+            <li>Phishing tricks users via fake emails/messages to steal credentials</li>
+            <li>Brute-force attacks systematically guess passwords through trial-and-error</li>
+            <li>Malware attacks use viruses, worms, trojans, ransomware, and spyware</li>
+            <li>DoS attacks overwhelm servers to deny service to legitimate users</li>
+            <li>Zero-day attacks exploit unknown vulnerabilities with no available patches</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════
+         SECTION 5: SECURE WEB BROWSING & PERSONAL DATA
+    ════════════════════════════════════════ -->
+    <div id="sec-browsing" class="notebook-page reveal">
+      <div class="spiral-holes"></div>
+      <div class="page-content">
+        <div class="section-heading">
+          <span class="icon">🌐</span> Secure Web Browsing & Personal Data Protection
+          <span class="badge">Section 5</span>
+        </div>
+
+        <div class="sub-heading">Secure Web Browsing</div>
+        <p>Secure web browsing is essential for online safety. Users must learn to recognize secure connections, identify suspicious links, and practice safe browsing habits.</p>
+
+        <div class="cards">
+          <div class="card">
+            <div class="card-icon">🔒</div>
+            <div class="card-title">HTTPS & Padlock</div>
+            <div class="card-body">Always look for <strong>HTTPS</strong> (not HTTP) in the URL bar and a <strong>padlock icon</strong>. These indicate an encrypted, secure connection between your browser and the website.</div>
+          </div>
+          <div class="card">
+            <div class="card-icon">🔗</div>
+            <div class="card-title">Suspicious Links</div>
+            <div class="card-body">Avoid clicking unknown or shortened links. Hover over links to see the actual URL before clicking. Be cautious of links in emails and messages.</div>
+          </div>
+          <div class="card">
+            <div class="card-icon">✅</div>
+            <div class="card-title">Verify Sources</div>
+            <div class="card-body">Always check the source of a link before clicking. Look for official domains and avoid misspelled URLs (e.g., "g00gle.com").</div>
+          </div>
+        </div>
+
+        <div class="sub-heading2">Browser and Plugin Security</div>
+        <ul class="notes-list">
+          <li><strong>Regular Updates:</strong> Keep browsers updated — updates often patch critical vulnerabilities</li>
+          <li><strong>Plugin Updates:</strong> Update browser plugins and extensions for security fixes</li>
+          <li><strong>Remove Unused Plugins:</strong> Eliminate unnecessary plugins that could be exploited</li>
+        </ul>
+
+        <div id="browsing-social">
+          <div class="sub-heading">Best Practices for Social Media Security</div>
+          <ul class="notes-list">
+            <li><strong>Use strong, unique passwords</strong> for each social media account</li>
+            <li><strong>Enable two-factor authentication (2FA)</strong> wherever available</li>
+            <li><strong>Review privacy settings</strong> regularly — control who can see your posts</li>
+            <li><strong>Be cautious of friend requests</strong> from unknown people</li>
+            <li><strong>Don't share sensitive information</strong> like location, phone number, or financial details</li>
+            <li><strong>Think before clicking</strong> on links shared in messages or posts</li>
+            <li><strong>Report suspicious activity</strong> to the platform immediately</li>
+          </ul>
+        </div>
+
+        <div id="browsing-email">
+          <div class="sub-heading">Email Security — Threats & Protection</div>
+          <ul class="notes-list">
+            <li><strong>Phishing Emails:</strong> Fake emails that impersonate trusted sources — verify before clicking</li>
+            <li><strong>Spam Filters:</strong> Enable and trust your email provider's spam filters</li>
+            <li><strong>Attachment Caution:</strong> Never open unexpected attachments, especially .exe, .zip, or .scr files</li>
+            <li><strong>Email Encryption:</strong> Use encrypted email services for sensitive communications</li>
+            <li><strong>Verify Sender:</strong> Check the sender's actual email address (not just the display name)</li>
+          </ul>
+        </div>
+
+        <div id="browsing-digital">
+          <div class="sub-heading">Personal Data Protection & Digital Footprints</div>
+          <div class="box def">
+            <div class="box-title">📌 Key Definitions</div>
+            <strong>Personal Data:</strong> Name, phone, email, Aadhaar, biometrics, location, online credentials — any information that can identify a person.<br><br>
+            <strong>Digital Footprint:</strong> The trace of data created by your online activities — every click, search, post, and purchase leaves a digital trail.
+          </div>
+
+          <div class="sub-heading2">Types of Digital Footprints</div>
+          <ul class="notes-list">
+            <li><strong>Active Digital Footprint:</strong> Data you deliberately share — social media posts, comments, uploads, blog entries</li>
+            <li><strong>Passive Digital Footprint:</strong> Data collected without your direct input — cookies, browsing history, location tracking, IP addresses</li>
+          </ul>
+
+          <div class="sub-heading2">Sources of Digital Footprints</div>
+          <ul class="notes-list">
+            <li>Social media platforms (Facebook, Instagram, Twitter)</li>
+            <li>Online shopping & e-commerce apps</li>
+            <li>Search engines and web browsers</li>
+            <li>Mobile apps and GPS services</li>
+          </ul>
+        </div>
+
+        <div class="box imp">
+          <div class="box-title">🚨 Important</div>
+          Your digital footprint is <strong>permanent</strong>. Once data is online, it can be extremely difficult to remove completely. Always think before you post! Employers, universities, and law enforcement can all access your digital footprint.
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════
+         SECTION 6: CYBERSECURITY TOOLS
+    ════════════════════════════════════════ -->
+    <div id="sec-tools" class="notebook-page reveal">
+      <div class="spiral-holes"></div>
+      <div class="page-content">
+        <div class="section-heading">
+          <span class="icon">🔧</span> Cybersecurity Tools
+          <span class="badge">Section 6</span>
+        </div>
+
+        <p>Cybersecurity tools help <strong>identify, analyze, and prevent cyber threats</strong>. They are used by security analysts, ethical hackers, and SOC (Security Operations Center) teams. These tools support proactive security and faster incident response.</p>
+
+        <div class="sub-heading2">Categories of Cybersecurity Tools</div>
+        <ul class="notes-list">
+          <li><strong>Network Scanning Tools</strong> — Nmap</li>
+          <li><strong>Traffic Analysis Tools</strong> — Wireshark</li>
+          <li><strong>Intelligent Defense Tools</strong> — AI-based threat detection systems</li>
+        </ul>
+
+        <div class="tool-grid">
+          <div class="tool-card nmap" id="tool-nmap">
+            <div class="tool-name">🔍 Nmap (Network Mapper)</div>
+            <div class="tool-desc">
+              <strong>Type:</strong> Open-source network scanning & reconnaissance tool<br><br>
+              <strong>What it identifies:</strong><br>
+              • Live hosts and open ports on a network<br>
+              • Running services and their versions<br>
+              • Operating system details (OS fingerprinting)<br><br>
+              <strong>Used for:</strong><br>
+              • Network security auditing<br>
+              • Vulnerability assessment<br>
+              • Detecting misconfigurations and exposed services<br><br>
+              <strong>Key feature:</strong> Can scan entire networks to create a map of all connected devices and their vulnerabilities.
+            </div>
+          </div>
+          <div class="tool-card wireshark" id="tool-wireshark">
+            <div class="tool-name">🦈 Wireshark</div>
+            <div class="tool-desc">
+              <strong>Type:</strong> Packet capturing and network protocol analyzer<br><br>
+              <strong>What it does:</strong><br>
+              • Monitors real-time network traffic<br>
+              • Captures and analyzes data packets<br>
+              • Provides deep inspection of network protocols<br><br>
+              <strong>Used to:</strong><br>
+              • Detect suspicious network activity<br>
+              • Analyze malware communication patterns<br>
+              • Troubleshoot network issues and bottlenecks<br><br>
+              <strong>Key feature:</strong> Shows every packet flowing through the network in readable format.
+            </div>
+          </div>
+          <div class="tool-card ai-tool" id="tool-ai">
+            <div class="tool-name">🤖 AI-Based Threat Detection</div>
+            <div class="tool-desc">
+              <strong>Type:</strong> Machine Learning & AI-powered security systems<br><br>
+              <strong>What they analyze:</strong><br>
+              • Large volumes of logs and network data<br>
+              • User behavior patterns for anomalies<br><br>
+              <strong>Capabilities:</strong><br>
+              • Identify zero-day attacks<br>
+              • Detect anomalies & insider threats<br>
+              • Reduce false positives significantly<br><br>
+              <strong>Examples:</strong> AI-powered IDS/IPS, User Behavior Analytics (UBA)<br>
+              <strong>Advantage:</strong> Faster, automated, and adaptive security — can learn and evolve with new threats.
+            </div>
+          </div>
+        </div>
+
+        <div class="box tip">
+          <div class="box-title">💡 Exam Tip</div>
+          Remember the 3 tools: <span class="hl-rose">Nmap</span> = Network Scanning, <span class="hl-blue">Wireshark</span> = Traffic/Packet Analysis, <span class="hl-green">AI-Based</span> = Intelligent Detection. This is frequently asked!
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════
+         SECTION 7: CYBERSECURITY COMPLIANCE
+    ════════════════════════════════════════ -->
+    <div id="sec-compliance" class="notebook-page reveal">
+      <div class="spiral-holes"></div>
+      <div class="page-content">
+        <div class="section-heading">
+          <span class="icon">📋</span> Cybersecurity Compliance
+          <span class="badge">Section 7</span>
+        </div>
+
+        <div class="sub-heading">What is Cybersecurity Compliance?</div>
+        <div class="box def">
+          <div class="box-title">📌 Definition</div>
+          <strong>Cybersecurity Compliance</strong> means <span class="hl">adhering to laws, standards, and policies</span> designed to protect data and systems. It ensures organizations follow legal and security requirements for IT systems, networks, applications, and data handling.
+        </div>
+
+        <div class="sub-heading2">Objectives of Compliance</div>
+        <ul class="notes-list">
+          <li>Protect sensitive and personal data</li>
+          <li>Reduce cyber risks and breaches</li>
+          <li>Maintain trust and legal accountability</li>
+          <li>Ensure organizations meet industry standards</li>
+        </ul>
+
+        <div class="sub-heading">Key Cybersecurity Laws & Standards</div>
+        <table class="notes-table">
+          <thead>
+            <tr><th>Standard/Law</th><th>Full Name</th><th>Description</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><strong>ISO/IEC 27001</strong></td><td>Information Security Management System (ISMS)</td><td>International standard for managing information security through a systematic approach</td></tr>
+            <tr><td><strong>GDPR</strong></td><td>General Data Protection Regulation</td><td>EU regulation for data protection and privacy — applies to any organization handling EU citizens' data</td></tr>
+            <tr><td><strong>IT Act 2000 (India)</strong></td><td>Information Technology Act</td><td>Legal framework for cyber activities in India — covers e-commerce, digital signatures, and cybercrime</td></tr>
+            <tr><td><strong>PCI-DSS</strong></td><td>Payment Card Industry Data Security Standard</td><td>Security standard for organizations handling payment card data (credit/debit cards)</td></tr>
+            <tr><td><strong>HIPAA</strong></td><td>Health Insurance Portability and Accountability Act</td><td>US law protecting healthcare and medical information privacy</td></tr>
+          </tbody>
+        </table>
+
+        <p>Compliance ensures the <strong>CIA Triad</strong> (Confidentiality, Integrity, Availability) is maintained, along with secure data storage and transmission across all systems.</p>
+
+        <div class="sub-heading">Key Cybersecurity Certifications</div>
+        <div class="cards">
+          <div class="card">
+            <div class="card-icon">🏅</div>
+            <div class="card-title">CompTIA Security+</div>
+            <div class="card-body">Entry-level certification covering fundamental security concepts. Great starting point for beginners in cybersecurity.</div>
+          </div>
+          <div class="card">
+            <div class="card-icon">🎯</div>
+            <div class="card-title">Certified Ethical Hacker (CEH)</div>
+            <div class="card-body">Demonstrates knowledge of hacking techniques and countermeasures. Validates skills in penetration testing.</div>
+          </div>
+          <div class="card">
+            <div class="card-icon">🏆</div>
+            <div class="card-title">CISSP</div>
+            <div class="card-body">Certified Information Systems Security Professional — advanced certification for experienced security professionals.</div>
+          </div>
+        </div>
+
+        <div class="box sum">
+          <div class="box-title">📝 Summary — Compliance</div>
+          <ul class="notes-list">
+            <li>Compliance = Following laws and standards to protect data</li>
+            <li>Key laws: ISO 27001, GDPR, IT Act 2000, PCI-DSS, HIPAA</li>
+            <li>Certifications: CompTIA Security+, CEH, CISSP</li>
+            <li>Goal: Protect CIA triad and maintain organizational trust</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════
+         SECTION 8: CAREER OPPORTUNITIES
+    ════════════════════════════════════════ -->
+    <div id="sec-careers" class="notebook-page reveal">
+      <div class="spiral-holes"></div>
+      <div class="page-content">
+        <div class="section-heading">
+          <span class="icon">💼</span> Job Roles & Skillset for Cybersecurity
+          <span class="badge">Section 8</span>
+        </div>
+
+        <p>The cybersecurity job market is expanding rapidly. Security analysts, ethical hackers, and consultants are in high demand. Essential skills include network security, threat analysis, and incident response.</p>
+
+        <div class="sub-heading">In-Demand Cybersecurity Job Roles</div>
+        <div class="cards">
+          <div class="card">
+            <div class="card-icon">🔍</div>
+            <div class="card-title">Security Analyst</div>
+            <div class="card-body">Monitors and analyzes security events, investigates incidents. Acts as the first line of defense in a SOC.</div>
+          </div>
+          <div class="card">
+            <div class="card-icon">🎯</div>
+            <div class="card-title">Penetration Tester</div>
+            <div class="card-body">Identifies vulnerabilities by simulating real cyber attacks (ethical hacking). Tests systems before real attackers can exploit them.</div>
+          </div>
+          <div class="card">
+            <div class="card-icon">🛠️</div>
+            <div class="card-title">Security Engineer</div>
+            <div class="card-body">Designs and implements security systems and infrastructure. Builds firewalls, intrusion detection, and security architectures.</div>
+          </div>
+          <div class="card">
+            <div class="card-icon">🏗️</div>
+            <div class="card-title">Security Architect</div>
+            <div class="card-body">Develops and maintains the organization's overall security architecture. Creates security frameworks and policies.</div>
+          </div>
+          <div class="card">
+            <div class="card-icon">💬</div>
+            <div class="card-title">Cybersecurity Consultant</div>
+            <div class="card-body">Advises organizations on security best practices, risk assessment, and compliance strategies.</div>
+          </div>
+        </div>
+
+        <div class="sub-heading">Developing Your Cybersecurity Skillset</div>
+        <table class="notes-table">
+          <thead>
+            <tr><th>Technical Skills</th><th>Soft Skills</th><th>Continuous Learning</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>• Network security<br>• Operating systems (Linux, Windows)<br>• Cryptography<br>• Penetration testing<br>• Firewall management</td>
+              <td>• Problem-solving<br>• Communication<br>• Critical thinking<br>• Attention to detail<br>• Teamwork</td>
+              <td>• Stay updated with latest threats<br>• Follow cybersecurity news<br>• Practice on CTF platforms<br>• Earn certifications<br>• Attend conferences</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="sub-heading">Cybersecurity Opportunities & The Future</div>
+        <div class="cards">
+          <div class="card">
+            <div class="card-icon">🤖</div>
+            <div class="card-title">AI & Automation</div>
+            <div class="card-body">AI is improving threat detection and automated incident response. AIOps and ML-based security are the future.</div>
+          </div>
+          <div class="card">
+            <div class="card-icon">☁️</div>
+            <div class="card-title">Cloud Security</div>
+            <div class="card-body">Securing data and applications in cloud environments (AWS, Azure, GCP) is a rapidly growing field.</div>
+          </div>
+          <div class="card">
+            <div class="card-icon">📱</div>
+            <div class="card-title">IoT Security</div>
+            <div class="card-body">Protecting connected devices (smart homes, wearables, industrial IoT) from cyber threats is increasingly critical.</div>
+          </div>
+        </div>
+
+        <div class="box imp">
+          <div class="box-title">🚨 Key Takeaway</div>
+          Cybersecurity is everyone's responsibility. The field is constantly evolving with new technologies. Stay curious, keep learning, and embrace continuous improvement to succeed in cybersecurity careers.
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════
+         SECTION 9: QUICK REVISION
+    ════════════════════════════════════════ -->
+    <div id="sec-revision" class="notebook-page reveal">
+      <div class="spiral-holes"></div>
+      <div class="page-content">
+        <div class="section-heading">
+          <span class="icon">✏️</span> Quick Revision
+          <span class="badge">Revision</span>
+        </div>
+        <div class="revision-grid">
+          <div class="rev-card">
+            <div class="rev-q">Q: What is Cybersecurity?</div>
+            <div class="rev-a">Practice of protecting systems, networks, programs, and data from digital attacks and unauthorized access.</div>
+          </div>
+          <div class="rev-card">
+            <div class="rev-q">Q: What is the CIA Triad?</div>
+            <div class="rev-a">Confidentiality (who can see), Integrity (is it accurate), Availability (can I access it) — the 3 pillars of security.</div>
+          </div>
+          <div class="rev-card">
+            <div class="rev-q">Q: What is Malware?</div>
+            <div class="rev-a">Malicious software designed to disrupt, damage, or gain unauthorized access. Types: Virus, Worm, Trojan, Ransomware, Spyware.</div>
+          </div>
+          <div class="rev-card">
+            <div class="rev-q">Q: What is Phishing?</div>
+            <div class="rev-a">Social engineering attack using fake emails/messages to trick users into revealing sensitive information like passwords.</div>
+          </div>
+          <div class="rev-card">
+            <div class="rev-q">Q: What is a DoS Attack?</div>
+            <div class="rev-a">Denial of Service — overwhelms a server with excessive requests to make it unavailable to legitimate users.</div>
+          </div>
+          <div class="rev-card">
+            <div class="rev-q">Q: What is a Zero-Day Attack?</div>
+            <div class="rev-a">Exploits an unknown vulnerability with no available patch. "Zero days" = no time to prepare defenses.</div>
+          </div>
+          <div class="rev-card">
+            <div class="rev-q">Q: What does Nmap do?</div>
+            <div class="rev-a">Network scanning tool — identifies live hosts, open ports, running services, and OS details for security auditing.</div>
+          </div>
+          <div class="rev-card">
+            <div class="rev-q">Q: What does Wireshark do?</div>
+            <div class="rev-a">Packet capture and network protocol analyzer — monitors real-time network traffic and detects suspicious activity.</div>
+          </div>
+          <div class="rev-card">
+            <div class="rev-q">Q: Name 3 compliance standards.</div>
+            <div class="rev-a">ISO/IEC 27001 (ISMS), GDPR (EU privacy), IT Act 2000 (India), PCI-DSS (payments), HIPAA (healthcare).</div>
+          </div>
+          <div class="rev-card">
+            <div class="rev-q">Q: What is a Digital Footprint?</div>
+            <div class="rev-a">Trace of data from online activities. Active = posts/comments. Passive = cookies/browsing history/location tracking.</div>
+          </div>
+          <div class="rev-card">
+            <div class="rev-q">Q: Name cybersecurity certifications.</div>
+            <div class="rev-a">CompTIA Security+ (entry), Certified Ethical Hacker (CEH), CISSP (advanced).</div>
+          </div>
+          <div class="rev-card">
+            <div class="rev-q">Q: Difference between Virus and Worm?</div>
+            <div class="rev-a">Virus needs a host file and user action. Worm self-replicates across networks without any user action needed.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════
+         MCQ SECTION — 50 QUESTIONS
+    ════════════════════════════════════════ -->
+    <div id="mcq-section">
+      <div class="mcq-header">
+        <h2>🛡️ Unit III — MCQ Practice</h2>
+        <p>50 Multiple Choice Questions on Cybersecurity</p>
+        <div class="mcq-progress-bar-wrap">
+          <div class="mcq-progress-fill" id="mcq-progress-fill"></div>
+        </div>
+        <div class="mcq-progress-text" id="mcq-progress-text">0 of 50 attempted</div>
+      </div>
+      <div class="mcq-body">
+        <div id="mcq-container"></div>
+        <div class="mcq-nav">
+          <button class="mcq-btn prev" id="btn-prev" onclick="changeMCQ(-1)">← Previous</button>
+          <span class="q-counter">Question <strong id="q-current">1</strong> / <strong>50</strong></span>
+          <button class="mcq-btn next" id="btn-next" onclick="changeMCQ(1)">Next →</button>
+        </div>
+        <div class="score-panel" id="score-panel">
+          <div class="score-emoji" id="score-emoji">🏆</div>
+          <div class="score-title">Results</div>
+          <div class="score-value" id="score-value"></div>
+          <button class="score-restart" onclick="restartMCQ()">🔄 Restart Quiz</button>
+        </div>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<script>
+// ─── SPIRAL HOLES ─────────────────────────────────────────
+document.querySelectorAll('.spiral-holes').forEach(sh => {
+  const page = sh.parentElement;
+  const h = page.offsetHeight;
+  const count = Math.max(3, Math.floor(h / 60));
+  sh.innerHTML = Array.from({length: count}, () => '<div class="spiral-hole"></div>').join('');
+});
+
+// ─── PROGRESS BAR ─────────────────────────────────────────
+window.addEventListener('scroll', () => {
+  const h = document.documentElement;
+  const pct = (h.scrollTop / (h.scrollHeight - h.clientHeight)) * 100;
+  document.getElementById('progress-bar').style.width = pct + '%';
+});
+
+// ─── SIDEBAR TOGGLE ───────────────────────────────────────
+const sidebar = document.getElementById('sidebar');
+const overlay = document.getElementById('sidebar-overlay');
+document.getElementById('menu-toggle').addEventListener('click', () => {
+  sidebar.classList.toggle('open');
+  overlay.style.display = sidebar.classList.contains('open') ? 'block' : 'none';
+});
+overlay.addEventListener('click', () => {
+  sidebar.classList.remove('open');
+  overlay.style.display = 'none';
+});
+document.querySelectorAll('.toc-item').forEach(a => {
+  a.addEventListener('click', () => {
+    if (window.innerWidth <= 768) {
+      sidebar.classList.remove('open');
+      overlay.style.display = 'none';
+    }
+  });
+});
+
+// ─── SCROLL REVEAL ────────────────────────────────────────
+const revealEls = document.querySelectorAll('.reveal');
+const revealObs = new IntersectionObserver((entries) => {
+  entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); revealObs.unobserve(e.target); } });
+}, { threshold: 0.08 });
+revealEls.forEach(el => revealObs.observe(el));
+
+// ─── COLLAPSIBLE ──────────────────────────────────────────
+document.querySelectorAll('.collapsible-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    btn.classList.toggle('open');
+    const body = btn.nextElementSibling;
+    body.classList.toggle('open');
+  });
+});
+
+// ─── ACTIVE TOC TRACKING ─────────────────────────────────
+const sections = document.querySelectorAll('[id]');
+const tocLinks = document.querySelectorAll('.toc-item');
+window.addEventListener('scroll', () => {
+  let current = '';
+  sections.forEach(s => { if (window.scrollY >= s.offsetTop - 120) current = s.id; });
+  tocLinks.forEach(l => {
+    l.classList.remove('active');
+    if (l.getAttribute('href') === '#' + current) l.classList.add('active');
+  });
+});
+
+// ─── MCQ DATA — 50 QUESTIONS ─────────────────────────────
+const mcqs = [
+  // CIA Triad (Q1-8)
+  {q:"What does the 'C' in CIA Triad stand for?",opts:["Consistency","Confidentiality","Compliance","Communication"],ans:1,exp:"CIA Triad stands for Confidentiality, Integrity, and Availability. Confidentiality means ensuring information is accessible only to authorized users."},
+  {q:"Which principle of the CIA Triad ensures that data has not been tampered with?",opts:["Confidentiality","Availability","Integrity","Authentication"],ans:2,exp:"Integrity ensures that information is accurate, complete, and not altered by unauthorized parties. It guarantees data trustworthiness."},
+  {q:"A hospital's patient record system goes down during an emergency. Which CIA principle has failed?",opts:["Confidentiality","Integrity","Availability","Non-repudiation"],ans:2,exp:"Availability ensures systems and data are accessible when needed. If the system is down when patients need it, availability has failed."},
+  {q:"Which technique is primarily used to ensure Confidentiality?",opts:["Backup systems","Encryption","Load balancing","Version control"],ans:1,exp:"Encryption converts data into coded form so only authorized parties can read it. It's the primary technique for ensuring confidentiality of data."},
+  {q:"Hash functions like SHA-256 are used to ensure which CIA principle?",opts:["Confidentiality","Integrity","Availability","Scalability"],ans:1,exp:"Hash functions create unique 'fingerprints' of data. If data is altered, the hash changes — making them ideal for verifying data integrity."},
+  {q:"Which of the following ensures systems remain operational and accessible?",opts:["Firewalls","Redundancy and backup systems","Antivirus software","Digital signatures"],ans:1,exp:"Redundancy (backup systems that can take over) and disaster recovery plans are the primary methods for ensuring system availability."},
+  {q:"Two-Factor Authentication (2FA) primarily supports which security principle?",opts:["Integrity","Availability","Confidentiality","Consistency"],ans:2,exp:"2FA adds an extra verification step beyond passwords, ensuring only authorized users can access information — supporting confidentiality."},
+  {q:"The CIA Triad is the foundational model of:",opts:["Software Engineering","Database Management","Cybersecurity","Cloud Computing"],ans:2,exp:"The CIA Triad (Confidentiality, Integrity, Availability) is the fundamental model upon which all cybersecurity measures are designed and evaluated."},
+
+  // Threats & Malware (Q9-18)
+  {q:"Which type of threat is generally HARDER to detect — insider or external?",opts:["External threats","Insider threats","Both are equally easy","Neither is detectable"],ans:1,exp:"Insider threats are harder to detect because insiders already have trusted access to systems. Their malicious activities can blend with normal operations."},
+  {q:"What is Malware?",opts:["A type of hardware component","Malicious software designed to harm systems","A network protocol","A security certification"],ans:1,exp:"Malware (malicious software) is any software intentionally designed to disrupt, damage, or gain unauthorized access to computer systems."},
+  {q:"Which malware type self-replicates across networks WITHOUT user action?",opts:["Virus","Trojan","Worm","Adware"],ans:2,exp:"Worms self-replicate and spread across networks without requiring any user action or host files, making them extremely dangerous for network congestion."},
+  {q:"A Trojan horse malware is best described as:",opts:["Software that encrypts your files","Software disguised as legitimate that creates backdoors","Self-replicating network malware","Software that displays unwanted ads"],ans:1,exp:"Trojan horses disguise themselves as legitimate software. Once installed, they create backdoors allowing attackers to access the system secretly."},
+  {q:"Which malware encrypts victim's data and demands payment for unlocking?",opts:["Spyware","Adware","Ransomware","Worm"],ans:2,exp:"Ransomware encrypts the victim's files and demands a ransom payment (usually in cryptocurrency) to provide the decryption key. It's one of the most dangerous modern threats."},
+  {q:"Spyware primarily:",opts:["Displays advertisements","Encrypts files for ransom","Secretly monitors user activity and steals data","Self-replicates across networks"],ans:2,exp:"Spyware runs secretly in the background, monitoring keystrokes, browsing habits, and collecting sensitive personal information without the user's knowledge."},
+  {q:"Which is NOT a way malware spreads?",opts:["Pirated software","Email attachments","Updating your antivirus","Infected USB drives"],ans:2,exp:"Updating antivirus actually PROTECTS against malware. Malware spreads through pirated software, emails, infected USB drives, social networks, and compromised websites."},
+  {q:"A compromised computer controlled remotely as part of a botnet is called a:",opts:["Virus","Zombie","Adware","Firewall"],ans:1,exp:"A 'zombie' is a compromised computer that an attacker controls remotely, often used as part of a botnet to launch DDoS attacks or send spam."},
+  {q:"Which virus type infects the boot sector of a hard drive?",opts:["Macro virus","Boot virus","Logic Bomb virus","Resident virus"],ans:1,exp:"A boot virus infects the boot sector (Master Boot Record) of a hard drive, activating every time the computer starts up, before the OS loads."},
+  {q:"Adware is a type of malware that primarily:",opts:["Steals passwords","Encrypts data","Displays unwanted advertisements","Destroys hardware"],ans:2,exp:"Adware displays unwanted advertisements on the user's system. While often annoying rather than destructive, it may track browsing habits and slow down the system."},
+
+  // Attacks (Q19-30)
+  {q:"Phishing is best described as:",opts:["A network scanning technique","Sending fake messages to trick users into revealing sensitive info","A type of firewall","An encryption algorithm"],ans:1,exp:"Phishing is a social engineering attack where attackers send fraudulent communications (usually emails) that impersonate trusted sources to steal sensitive data."},
+  {q:"'Spear phishing' differs from regular phishing because it:",opts:["Uses phone calls instead of emails","Targets specific individuals or organizations","Only uses SMS messages","Is not harmful"],ans:1,exp:"Spear phishing targets specific individuals or organizations with personalized, research-backed attacks — unlike regular phishing which sends mass generic emails."},
+  {q:"'Whaling' in cybersecurity targets:",opts:["Random internet users","Entry-level employees","High-level executives (CEOs, CFOs)","Only government agencies"],ans:2,exp:"Whaling specifically targets high-level executives (the 'big fish') like CEOs and CFOs for maximum impact, as they have access to critical organizational data and authority."},
+  {q:"In a brute-force attack, the attacker:",opts:["Uses social engineering","Systematically tries many password combinations","Exploits zero-day vulnerabilities","Sends mass spam emails"],ans:1,exp:"Brute-force attacks use trial-and-error, systematically trying multiple username-password combinations until finding the correct credentials to gain unauthorized access."},
+  {q:"A Dictionary Attack is a type of brute-force that:",opts:["Randomly generates character combinations","Uses common words and phrases as password guesses","Targets network infrastructure","Exploits software bugs"],ans:1,exp:"Dictionary attacks try common words, phrases, and popular passwords from a pre-compiled 'dictionary' list, making them faster than pure random brute-force."},
+  {q:"A Reverse Brute Force attack:",opts:["Starts with a known password and tries many usernames","Tries all possible password combinations","Only targets encrypted files","Is the same as phishing"],ans:0,exp:"Reverse brute-force starts with a known common password (like 'password123') and tries it against many different usernames — the reverse of traditional brute-force."},
+  {q:"A Denial of Service (DoS) attack:",opts:["Steals user passwords","Encrypts files for ransom","Overwhelms servers with excessive requests to deny service","Installs spyware on devices"],ans:2,exp:"DoS attacks flood servers with excessive traffic/requests, overwhelming them so legitimate users can't access the service — causing downtime and business loss."},
+  {q:"What distinguishes a DDoS from a DoS attack?",opts:["DDoS is less harmful","DDoS uses multiple attack sources","DDoS only targets mobile devices","DDoS is a type of malware"],ans:1,exp:"DDoS (Distributed Denial of Service) launches attacks from multiple compromised computers (botnets) simultaneously, making it much harder to stop than a single-source DoS."},
+  {q:"A Zero-Day attack is dangerous because:",opts:["It only lasts one day","It uses outdated software","No patch or fix exists at the time of attack","It can only target Windows systems"],ans:2,exp:"Zero-day attacks exploit unknown vulnerabilities with no available fix. 'Zero days' means the vendor has had zero days to create a patch — leaving systems completely exposed."},
+  {q:"Zero-day attacks are often used in:",opts:["Social media marketing","Advanced Persistent Threats (APTs)","Database optimization","Cloud computing"],ans:1,exp:"APTs (Advanced Persistent Threats) are sophisticated, prolonged attacks often by state actors. They frequently use zero-day exploits to penetrate highly secure systems undetected."},
+  {q:"Which prevention method helps against DoS attacks?",opts:["Changing passwords frequently","Rate limiting and traffic filtering","Installing anti-malware","Using strong encryption"],ans:1,exp:"Rate limiting restricts the number of requests a server accepts, and traffic filtering blocks suspicious traffic — both help mitigate DoS/DDoS attacks."},
+  {q:"Vishing is phishing conducted via:",opts:["Video messages","Voice calls","Virtual reality","VPN connections"],ans:1,exp:"Vishing (voice phishing) involves attackers making phone calls impersonating customer service, banks, or tech support to trick victims into revealing sensitive information."},
+
+  // Secure Browsing & Digital Footprint (Q31-37)
+  {q:"HTTPS in a URL indicates:",opts:["The website is blocked","An insecure connection","A secure, encrypted connection","The website uses JavaScript"],ans:2,exp:"HTTPS (HTTP Secure) indicates the connection between browser and website is encrypted using SSL/TLS, protecting data from interception during transmission."},
+  {q:"A padlock icon in the browser address bar means:",opts:["The website is slow","The connection is secure and encrypted","The site requires a password","JavaScript is disabled"],ans:1,exp:"The padlock icon indicates that the website is using a valid SSL/TLS certificate and the connection is encrypted — your data is protected during transmission."},
+  {q:"An 'Active Digital Footprint' includes:",opts:["Cookies stored by websites","Browsing history tracked by ISPs","Social media posts and comments you deliberately share","IP address logs"],ans:2,exp:"Active digital footprints are data you deliberately create — social media posts, comments, uploads, blog entries, reviews, and form submissions."},
+  {q:"A 'Passive Digital Footprint' includes:",opts:["Photos you upload to Instagram","Comments you post on YouTube","Cookies and browsing history collected without your direct input","Emails you send"],ans:2,exp:"Passive digital footprints are collected without your direct input — cookies, browsing history, location tracking, IP address logs, and web analytics data."},
+  {q:"Which is the BEST practice for social media security?",opts:["Accept all friend requests to increase connections","Share your location in every post","Enable two-factor authentication","Use the same password for all accounts"],ans:2,exp:"Two-factor authentication (2FA) adds an extra layer of security beyond passwords, making it significantly harder for attackers to access your accounts."},
+  {q:"You receive an email asking you to urgently click a link to verify your bank account. You should:",opts:["Click immediately — it might be important","Forward it to friends","Verify by contacting the bank directly through official channels","Reply with your account details"],ans:2,exp:"Never click links in suspicious emails. Always verify by contacting the organization directly through their official website or phone number — not through the email link."},
+  {q:"Your digital footprint is:",opts:["Easily deleted completely","Temporary and disappears after 30 days","Essentially permanent — very difficult to remove completely","Only visible to you"],ans:2,exp:"Digital footprints are essentially permanent. Once data is online, it can be cached, archived, screenshotted, or shared — making complete removal extremely difficult."},
+
+  // Cybersecurity Tools (Q38-43)
+  {q:"Nmap is primarily used for:",opts:["Video editing","Network scanning and reconnaissance","Email encryption","Database management"],ans:1,exp:"Nmap (Network Mapper) is an open-source network scanning tool used to discover live hosts, open ports, running services, and OS details on a network."},
+  {q:"Wireshark is best described as a:",opts:["Antivirus software","Packet capturing and network protocol analyzer","Password manager","Code editor"],ans:1,exp:"Wireshark captures and analyzes network packets in real-time, allowing security professionals to monitor traffic, detect suspicious activity, and troubleshoot network issues."},
+  {q:"AI-Based Threat Detection systems can:",opts:["Only detect known viruses","Identify zero-day attacks and detect anomalies","Replace all human security analysts","Only work with Nmap"],ans:1,exp:"AI-based systems use machine learning to analyze patterns in large data volumes, enabling them to identify zero-day attacks, detect anomalies, and reduce false positives."},
+  {q:"Which tool would you use to identify open ports on a network?",opts:["Wireshark","Nmap","Microsoft Word","Tableau"],ans:1,exp:"Nmap's core function is network scanning — it identifies open ports, running services, OS details, and potential vulnerabilities across network devices."},
+  {q:"User Behavior Analytics (UBA) is an example of:",opts:["Network scanning","Packet analysis","AI-based threat detection","Database tool"],ans:2,exp:"UBA uses AI/ML to establish baseline user behavior patterns and detect anomalies that might indicate insider threats or compromised accounts."},
+  {q:"Wireshark can be used to:",opts:["Create websites","Detect suspicious network activity and analyze malware communication","Compile programming code","Design user interfaces"],ans:1,exp:"Wireshark monitors real-time network traffic to detect suspicious activity, analyze how malware communicates, and troubleshoot network performance issues."},
+
+  // Compliance & Laws (Q44-47)
+  {q:"GDPR is a data protection regulation from:",opts:["United States","India","European Union","Japan"],ans:2,exp:"GDPR (General Data Protection Regulation) is the EU's comprehensive data protection and privacy regulation, applicable to any organization handling EU citizens' data."},
+  {q:"IT Act 2000 is the cyber law framework of:",opts:["United States","United Kingdom","India","Australia"],ans:2,exp:"The IT Act 2000 (Information Technology Act) is India's primary legislation governing cyber activities, e-commerce, digital signatures, and cybercrime."},
+  {q:"PCI-DSS is a security standard for:",opts:["Healthcare data","Government secrets","Payment card data","Social media accounts"],ans:2,exp:"PCI-DSS (Payment Card Industry Data Security Standard) establishes security requirements for organizations that handle, process, or store payment card (credit/debit) data."},
+  {q:"ISO/IEC 27001 deals with:",opts:["Food safety management","Information Security Management System (ISMS)","Environmental management","Quality management"],ans:1,exp:"ISO/IEC 27001 is the international standard for establishing, implementing, and maintaining an Information Security Management System (ISMS) within organizations."},
+
+  // Career & Certifications (Q48-50)
+  {q:"CompTIA Security+ is best described as:",opts:["An advanced expert-level certification","An entry-level cybersecurity certification","A networking certification","A programming certification"],ans:1,exp:"CompTIA Security+ is an entry-level certification covering fundamental security concepts. It's the ideal starting point for beginners entering the cybersecurity field."},
+  {q:"Which certification demonstrates knowledge of ethical hacking techniques?",opts:["CISSP","CompTIA A+","Certified Ethical Hacker (CEH)","AWS Solutions Architect"],ans:2,exp:"CEH (Certified Ethical Hacker) validates skills in penetration testing and ethical hacking — demonstrating knowledge of hacking techniques and countermeasures."},
+  {q:"A Security Analyst primarily:",opts:["Writes software code","Monitors and analyzes security events, investigates incidents","Designs marketing campaigns","Manages HR operations"],ans:1,exp:"Security Analysts are the first line of defense in a SOC (Security Operations Center) — they monitor security events, investigate incidents, and respond to threats."}
+];
+
+// ─── MCQ RENDERING ────────────────────────────────────────
+let currentQ = 0;
+const answered = new Array(mcqs.length).fill(false);
+const scores = new Array(mcqs.length).fill(null);
+
+function renderMCQ(idx) {
+  const container = document.getElementById('mcq-container');
+  container.innerHTML = '';
+  const data = mcqs[idx];
+  const div = document.createElement('div');
+  div.className = 'mcq-question-block active';
+  const optLetters = ['A','B','C','D'];
+  let optHtml = data.opts.map((o, i) =>
+    `<div class="q-option ${answered[idx] ? (i === data.ans ? 'reveal-correct' : (scores[idx] === i ? 'wrong' : '')) : ''}" 
+     onclick="selectOpt(${idx}, ${i}, this)" data-idx="${i}">
+      <span class="opt-label">${optLetters[i]}.</span>
+      <span>${o}</span>
+    </div>`
+  ).join('');
+  div.innerHTML = `
+    <div class="q-number">Question ${idx + 1} of ${mcqs.length}</div>
+    <div class="q-text">${data.q}</div>
+    <div class="q-options">${optHtml}</div>
+    <div class="q-explanation ${answered[idx] ? 'show' : ''}" id="exp-${idx}">
+      <div class="exp-title">💡 Explanation</div>
+      ${data.exp}
+    </div>
+  `;
+  container.appendChild(div);
+  if (answered[idx]) {
+    div.querySelectorAll('.q-option').forEach(o => o.style.pointerEvents = 'none');
+  }
+  document.getElementById('q-current').textContent = idx + 1;
+  document.getElementById('btn-prev').disabled = idx === 0;
+  document.getElementById('btn-next').textContent = idx === mcqs.length - 1 ? 'Finish Quiz' : 'Next →';
+  updateMCQProgress();
+}
+
+function selectOpt(qIdx, optIdx, el) {
+  if (answered[qIdx]) return;
+  answered[qIdx] = true;
+  scores[qIdx] = optIdx;
+  const data = mcqs[qIdx];
+  const opts = el.parentElement.querySelectorAll('.q-option');
+  opts.forEach(o => {
+    o.style.pointerEvents = 'none';
+    const i = parseInt(o.dataset.idx);
+    if (i === data.ans) o.classList.add('reveal-correct');
+    if (i === optIdx && optIdx !== data.ans) o.classList.add('wrong');
+  });
+  const exp = document.getElementById(`exp-${qIdx}`);
+  if (exp) exp.classList.add('show');
+  updateMCQProgress();
+}
+
+function changeMCQ(dir) {
+  const newIdx = currentQ + dir;
+  if (newIdx >= mcqs.length) { showScore(); return; }
+  if (newIdx < 0) return;
+  currentQ = newIdx;
+  renderMCQ(currentQ);
+}
+
+function updateMCQProgress() {
+  const attempted = answered.filter(Boolean).length;
+  const pct = (attempted / mcqs.length) * 100;
+  document.getElementById('mcq-progress-fill').style.width = pct + '%';
+  document.getElementById('mcq-progress-text').textContent = `${attempted} of ${mcqs.length} attempted`;
+}
+
+function showScore() {
+  document.getElementById('mcq-container').style.display = 'none';
+  document.querySelector('.mcq-nav').style.display = 'none';
+  const correct = scores.reduce((acc, s, i) => acc + (s === mcqs[i].ans ? 1 : 0), 0);
+  const pct = Math.round((correct / mcqs.length) * 100);
+  const panel = document.getElementById('score-panel');
+  panel.classList.add('show');
+  document.getElementById('score-value').textContent = `${correct} / ${mcqs.length} correct (${pct}%)`;
+  let emoji = '😅', msg = 'Keep practicing!';
+  if (pct >= 90) { emoji = '🏆'; msg = 'Outstanding! Exam-ready!'; }
+  else if (pct >= 75) { emoji = '🎉'; msg = 'Great job! Almost there!'; }
+  else if (pct >= 60) { emoji = '👍'; msg = 'Good effort! Review weak areas.'; }
+  document.getElementById('score-emoji').textContent = emoji;
+  document.querySelector('.score-title').textContent = msg;
+  document.getElementById('mcq-progress-fill').style.width = '100%';
+  document.getElementById('mcq-progress-text').textContent = `Quiz Complete — ${correct}/${mcqs.length} correct`;
+}
+
+function restartMCQ() {
+  answered.fill(false);
+  scores.fill(null);
+  currentQ = 0;
+  document.getElementById('mcq-container').style.display = 'block';
+  document.querySelector('.mcq-nav').style.display = 'flex';
+  document.getElementById('score-panel').classList.remove('show');
+  renderMCQ(0);
+}
+
+// ─── INIT ─────────────────────────────────────────────────
+renderMCQ(0);
+</script>
+</body>
+</html>
